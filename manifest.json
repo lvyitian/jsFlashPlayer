@@ -1,0 +1,27 @@
+{
+
+  "manifest_version": 2,
+  "name": "jsFlashPlayer",
+  "version": "1.0",
+ 
+  "description": "Flash Player written on pure JavaScript. Yes this is stupid idea, but why not?",
+  "icons": {
+    "48": "icons/icon-48.png"
+  },
+
+  "applications": {
+    "gecko": {
+      "id": "jsFlashPlayer@mozilla.org",
+      "strict_min_version": "45.0"
+    }
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "run_at" : "document_start",
+      "js": ["jsFlashPlayer.js"]
+    }
+  ]
+
+}
