@@ -2,7 +2,10 @@
 
 class FlashCore{
     constructor(url){
-        console.log(url);
+
+    	this.debug_mode = true;
+
+        this.debug(url);
         this.raw_data = null;
         this.zipped = false;
         this.cur = 0;
@@ -15,6 +18,10 @@ class FlashCore{
         this.redraw_timeout_id=0;
 
         this.skip_tags = [];
+        this.sound_stream = null;
+
+        this.dictionary = new Dictionary();
+        this.display_list = new DisplayList();
         
         let me = this;
         send_query(url,[],function(data){
@@ -55,7 +62,7 @@ class FlashCore{
         let temp = this.raw_data[this.cur]; this.cur++;
         let first = true;
         let is_negative=false;
-        for(let i=0;i<bitsize;i++){
+        for(let i=0;i<bitsize-1;i++){
 
             out |= ((temp << shift) & 0b10000000) > 0 ? 1 : 0;
 
@@ -77,6 +84,29 @@ class FlashCore{
                 shift = 0;
             }
         }
+        shift=(shift+1)%8;
+        if(shift!=0)
+            this.cur--;
+        return { shift : shift, value : out};
+    }
+
+    read_UB(shift,bitsize){
+        let out = 0;
+        let temp = this.raw_data[this.cur]; this.cur++;        
+        for(let i=0;i<bitsize-1;i++){
+
+            out |= ((temp << shift) & 0b10000000) > 0 ? 1 : 0;
+
+			//this.debug(((temp << shift) & 0b10000000) > 0 ? 1 : 0);
+
+            out = out << 1;
+            shift++;
+            if(shift>7){
+                temp = this.raw_data[this.cur]; this.cur++;
+                shift = 0;
+            }
+        }
+        shift=(shift+1)%8;
         if(shift!=0)
             this.cur--;
         return { shift : shift, value : out};
@@ -127,32 +157,32 @@ class FlashCore{
         else
             {console.log("Error: unknown signature:"+signature); return false;}
         
-        console.log('zipped:',this.zipped);
+        this.debug('zipped:',this.zipped);
         this.cur=3;
         
         this.flash_version = this.read_UI8();
-        console.log('flash version:',this.flash_version);
+        this.debug('flash version:',this.flash_version);
         
         this.file_length = this.read_UI32();
-        console.log('file length:',this.file_length);
-        console.log('raw data length:', this.raw_data.length);
+        this.debug('file length:',this.file_length);
+        this.debug('raw data length:', this.raw_data.length);
 
         if(this.zipped){
-            console.log('inflating');
+            this.debug('inflating');
             let pako = window.pako;
             this.raw_data = pako.inflate(this.raw_data.slice(8));
             this.cur=0;
-            console.log('raw data length:', this.raw_data.length);
+            this.debug('raw data length:', this.raw_data.length);
         }
 
         this.frame_size = this.read_RECT();
-        console.log('frame size: '+(this.frame_size.Xmax/20)+'x'+(this.frame_size.Ymax/20));
+        this.debug('frame size: '+(this.frame_size.Xmax/20)+'x'+(this.frame_size.Ymax/20));
 
         this.frame_rate = this.read_FIXED8();
-        console.log('frame rate:', this.frame_rate);
+        this.debug('frame rate:', this.frame_rate);
 
         this.frames_count = this.read_UI16();
-        console.log('frames count:',this.frames_count);
+        this.debug('frames count:',this.frames_count);
         return true;
     }
 
@@ -195,13 +225,113 @@ class FlashCore{
         }, 1000 / me.frame_rate);
     }
 
+    process_SoundStreamHead2(){
+		this.debug('tag SoundStreamHead2');
+		let shift=4;
+		let temp = this.read_UI8();
+
+		let playbackSoundRate = (temp >> 2) & 0b11;
+		let playbackSoundSize = (temp >> 1) & 1;
+		let playbackSoundType = temp & 1;
+
+		/*this.debug('playbackSoundRate:',playbackSoundRate);
+		this.debug('playbackSoundSize:',playbackSoundSize);
+		this.debug('playbackSoundType:',playbackSoundType);*/
+
+		temp = this.read_UI8();
+		let streamSoundCompression = (temp>>4)&0b1111;
+		let streamSoundRate = (temp>>2)&0b11;
+		let streamSoundSize = (temp>>1)&1;
+		let streamSoundType = temp&1;
+
+		/*this.debug('streamSoundCompression:',streamSoundCompression);
+		this.debug('streamSoundRate:',streamSoundRate);
+		this.debug('streamSoundSize:',streamSoundSize);
+		this.debug('streamSoundType:',streamSoundType);*/
+
+		let streamSoundSampleCount = this.read_UI16();
+		//this.debug('streamSoundSampleCount:',streamSoundSampleCount);
+		
+		let latencySeek = 0;
+
+		if(streamSoundCompression==2){ //mp3
+			latencySeek = this.read_UI16();
+			//this.debug('latencySeek:',latencySeek);
+		}
+
+		this.sound_stream = new SoundStream(
+			playbackSoundRate,
+			playbackSoundSize,
+			playbackSoundType,
+			streamSoundCompression,
+			streamSoundRate,
+			streamSoundSize,
+			streamSoundType,
+			streamSoundSampleCount,
+			latencySeek
+			);
+
+		//this.debug(this.sound_stream);
+    }
+    process_DefineVideoStream(){
+		this.debug('tag DefineVideoStream');
+		
+		let object = {
+			type: this.dictionary.TypeVideoStream,
+			typeName : 'VideoStream',
+			characterID : this.read_UI16(),
+			numFrames : this.read_UI16(),
+			width : this.read_UI16(),
+			height : this.read_UI16()
+		}
+
+		let temp = this.read_UI8();
+
+		object.videoFlagsDeblocking = (temp>>1)&0b111;
+		object.videoFlagsSmoothing = temp & 1;
+		
+		object.codecID = this.read_UI8();
+
+		this.dictionary.add(object.characterID,object);
+    }
+
+    process_PlaceObject2(){
+        this.debug('tag PlaceObject2');
+        let flags = this.read_UI8();
+
+        let obj = {
+            HasClipActions  : (flags & 0b10000000)>0,
+            HasClipDepth    : (flags & 0b01000000)>0,
+            HasName         : (flags & 0b00100000)>0,
+            HasRatio        : (flags & 0b00010000)>0,
+            HasColorTransform:(flags & 0b00001000)>0,
+            HasMatrix       : (flags & 0b00000100)>0,
+            HasCharacter    : (flags & 0b00000010)>0,
+            Move            : (flags & 0b00000001)>0,
+            Depth : this.read_UI16()
+    	};
+
+        if(obj.HasCharacter){
+            obj.characterID = this.read_UI16();
+        }
+
+        this.debug(obj);
+    }
+
     process_tag(){
         let tag = this.read_tag_info();
 
         switch(tag.code){
-            //case 45:
-
-            //break;
+        	case 26:
+        		this.process_PlaceObject2();
+        		return false;
+        	break;
+            case 45:
+            	this.process_SoundStreamHead2();
+            break;
+            case 60:
+            	this.process_DefineVideoStream();
+            break;
             default:
                 if(this.skip_tags.indexOf(tag.code)>0){
                     this.cur+=tag.length;
@@ -212,7 +342,7 @@ class FlashCore{
                 this.cur+=tag.length;
                 if(skip){
                     this.skip_tags.push(tag.code);
-                    return true;
+		            return true;
                 }
                 return false;
             break;
@@ -221,7 +351,14 @@ class FlashCore{
     }
 
 
+    debug(...args){
+    	if(this.debug_mode){
+    		console.log('flash:',...args);
+    	}
+    }
+
     print_address(){
         console.log('address:', '0x'+this.cur.toString(16));
     }
 }
+

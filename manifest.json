@@ -24,6 +24,9 @@
         "helpers/pako/pako_inflate.min.js",
         "helpers/query.js",
         "flash/data_types/Rect.js",
+        "flash/data_types/SoundStream.js",
+        "flash/data_types/Dictionary.js",
+        "flash/data_types/DisplayList.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]
