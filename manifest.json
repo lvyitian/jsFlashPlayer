@@ -20,7 +20,11 @@
     {
       "matches": ["<all_urls>"],
       "run_at" : "document_start",
-      "js": ["jsFlashPlayer.js"]
+      "js": [
+        "helpers/query.js",
+        "flash/FlashCore.js",
+        "jsFlashPlayer.js"
+      ]
     }
   ]
 
