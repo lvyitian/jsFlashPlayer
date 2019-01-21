@@ -200,6 +200,10 @@ class FlashCore{
         return {code:tag_code, length:tag_length};
     }
 
+    read_MATRIX(){
+        
+    }
+
     process(){
         if(!this.read_header()){
             return;
@@ -313,6 +317,9 @@ class FlashCore{
 
         if(obj.HasCharacter){
             obj.characterID = this.read_UI16();
+        }
+        if(obj.HasMatrix){
+            obj.matrix = this.read_MATRIX();
         }
 
         this.debug(obj);
