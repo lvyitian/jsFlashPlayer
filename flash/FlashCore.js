@@ -11,6 +11,10 @@ class FlashCore{
         this.frame_size = new Rect(0,0,0,0);
         this.frame_rate = 0;
         this.frames_count = 0;
+        this.redraw_interval_id=0;
+        this.redraw_timeout_id=0;
+
+        this.skip_tags = [];
         
         let me = this;
         send_query(url,[],function(data){
@@ -161,8 +165,8 @@ class FlashCore{
             tag_length = this.read_UI32();
         }
 
-        console.log('tag_code: '+tag_code);
-        console.log('tag_length: '+tag_length);
+        //console.log('tag_code: '+tag_code);
+        //console.log('tag_length: '+tag_length);
         return {code:tag_code, length:tag_length};
     }
 
@@ -171,14 +175,49 @@ class FlashCore{
             return;
         }
 
-        //while(this.cur<this.file_length){
-            this.print_address();
-            let tag = this.read_tag_info();
-            this.cur+=tag.length;    
-
-            tag = this.read_tag_info();
-        //}
+        this.draw();
         
+    }
+
+    draw(){
+        let me = this;
+        me.redraw_timeout_id = setTimeout(function() {
+            me.redraw_interval_id = requestAnimationFrame(me.draw);
+            
+            for(let i=0;i<me.raw_data.length;i++){
+                if(!me.process_tag()){
+                    clearTimeout(me.redraw_timeout_id);
+                    cancelAnimationFrame(me.redraw_interval_id);
+                    return false;
+                }
+            }
+
+        }, 1000 / me.frame_rate);
+    }
+
+    process_tag(){
+        let tag = this.read_tag_info();
+
+        switch(tag.code){
+            //case 45:
+
+            //break;
+            default:
+                if(this.skip_tags.indexOf(tag.code)>0){
+                    this.cur+=tag.length;
+                    return true;
+                }
+                console.log("unimplemented tag: #"+tag.code);
+                let skip = confirm('Skip unimplemented tag #'+tag.code+' ?');
+                this.cur+=tag.length;
+                if(skip){
+                    this.skip_tags.push(tag.code);
+                    return true;
+                }
+                return false;
+            break;
+        }
+        return true;
     }
 
 
