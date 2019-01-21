@@ -39,5 +39,25 @@ function init(){
 
         let flash = new FlashCore(url);
     }
+
+    objects = document.getElementsByTagName('EMBED');
+    for(let i=0;i<objects.length;i++){
+        let el = objects.item(i);
+        let type = el.getAttribute('type');
+        if(type!=mime) continue;
+        
+        let url = el.getAttribute('src');
+        if(url.startsWith('//')){
+            url = window.location.protocol+url;
+        }
+
+        if(url.indexOf('/')<0){
+            //console.log(window.location.href);
+            let location = window.location.href;
+            url = location.substr(0,location.lastIndexOf('/')+1)+url;
+        }
+
+        let flash = new FlashCore(url);
+    }
 }
 

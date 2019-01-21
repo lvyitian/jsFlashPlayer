@@ -21,7 +21,9 @@
       "matches": ["<all_urls>"],
       "run_at" : "document_start",
       "js": [
+        "helpers/pako/pako_inflate.min.js",
         "helpers/query.js",
+        "flash/data_types/Rect.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]
