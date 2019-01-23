@@ -62,7 +62,7 @@ class FlashCore{
         let temp = this.raw_data[this.cur]; this.cur++;
         let first = true;
         let is_negative=false;
-        for(let i=0;i<bitsize-1;i++){
+        for(let i=0;i<bitsize;i++){
 
             out |= ((temp << shift) & 0b10000000) > 0 ? 1 : 0;
 
@@ -76,40 +76,49 @@ class FlashCore{
                     is_negative=true;   
                 }
             }
-
-            out = out << 1;
+            if((i+1)<bitsize)
+                out = out << 1;
             shift++;
             if(shift>7){
                 temp = this.raw_data[this.cur]; this.cur++;
                 shift = 0;
             }
         }
-        shift=(shift+1)%8;
-        if(shift!=0)
-            this.cur--;
+        //shift=(shift+1)%8;
+        /*if(shift!=0)
+            this.cur--;*/
+        this.cur--;
         return { shift : shift, value : out};
     }
 
     read_UB(shift,bitsize){
         let out = 0;
         let temp = this.raw_data[this.cur]; this.cur++;        
-        for(let i=0;i<bitsize-1;i++){
+        for(let i=0;i<bitsize;i++){
 
             out |= ((temp << shift) & 0b10000000) > 0 ? 1 : 0;
 
 			//this.debug(((temp << shift) & 0b10000000) > 0 ? 1 : 0);
 
-            out = out << 1;
+            if((i+1)<bitsize)
+                out = out << 1;
             shift++;
             if(shift>7){
                 temp = this.raw_data[this.cur]; this.cur++;
                 shift = 0;
             }
         }
-        shift=(shift+1)%8;
-        if(shift!=0)
-            this.cur--;
+        //shift=(shift+1)%8;
+        /*if(shift!=0)
+            this.cur--;*/
+        this.cur--; 
         return { shift : shift, value : out};
+    }
+
+    read_FB(shift,bitsize){
+        let temp = this.read_UB(shift, bitsize);
+        temp.value = (temp.value>>16)+(temp.value&0xFFFF)/0x10000;
+        return temp;
     }
     
     read_RECT(){
@@ -202,6 +211,71 @@ class FlashCore{
 
     read_MATRIX(){
         
+        let matrix = {
+            has_scale: false,
+            has_rotate: false,
+            scaleX: 1,
+            scaleY: 1,
+            translateX: 0,
+            translateY: 0,
+            rotateSkew0:0,
+            rotateSkew1:0
+        }
+        //scale
+        let temp = this.read_UB(0,1);
+        matrix.has_scale = (temp.value==1);
+        if(matrix.has_scale){
+            temp = this.read_UB(temp.shift, 5);
+            let bitsize = temp.value;
+            temp = this.read_FB(temp.shift, bitsize);
+            matrix.scaleX = temp.value;
+
+            temp = this.read_FB(temp.shift, bitsize);
+            matrix.scaleY = temp.value;
+
+        }
+
+        //rotate
+        temp = this.read_UB(temp.shift,1);
+        matrix.has_rotate = (temp.value==1);
+        if(matrix.has_rotate){
+            temp = this.read_UB(temp.shift, 5);
+            let bitsize = temp.value;
+            temp = this.read_FB(temp.shift, bitsize);
+            matrix.rotateSkew0 = temp.value;
+
+            temp = this.read_FB(temp.shift, bitsize);
+            matrix.rotateSkew1 = temp.value;
+
+        }
+
+        //translate
+        temp = this.read_UB(temp.shift, 5);
+        let bitsize = temp.value;
+        temp = this.read_SB(temp.shift, bitsize);
+        matrix.translateX = temp.value;
+        
+        //this.debug('shift:'+temp.shift);
+        temp = this.read_SB(temp.shift, bitsize);
+        matrix.translateY = temp.value;
+        
+        //this.debug('shift:'+temp.shift);
+        if(temp.shift!=0)
+            this.cur++;
+
+        return matrix;
+    }
+
+    read_STRING(){
+        let start = this.cur;
+        let end = start;
+        while(this.raw_data[end]!=0){
+            end++;
+        }
+        let decoder = new TextDecoder('utf-8'); //TODO: Make Shift-Jis  Version
+        let out = decoder.decode(this.raw_data.slice(start,end));
+        this.cur = end+1;
+        return out;
     }
 
     process(){
@@ -304,25 +378,157 @@ class FlashCore{
         let flags = this.read_UI8();
 
         let obj = {
-            HasClipActions  : (flags & 0b10000000)>0,
-            HasClipDepth    : (flags & 0b01000000)>0,
-            HasName         : (flags & 0b00100000)>0,
-            HasRatio        : (flags & 0b00010000)>0,
-            HasColorTransform:(flags & 0b00001000)>0,
-            HasMatrix       : (flags & 0b00000100)>0,
-            HasCharacter    : (flags & 0b00000010)>0,
-            Move            : (flags & 0b00000001)>0,
-            Depth : this.read_UI16()
+            type : this.display_list.TYPE_PlaceObject2,
+            typeName : 'PlaceObject2',
+            hasClipActions  : (flags & 0b10000000)>0,
+            hasClipDepth    : (flags & 0b01000000)>0,
+            hasName         : (flags & 0b00100000)>0,
+            hasRatio        : (flags & 0b00010000)>0,
+            hasColorTransform:(flags & 0b00001000)>0,
+            hasMatrix       : (flags & 0b00000100)>0,
+            hasCharacter    : (flags & 0b00000010)>0,
+            move            : (flags & 0b00000001)>0,
+            depth : 0
     	};
+        obj.depth = this.read_UI16();
 
-        if(obj.HasCharacter){
+        if(obj.hasCharacter){
             obj.characterID = this.read_UI16();
         }
-        if(obj.HasMatrix){
+        if(obj.hasMatrix){
             obj.matrix = this.read_MATRIX();
+            if(obj.matrix===false) return false;
+        }
+        if(obj.hasColorTransform){
+            alett('TODO: Reading ColorTransform from PlaceObject2!');
+            return false;
+        }
+        if(obj.hasRatio){
+            obj.ratio = this.read_UI16();
+        }
+        if(obj.hasName){
+            obj.name = this.read_STRING();
+        }
+        if(obj.hasClipDepth){
+            obj.clipDepth = this.read_UI16();
+        }
+        if(obj.hasClipActions){
+            alett('TODO: Reading ClipActions from PlaceObject2!');
+            return false;   
         }
 
-        this.debug(obj);
+        this.display_list.add(obj.depth,obj);
+        
+        return true;
+    }
+
+    read_H263VIDEOPACKET(){
+
+    
+
+        this.debug('H263VIDEOPACKET');
+        let packet = {};
+
+        let temp = this.read_UB(0, 17);
+        let PictureStartCode = temp.value;
+        this.debug('PictureStartCode:',PictureStartCode);
+        if(PictureStartCode!=1){
+            alert('Error Processing H263VIDEOPACKET');
+            return false;
+        }
+
+        temp = this.read_UB(temp.shift, 5);
+        packet.version = temp.value;
+
+        temp = this.read_UB(temp.shift, 8);
+        packet.temporalReference = temp.value;
+
+        temp = this.read_UB(temp.shift, 3);
+        packet.pictureSize = temp.value;
+
+        if(packet.pictureSize == 0){
+            temp = this.read_UB(temp.shift, 8);
+            packet.customWidth = temp.value;
+            temp = this.read_UB(temp.shift, 8);
+            packet.customHeight = temp.value;
+        }
+        if(packet.pictureSize == 1){
+            temp = this.read_UB(temp.shift, 16);
+            packet.customWidth = temp.value;
+            temp = this.read_UB(temp.shift, 16);
+            packet.customHeight = temp.value;
+        }
+
+        temp = this.read_UB(temp.shift, 2);
+        packet.pictureType = temp.value;
+
+        temp = this.read_UB(temp.shift, 1);
+        packet.deblockingFlag = temp.value;
+
+        temp = this.read_UB(temp.shift, 5);
+        packet.quantizer = temp.value;
+
+        temp = this.read_UB(temp.shift, 1);
+        packet.extraInfoFlag = temp.value;
+        if(packet.extraInfoFlag==1){
+            alert('TODO: H263VIDEOPACKET reading extraInfo!');
+            return false;
+        }
+        
+
+        let macro = {};
+        temp = this.read_UB(temp.shift, 1);
+        macro.codedMacroblockFlag = temp.value;
+
+        if(macro.codedMacroblockFlag == 0){
+            alert('TODO: H263VIDEOPACKET reading macroblock!');
+            return false;
+        }
+
+        let block = {};
+        temp = this.read_UB(temp.shift, 8);
+        block.INTRADC = temp.value;
+
+        this.debug(block);
+
+        packet.macroblock = macro;
+
+        if(temp.shift!=0)
+            this.cur++;
+
+        return packet;
+    }
+
+    process_VideoFrame(){
+        let frame = {
+            streamId : -1,
+            frameNum : -1,
+            videoData : null
+        }
+
+        frame.streamId = this.read_UI16();
+        frame.frameNum = this.read_UI16();
+
+        let stream = this.dictionary.get(frame.streamId);
+        if(stream.type!=this.dictionary.TypeVideoStream){
+            alert('Error: VideoFrame pointing to not VideoStream block!');
+            return false;
+        }
+
+        if(stream.codecID != 2){
+            alert('TODO: Video Frame of codec '+stream.codecID);
+            return false;
+        }
+
+        //codecID = 2
+
+        frame.videoData = this.read_H263VIDEOPACKET();
+        if(frame.videoData===false) return false;
+
+        if(stream.frames==undefined)
+            stream.frames = [];
+        stream.frames[frame.frameNum] = frame.videoData;
+        return true;
     }
 
     process_tag(){
@@ -330,14 +536,22 @@ class FlashCore{
 
         switch(tag.code){
         	case 26:
-        		this.process_PlaceObject2();
-        		return false;
+        		if(!this.process_PlaceObject2()) return false;
         	break;
             case 45:
             	this.process_SoundStreamHead2();
             break;
             case 60:
             	this.process_DefineVideoStream();
+            break;
+            case 61:
+                {
+                    let start = this.cur;
+                    if(!this.process_VideoFrame()) return false;
+                    let size = this.cur - start;
+                    this.debug('readed:',size,'real_size:',tag.length);
+                    return false;
+                }
             break;
             default:
                 if(this.skip_tags.indexOf(tag.code)>0){
@@ -368,4 +582,4 @@ class FlashCore{
         console.log('address:', '0x'+this.cur.toString(16));
     }
 }
-
+    

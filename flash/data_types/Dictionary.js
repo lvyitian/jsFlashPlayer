@@ -13,4 +13,8 @@ class Dictionary{
 		this.dict[characterID] = object;
 	}
 
+	get(characterID){
+		return this.dict[characterID];
+	}
+
 }
