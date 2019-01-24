@@ -289,18 +289,22 @@ class FlashCore{
 
     draw(){
         let me = this;
+        let interval_time = 1000 / me.frame_rate;
         me.redraw_timeout_id = setTimeout(function() {
-            me.redraw_interval_id = requestAnimationFrame(me.draw);
-            
+            me.redraw_interval_id = requestAnimationFrame(me.draw.bind(me));
             for(let i=0;i<me.raw_data.length;i++){
-                if(!me.process_tag()){
+                let ret = me.process_tag();
+                if(ret === false){
                     clearTimeout(me.redraw_timeout_id);
                     cancelAnimationFrame(me.redraw_interval_id);
                     return false;
                 }
+                if(ret===2){
+                    break;
+                }
             }
 
-        }, 1000 / me.frame_rate);
+        }, interval_time);
     }
 
     process_SoundStreamHead2(){
@@ -499,7 +503,8 @@ class FlashCore{
         return packet;
     }
 
-    process_VideoFrame(){
+    process_VideoFrame(end_address){
+        this.debug('tag VideoFrame');
         let frame = {
             streamId : -1,
             frameNum : -1,
@@ -515,15 +520,8 @@ class FlashCore{
             return false;
         }
 
-        if(stream.codecID != 2){
-            alert('TODO: Video Frame of codec '+stream.codecID);
-            return false;
-        }
-
-        //codecID = 2
-
-        frame.videoData = this.read_H263VIDEOPACKET();
-        if(frame.videoData===false) return false;
+        //copying video packet to video stream
+        frame.videoData = this.raw_data.slice(this.cur,end_address);
 
         if(stream.frames==undefined)
             stream.frames = [];
@@ -531,10 +529,24 @@ class FlashCore{
         return true;
     }
 
+    process_ShowFrame(){
+        this.debug('tag ShowFrame');
+
+        alert('TODO: Show Frame!');
+        //TODO: Show Frame
+        return false;
+    }
+
     process_tag(){
         let tag = this.read_tag_info();
 
         switch(tag.code){
+            case 1:
+                if(this.process_ShowFrame()) {
+                    this.cur+=tag.length;
+                    return 2;
+                }else return false;
+            break;
         	case 26:
         		if(!this.process_PlaceObject2()) return false;
         	break;
@@ -547,10 +559,9 @@ class FlashCore{
             case 61:
                 {
                     let start = this.cur;
-                    if(!this.process_VideoFrame()) return false;
-                    let size = this.cur - start;
-                    this.debug('readed:',size,'real_size:',tag.length);
-                    return false;
+                    let end_address = start+tag.length;
+                    if(!this.process_VideoFrame(end_address)) return false;
+                    this.cur=end_address;
                 }
             break;
             default:
