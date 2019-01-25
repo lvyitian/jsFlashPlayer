@@ -526,6 +526,8 @@ class FlashCore{
         if(stream.frames==undefined)
             stream.frames = [];
         stream.frames[frame.frameNum] = frame.videoData;
+
+        //this.save_blob(frame.videoData);
         return true;
     }
 
@@ -591,6 +593,16 @@ class FlashCore{
 
     print_address(){
         console.log('address:', '0x'+this.cur.toString(16));
+    }
+
+    save_blob(bytes){
+        var blob = new Blob([bytes], {type: "application/octet-stream"});
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        var fileName = 'binary_data';
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
     }
 }
     

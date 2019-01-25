@@ -33,11 +33,12 @@ function init(){
         if(type!=mime) continue;
         
         let url = el.getAttribute('data');
-        if(url.startsWith('//')){
-        	url = window.location.protocol+url;
-        }
+        url = get_swf_real_path(url);
+        let width = el.getAttribute('width');
+        let height = el.getAttribute('height');
+        let canvas = create_canvas(el,'100%','100%');
 
-        let flash = new FlashCore(url);
+        let flash = new FlashCore(url,canvas);
     }
 
     objects = document.getElementsByTagName('EMBED');
@@ -47,17 +48,40 @@ function init(){
         if(type!=mime) continue;
         
         let url = el.getAttribute('src');
-        if(url.startsWith('//')){
-            url = window.location.protocol+url;
+        url = get_swf_real_path(url);
+        let width = el.getAttribute('width')+'px';
+        let height = el.getAttribute('height')+'px';
+        let align = el.getAttribute('align')+'px';
+        if (align == 'middle'){
+            align = 'margin: 0 auto 0 auto;'
+        }else {
+            align = '';
         }
+        el.style = 'display:block;'+align+'width:'+width+'; height:'+height;
+        let canvas = create_canvas(el,'100%','100%');
 
-        if(url.indexOf('/')<0){
-            //console.log(window.location.href);
-            let location = window.location.href;
-            url = location.substr(0,location.lastIndexOf('/')+1)+url;
-        }
-
-        let flash = new FlashCore(url);
+        let flash = new FlashCore(url,canvas);
     }
 }
 
+function get_swf_real_path(url){
+    if(url.startsWith('//')){
+        url = window.location.protocol+url;
+    }
+    if(url.indexOf('/')<0){
+        //console.log(window.location.href);
+        let location = window.location.href;
+        url = location.substr(0,location.lastIndexOf('/')+1)+url;
+    }
+    return url;
+}
+
+function create_canvas(element, width, height){
+    let canvas = document.createElement('CANVAS');
+    canvas.style = 'width: '+width+'; height: '+height;
+    element.appendChild(canvas);
+    let ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#00FF55';
+    ctx.fillRect(0,0,canvas.width, canvas.height);
+    return canvas;
+}
