@@ -1,7 +1,7 @@
 "use strict";
 
 class FlashCore{
-    constructor(url){
+    constructor(url,canvas){
 
     	this.debug_mode = true;
 
@@ -20,8 +20,9 @@ class FlashCore{
         this.skip_tags = [];
         this.sound_stream = null;
 
-        this.dictionary = new Dictionary();
-        this.display_list = new DisplayList();
+        this.dictionary = new Dictionary(this);
+        this.display_list = new DisplayList(canvas,this.dictionary);
+        this.canvas = canvas;
         
         let me = this;
         send_query(url,[],function(data){
@@ -534,8 +535,8 @@ class FlashCore{
     process_ShowFrame(){
         this.debug('tag ShowFrame');
 
-        alert('TODO: Show Frame!');
-        //TODO: Show Frame
+        //alert('TODO: Show Frame!');
+        this.display_list.draw();
         return false;
     }
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        
+    </head>
+    <body>
+        <script>
+            function _arrayToHeap(typedArray){
+              var numBytes = typedArray.length * typedArray.BYTES_PER_ELEMENT;
+              var ptr = Module._malloc(numBytes);
+              var heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
+              heapBytes.set(new Uint8Array(typedArray.buffer));
+              return heapBytes;
+            }
+            
+            
+     
+            
+            var Module = {
+                noInitialRun: true,
+                onRuntimeInitialized : function(){
+                    ccall("main");
+
+                    var decode_frame = Module.cwrap('decode_frame','number',['number','number']);
+                    var array = new Uint8Array(5);
+                    
+                    for(var i=0;i<5;i++){
+                        array[i]=i;
+                    }
+                    
+                    console.log("byteOffset:"+array.byteOffset)
+                    
+                    var heapBytes = _arrayToHeap(array);
+                    var ret = decode_frame(heapBytes.byteOffset,array.length);
+                    console.log(ret);
+
+                }
+            }
+            
+        </script>
+        <script src="main.js"></script>
+    </body>
+</html>

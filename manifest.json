@@ -16,6 +16,8 @@
     }
   },
 
+  "web_accessible_resources": ["helpers/ffmpeg_wrapper/ffmpeg.wasm"],
+
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -23,6 +25,8 @@
       "js": [
         "helpers/pako/pako_inflate.min.js",
         "helpers/query.js",
+        "helpers/ffmpeg_wrapper/ffmpeg_wrapper.js",
+        "helpers/ffmpeg_wrapper/ffmpeg.js",
         "flash/data_types/Rect.js",
         "flash/data_types/SoundStream.js",
         "flash/data_types/Dictionary.js",
