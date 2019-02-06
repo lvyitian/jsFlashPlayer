@@ -25,26 +25,29 @@ fi
 
 check_dir "libs"
 
-if [ ! -f "libs/libavcodec.a" ] ; then
+if [ ! -f "libs/libavcodec.so" ] ; then
 
     curdir=$(pwd)
 
     check_dir $ffmpeg_build_dir
     cd $ffmpeg_build_dir
-    emconfigure $ffmpeg_path/configure --disable-asm --enable-cross-compile --cc=emcc --disable-programs --disable-doc --disable-everything --enable-decoder=flv
+    emconfigure $ffmpeg_path/configure --disable-asm --enable-cross-compile --cc=emcc --disable-programs --disable-doc --disable-everything --enable-decoder=flv --enable-shared
     emmake make
     cd $curdir
 
-    cp $ffmpeg_build_dir/libavcodec/libavcodec.a ./libs/
+    cp $ffmpeg_build_dir/libavcodec/libavcodec.so ./libs/
 
 fi
 
 emcc \
     -I "$ffmpeg_path" \
     -I "$ffmpeg_build_dir" \
+    -L "libs/" \
+    -lavcodec \
     src/main.c \
     -o ffmpeg.js \
     -s EXPORTED_FUNCTIONS='["_decode_frame", "_main"]' \
-    -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
+    -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap", "getValue", "writeArrayToMemory"]' \
+    -s ALLOW_MEMORY_GROWTH=1
 
 

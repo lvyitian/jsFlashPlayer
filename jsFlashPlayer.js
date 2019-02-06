@@ -77,6 +77,12 @@ function get_swf_real_path(url){
 }
 
 function create_canvas(element, width, height){
+    //checking if canvas already exists and remove them
+    let ar=element.getElementsByTagName('CANVAS');
+    while(ar.length>0){
+        ar[0].remove();
+    }
+
     let canvas = document.createElement('CANVAS');
     canvas.style = 'width: '+width+'; height: '+height;
     element.appendChild(canvas);

@@ -28,8 +28,40 @@ class Dictionary{
 					return false;
 				}
 
-				let rgb_data = Libav.decode_frame(el.frames[ratio]);
-				return false;
+				if(el.img_data === undefined){
+					el.img_data = ctx.createImageData(el.width,el.height);
+
+
+					let canvas = document.createElement('canvas');
+					let context = canvas.getContext('2d');
+					let img = document.getElementById('myimg');
+					canvas.width = el.width;
+					canvas.height = el.height;
+					el.context=context;
+				}
+
+				let imdat = Libav.decode_frame(el.frames[ratio],el.width,el.height);
+				if(imdat===false)
+					return false;
+				
+				let imd = el.context.createImageData(el.width,el.height);
+				try {
+					imd.data.set(imdat);
+				} catch(e) {
+					// statements
+					console.log('exception:',e.message, e.name, e.type);
+					return false;
+				}
+				
+				console.log(imd);
+
+
+
+
+
+				//el.img_data.data.set(imdat);
+
+				ctx.putImageData(el.img_data,0,0);
 
 				break;
 			default:

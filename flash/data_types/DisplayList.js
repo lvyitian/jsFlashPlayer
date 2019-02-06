@@ -17,6 +17,10 @@ class DisplayList{
 		this.list[depth] = object;
 	}
 
+	get_by_depth(depth){
+		return this.list[depth];
+	}
+
 	draw(){
 		//this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
 		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
@@ -37,11 +41,11 @@ class DisplayList{
 						alert("TODO: DisplayList PlaceObject2 hasColorTransform");
 						return false;
 					}
+					let scaleX = 1;
+					let scaleY = 1;
+					let rotate0 = 0;
+					let rotate1 = 0;
 					if(el.hasMatrix){
-						let scaleX = 1;
-						let scaleY = 1;
-						let rotate0 = 0;
-						let rotate1 = 0;
 						if(el.matrix.has_scale){
 							scaleX=el.matrix.scaleX;
 							scaleY=el.matrix.scaleY;
@@ -50,8 +54,9 @@ class DisplayList{
 							rotate0 = el.matrix.rotateSkew0;
 							rotate1 = el.matrix.rotateSkew1;
 						}
-						this.ctx.setTransform(scaleX,rotate1,rotate0,scaleY,el.matrix.translateX,el.matrix.translateY);
 					}
+					//console.log('element:',el);
+					this.ctx.setTransform(scaleX,rotate1,rotate0,scaleY,el.matrix.translateX,el.matrix.translateY);
 					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio))
 						return false;
 					break;
@@ -60,5 +65,6 @@ class DisplayList{
 					return false;
 			}
 		}
+		return true;
 	}
 }

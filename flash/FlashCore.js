@@ -188,6 +188,9 @@ class FlashCore{
         this.frame_size = this.read_RECT();
         this.debug('frame size: '+(this.frame_size.Xmax/20)+'x'+(this.frame_size.Ymax/20));
 
+        this.canvas.width = this.frame_size.Xmax/20;
+        this.canvas.height = this.frame_size.Ymax/20;
+
         this.frame_rate = this.read_FIXED8();
         this.debug('frame rate:', this.frame_rate);
 
@@ -295,6 +298,7 @@ class FlashCore{
             me.redraw_interval_id = requestAnimationFrame(me.draw.bind(me));
             for(let i=0;i<me.raw_data.length;i++){
                 let ret = me.process_tag();
+
                 if(ret === false){
                     clearTimeout(me.redraw_timeout_id);
                     cancelAnimationFrame(me.redraw_interval_id);
@@ -396,6 +400,21 @@ class FlashCore{
             depth : 0
     	};
         obj.depth = this.read_UI16();
+
+        if(!obj.hasCharacter){
+            let tobj = this.display_list.get_by_depth(obj.depth);
+            if(tobj.type=obj.type){
+                tobj.hasClipActions = obj.hasClipActions;
+                tobj.hasClipDepth   = obj.hasClipDepth;
+                tobj.hasName   = obj.hasName;
+                tobj.hasRatio   = obj.hasRatio;
+                tobj.hasColorTransform   = obj.hasColorTransform;
+                tobj.hasMatrix   = obj.hasMatrix;
+                tobj.hasCharacter   = obj.hasCharacter;
+                tobj.move   = obj.move;
+                obj = tobj;
+            }
+        }
 
         if(obj.hasCharacter){
             obj.characterID = this.read_UI16();
@@ -534,10 +553,7 @@ class FlashCore{
 
     process_ShowFrame(){
         this.debug('tag ShowFrame');
-
-        //alert('TODO: Show Frame!');
-        this.display_list.draw();
-        return false;
+        return this.display_list.draw();
     }
 
     process_tag(){
@@ -568,7 +584,7 @@ class FlashCore{
                 }
             break;
             default:
-                if(this.skip_tags.indexOf(tag.code)>0){
+                if(this.skip_tags.indexOf(tag.code)>=0){
                     this.cur+=tag.length;
                     return true;
                 }
