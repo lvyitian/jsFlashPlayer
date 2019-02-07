@@ -27,41 +27,34 @@ class Dictionary{
 					alert("TODO: Draw VideoStream codecID:"+el.codecID);
 					return false;
 				}
-
-				if(el.img_data === undefined){
-					el.img_data = ctx.createImageData(el.width,el.height);
-
-
-					let canvas = document.createElement('canvas');
-					let context = canvas.getContext('2d');
-					let img = document.getElementById('myimg');
-					canvas.width = el.width;
-					canvas.height = el.height;
-					el.context=context;
-				}
-
+				
 				let imdat = Libav.decode_frame(el.frames[ratio],el.width,el.height);
 				if(imdat===false)
 					return false;
-				
-				let imd = el.context.createImageData(el.width,el.height);
-				try {
-					imd.data.set(imdat);
-				} catch(e) {
-					// statements
-					console.log('exception:',e.message, e.name, e.type);
-					return false;
+				var d1 = new Date();
+
+				//workaround a bug
+				let obj = {
+					canvas_id : this.core.canvas.id,
+					bitmap  : imdat,
+					width	: el.width,
+					height	: el.height
 				}
-				
+				window.wrappedJSObject.__flashplayer_draw_data=cloneInto(obj,window);
+				let script = document.createElement('script');
+				script.innerHTML='__flashplayer_draw_bitmap_on_canvas();';
+				document.head.appendChild(script);
+    			script.remove();
+
+    			var d2 = new Date();
+		        console.log("drawing on canvas time:",(d2-d1));
+		        var d2 = d1;
+		        
+				//return false;
+				/*let imd = ctx.createImageData(el.width,el.height);
+				imd.data.set(imdat);
 				console.log(imd);
-
-
-
-
-
-				//el.img_data.data.set(imdat);
-
-				ctx.putImageData(el.img_data,0,0);
+				ctx.putImageData(el.img_data,0,0);*/
 
 				break;
 			default:

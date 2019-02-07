@@ -14,8 +14,6 @@ class FlashCore{
         this.frame_size = new Rect(0,0,0,0);
         this.frame_rate = 0;
         this.frames_count = 0;
-        this.redraw_interval_id=0;
-        this.redraw_timeout_id=0;
 
         this.skip_tags = [];
         this.sound_stream = null;
@@ -23,6 +21,11 @@ class FlashCore{
         this.dictionary = new Dictionary(this);
         this.display_list = new DisplayList(canvas,this.dictionary);
         this.canvas = canvas;
+
+        this.last_redraw_time = 0;
+        this.redraw_interval_id=0;
+
+        this.reset_address=-1;
         
         let me = this;
         send_query(url,[],function(data){
@@ -196,6 +199,8 @@ class FlashCore{
 
         this.frames_count = this.read_UI16();
         this.debug('frames count:',this.frames_count);
+
+        this.reset_address = this.cur;
         return true;
     }
 
@@ -280,36 +285,6 @@ class FlashCore{
         let out = decoder.decode(this.raw_data.slice(start,end));
         this.cur = end+1;
         return out;
-    }
-
-    process(){
-        if(!this.read_header()){
-            return;
-        }
-
-        this.draw();
-        
-    }
-
-    draw(){
-        let me = this;
-        let interval_time = 1000 / me.frame_rate;
-        me.redraw_timeout_id = setTimeout(function() {
-            me.redraw_interval_id = requestAnimationFrame(me.draw.bind(me));
-            for(let i=0;i<me.raw_data.length;i++){
-                let ret = me.process_tag();
-
-                if(ret === false){
-                    clearTimeout(me.redraw_timeout_id);
-                    cancelAnimationFrame(me.redraw_interval_id);
-                    return false;
-                }
-                if(ret===2){
-                    break;
-                }
-            }
-
-        }, interval_time);
     }
 
     process_SoundStreamHead2(){
@@ -446,83 +421,6 @@ class FlashCore{
         return true;
     }
 
-    read_H263VIDEOPACKET(){
-
-    
-
-        this.debug('H263VIDEOPACKET');
-        let packet = {};
-
-        let temp = this.read_UB(0, 17);
-        let PictureStartCode = temp.value;
-        this.debug('PictureStartCode:',PictureStartCode);
-        if(PictureStartCode!=1){
-            alert('Error Processing H263VIDEOPACKET');
-            return false;
-        }
-
-        temp = this.read_UB(temp.shift, 5);
-        packet.version = temp.value;
-
-        temp = this.read_UB(temp.shift, 8);
-        packet.temporalReference = temp.value;
-
-        temp = this.read_UB(temp.shift, 3);
-        packet.pictureSize = temp.value;
-
-        if(packet.pictureSize == 0){
-            temp = this.read_UB(temp.shift, 8);
-            packet.customWidth = temp.value;
-            temp = this.read_UB(temp.shift, 8);
-            packet.customHeight = temp.value;
-        }
-        if(packet.pictureSize == 1){
-            temp = this.read_UB(temp.shift, 16);
-            packet.customWidth = temp.value;
-            temp = this.read_UB(temp.shift, 16);
-            packet.customHeight = temp.value;
-        }
-
-        temp = this.read_UB(temp.shift, 2);
-        packet.pictureType = temp.value;
-
-        temp = this.read_UB(temp.shift, 1);
-        packet.deblockingFlag = temp.value;
-
-        temp = this.read_UB(temp.shift, 5);
-        packet.quantizer = temp.value;
-
-        temp = this.read_UB(temp.shift, 1);
-        packet.extraInfoFlag = temp.value;
-        if(packet.extraInfoFlag==1){
-            alert('TODO: H263VIDEOPACKET reading extraInfo!');
-            return false;
-        }
-        
-
-        let macro = {};
-        temp = this.read_UB(temp.shift, 1);
-        macro.codedMacroblockFlag = temp.value;
-
-        if(macro.codedMacroblockFlag == 0){
-            alert('TODO: H263VIDEOPACKET reading macroblock!');
-            return false;
-        }
-
-        let block = {};
-        temp = this.read_UB(temp.shift, 8);
-        block.INTRADC = temp.value;
-
-        this.debug(block);
-
-        packet.macroblock = macro;
-
-        if(temp.shift!=0)
-            this.cur++;
-
-        return packet;
-    }
-
     process_VideoFrame(end_address){
         this.debug('tag VideoFrame');
         let frame = {
@@ -560,6 +458,9 @@ class FlashCore{
         let tag = this.read_tag_info();
 
         switch(tag.code){
+            case 0: //END OF FILE
+                return this.reset();
+            break;
             case 1:
                 if(this.process_ShowFrame()) {
                     this.cur+=tag.length;
@@ -599,6 +500,52 @@ class FlashCore{
             break;
         }
         return true;
+    }
+
+    process(){
+        if(!this.read_header()){
+            return;
+        }
+
+        this.draw();
+        
+    }
+
+    reset(){
+        if(this.reset_address<0)
+            return false;
+        this.cur=this.reset_address;
+        return true;
+    }
+
+    draw(){
+
+        let interval_time = 1000 / this.frame_rate;
+
+        let curtime = Date.now();
+        let diff = curtime - this.last_redraw_time;
+    
+        this.redraw_interval_id = requestAnimationFrame(this.draw.bind(this));
+
+        if(diff<interval_time) return;
+        this.last_redraw_time += interval_time;
+
+        if(diff>1000)
+            this.last_redraw_time = Date.now();
+
+        for(let i=0;i<this.raw_data.length;i++){
+            let ret = this.process_tag();
+
+            if(ret === false){
+                cancelAnimationFrame(this.redraw_interval_id);
+                return false;
+            }
+            if(ret===2){
+                break;
+            }
+        }
+
+        
     }
 
 

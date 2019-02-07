@@ -85,9 +85,27 @@ function create_canvas(element, width, height){
 
     let canvas = document.createElement('CANVAS');
     canvas.style = 'width: '+width+'; height: '+height;
+    canvas.id = 'canvas_'+(Math.floor(Math.random()*100000000));
     element.appendChild(canvas);
     let ctx = canvas.getContext('2d');
     ctx.fillStyle = '#00FF55';
     ctx.fillRect(0,0,canvas.width, canvas.height);
+
+    //workaround a bug "Permission denied for set dunction of imagedata"
+    let script = document.createElement('script');
+    script.innerHTML='\
+        function __flashplayer_draw_bitmap_on_canvas(){ \
+            let obj = __flashplayer_draw_data;\
+            let canvas = document.getElementById(obj.canvas_id);\
+            let ctx = canvas.getContext(\'2d\');\
+            let imd = ctx.createImageData(obj.width,obj.height);\
+            imd.data.set(obj.bitmap);\
+            ctx.putImageData(imd,0,0);\
+        }\
+    ';
+    document.head.appendChild(script);
+    script.remove();
+    //
+
     return canvas;
 }
