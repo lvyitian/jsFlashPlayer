@@ -9,7 +9,7 @@ var Libav = {
         return ptr;
     },
     decode_frame : function(encoded_frame_array,width, height){
-        var d1 = new Date();
+        //var d1 = new Date();
         if(this._decode_frame == undefined){
             console.log('"decode_frame" is not loaded!');
             return false;
@@ -20,18 +20,18 @@ var Libav = {
         let out_array_ptr=Module._malloc(4);
         this._decode_frame(frame, encoded_frame_array.length, out_array_ptr, out_array_length_ptr);
 
-        var d2 = new Date();
+        /*var d2 = new Date();
         console.log("decode time:",(d2-d1));
-        var d2 = d1;
+        var d2 = d1;*/
 
         let decoded_length = Module.getValue(out_array_length_ptr, 'i32');
         let decoded_offset = Module.getValue(out_array_ptr,'*');
         
         let decoded = new Uint8ClampedArray(Module.HEAP8.buffer,decoded_offset,decoded_length);
 
-        var d2 = new Date();
+        /*var d2 = new Date();
         console.log("getting data from heap time:",(d2-d1));
-        var d2 = d1;
+        var d2 = d1;*/
 
         /*for(let i=0;i<decoded_length;i++){
             imageData.data[i] = decoded[i];

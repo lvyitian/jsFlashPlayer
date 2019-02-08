@@ -24,6 +24,7 @@ class FlashCore{
         this.dictionary = new Dictionary(this);
         this.display_list = new DisplayList(canvas,this.dictionary);
         this.canvas = canvas;
+        this.audio_ctx = new window.AudioContext();
 
         this.last_redraw_time = 0;
         this.redraw_interval_id=0;
@@ -51,6 +52,14 @@ class FlashCore{
         
         return out;
     }
+
+    read_SI16(){
+        let out = this.read_UI16();
+        if(out>=0x8000){
+            out = 0 - out + 0x8000;
+        }
+        return out;
+    }
     
     read_UI32(){
     
@@ -60,7 +69,7 @@ class FlashCore{
         out |= ((this.raw_data[this.cur]&0xff) << 16); this.cur++;
         out |= ((this.raw_data[this.cur]&0xff) << 24); this.cur++;
         
-        return out;
+        return out>>>0;
     }
 
 
@@ -482,8 +491,128 @@ class FlashCore{
         return true;
     }
 
+    process_SoundStreamBlock(length){
+        this.debug('tag SoundStreamBlock');
+        let start_cur = this.cur;
+        
+        let sstream = this.sound_stream;
+        this.debug(sstream);
+        switch (sstream.streamSoundCompression) {
+            case 2:{
+                
+                let obj={};
+                let data = (new Uint8Array(this.raw_data.buffer,this.cur+4,length-4)).slice(0);
+
+                if(this.bcounter==undefined)
+                    this.bcounter=0;
+                this.bcounter++;
+                this.append_blob(data);
+                if(this.bcounter<1000)
+                    return true;
+
+                this.save_blob(this.blob);
+
+                /*console.log("encoded:",data);
+                this.audio_ctx.decodeAudioData(data.buffer,function(decoded){
+                    console.log('decoded',decoded);
+                });*/
+
+
+
+
+
+                /*
+
+                while(this.cur<start_cur+length){
+
+                    let temp  = this.read_UB(0, 11);
+                    console.log(temp.value.toString(16));
+                    while(temp.value!=0x7FF) {
+                        temp = this.read_UB(0, 11);
+                        console.log(temp.value.toString(16));
+                        if(this.cur>start_cur+length) break;
+                    }
+
+                    temp=this.read_UB(temp.shift, 2);
+                    obj.mpeg_version = temp.value;
+                    temp=this.read_UB(temp.shift, 2);
+                    obj.layer = temp.value;
+                    temp=this.read_UB(temp.shift, 1);
+                    obj.protection = temp.value;
+                    temp=this.read_UB(temp.shift, 4);
+                    obj.bitrate = temp.value;
+                    temp=this.read_UB(temp.shift, 2);
+                    obj.samplingRate = temp.value;
+                    temp=this.read_UB(temp.shift, 1);
+                    obj.paddingBit = temp.value;
+
+                    temp.shift=0;
+                    this.cur++;
+
+                    temp=this.read_UB(temp.shift, 2);
+                    obj.channelMode = temp.value;
+                    temp=this.read_UB(temp.shift, 2);
+                    obj.modeExtension = temp.value;
+                    temp=this.read_UB(temp.shift, 1);
+                    obj.copyright = temp.value;
+                    temp=this.read_UB(temp.shift, 1);
+                    obj.original = temp.value;
+                    temp=this.read_UB(temp.shift, 2);
+                    obj.emphasis = temp.value;
+
+                    console.log(temp);
+
+                    let bitrate_table_mpeg1 = [0,32,40,48,56,64,80,96,112,128,160,192,224,256,320,-1];
+                    let bitrate_table_mpeg2 = [0,8,16,24,32,40,48,56,64,80,96,112,128,144,160,-1];
+
+                    obj.bitrate_value = (obj.mpeg_version == 3) ? bitrate_table_mpeg1[obj.bitrate]*1000 : bitrate_table_mpeg2[obj.bitrate]*1000;
+
+                    let sample_rate_table_mpeg1   = [44100,48000,32000];
+                    let sample_rate_table_mpeg2   = [22050,24000,16000];
+                    let sample_rate_table_mpeg2_5 = [11025,12000,8000];
+
+                    obj.sample_rate_value = (obj.mpeg_version == 3) ? 
+                        sample_rate_table_mpeg1[obj.samplingRate] : 
+                        (
+                            (obj.mpeg_version == 2) ? 
+                            sample_rate_table_mpeg2[obj.samplingRate] : 
+                            sample_rate_table_mpeg2_5[obj.samplingRate]
+                        );
+
+                    obj.data_size = Math.floor((((obj.mpeg_version == 3) ? 144 : 72 ) * obj.bitrate_value) / obj.sample_rate_value + obj.paddingBit-4);
+
+
+                    
+
+                    /*if(sstream.buffer == undefined){
+                        sstream.buffer = this.audio_ctx.createBuffer(sstream.get_channels_count(),2*sstream.get_sample_rate(),sstream.get_sample_rate());
+                    }*/
+
+                    
+                    /*
+
+                    this.cur+=obj.data_size;
+                    this.debug(obj);
+
+                }*/
+
+
+
+
+                return false;
+                }break;
+            default:
+                alert("TODO: SoundStreamBlock compression "+sstream.streamSoundCompression);
+                return false;
+                break;
+        }
+
+        return false;
+    }
+
     process_tag(){
         let tag = this.read_tag_info();
+        //let tag_data = new Uint8Array(this.raw_data.buffer,this.cur,tag.length);
 
         switch(tag.code){
             case 0: //END OF FILE
@@ -497,6 +626,14 @@ class FlashCore{
             break;
             case 9:
                 return this.process_SetBackgroundColor();
+            break;
+            case 19:{
+                let next=this.cur+tag.length;
+                let t = this.process_SoundStreamBlock(tag.length);
+                if(!t)
+                    return false;
+                this.cur=next;
+            }
             break;
         	case 26:
         		if(!this.process_PlaceObject2()) return false;
@@ -578,7 +715,6 @@ class FlashCore{
                 break;
             }
         }
-
         
     }
 
@@ -593,6 +729,17 @@ class FlashCore{
         console.log('address:', '0x'+this.cur.toString(16));
     }
 
+
+    append_blob(in_array){
+        if(this.blob == undefined)
+            this.blob = new Uint8Array(0);
+
+        let t = new Uint8Array(this.blob.length+in_array.length);
+        t.set(this.blob);
+        t.set(in_array, this.blob.length);
+        this.blob=t;
+    }
+
     save_blob(bytes){
         var blob = new Blob([bytes], {type: "application/octet-stream"});
         var link = document.createElement('a');
@@ -601,6 +748,7 @@ class FlashCore{
         link.download = fileName;
         document.body.appendChild(link);
         link.click();
+        this.blob = new Uint8Array(0);
     }
 }
     

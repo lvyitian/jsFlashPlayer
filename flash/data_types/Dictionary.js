@@ -46,9 +46,9 @@ class Dictionary{
 				document.head.appendChild(script);
     			script.remove();
 
-    			var d2 = new Date();
+    			/*var d2 = new Date();
 		        console.log("drawing on canvas time:",(d2-d1));
-		        var d2 = d1;
+		        var d2 = d1;*/
 		        
 				//return false;
 				/*let imd = ctx.createImageData(el.width,el.height);
