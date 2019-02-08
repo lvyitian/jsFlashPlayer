@@ -15,6 +15,9 @@ class FlashCore{
         this.frame_rate = 0;
         this.frames_count = 0;
 
+        this.action_script3 = false;
+        this.file_attributes = {};
+
         this.skip_tags = [];
         this.sound_stream = null;
 
@@ -412,7 +415,7 @@ class FlashCore{
             obj.clipDepth = this.read_UI16();
         }
         if(obj.hasClipActions){
-            alett('TODO: Reading ClipActions from PlaceObject2!');
+            alert('TODO: Reading ClipActions from PlaceObject2!');
             return false;   
         }
 
@@ -454,6 +457,31 @@ class FlashCore{
         return this.display_list.draw();
     }
 
+    process_FileAttributes(){
+        this.debug('tag FileAttributes');
+        let obj = {};
+        let t = this.read_UI8();
+
+        obj.hardwareAcceleration = ((t & 0b01000000) > 0);
+        obj.useGPU =        ((t & 0b00100000) > 0);
+        obj.hasMetadata =   ((t & 0b00010000) > 0);
+        obj.actionScript3 = ((t & 0b00001000) > 0);
+        obj.useNetwork =    ((t & 0b00000001) > 0);
+
+        this.cur+=3;
+        this.action_script3 = obj.actionScript3;
+        return true;
+    }
+
+    process_SetBackgroundColor(){
+        this.debug('tag SetBackgroundColor');
+        let r = this.read_UI8();
+        let g = this.read_UI8();
+        let b = this.read_UI8();
+        this.display_list.set_background_color(r,g,b);
+        return true;
+    }
+
     process_tag(){
         let tag = this.read_tag_info();
 
@@ -466,6 +494,9 @@ class FlashCore{
                     this.cur+=tag.length;
                     return 2;
                 }else return false;
+            break;
+            case 9:
+                return this.process_SetBackgroundColor();
             break;
         	case 26:
         		if(!this.process_PlaceObject2()) return false;
@@ -483,6 +514,9 @@ class FlashCore{
                     if(!this.process_VideoFrame(end_address)) return false;
                     this.cur=end_address;
                 }
+            break;
+            case 69:
+                return this.process_FileAttributes();
             break;
             default:
                 if(this.skip_tags.indexOf(tag.code)>=0){

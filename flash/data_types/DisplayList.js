@@ -7,8 +7,9 @@ class DisplayList{
 		this.canvas = canvas;
 		this.dictionary = dictionary;
 
+		this.background_color = 'white';
+
 		this.ctx = canvas.getContext('2d');
-		this.ctx.fillStyle = "white";
 
 		//constants
 		this.TYPE_PlaceObject2 = 26;
@@ -17,12 +18,17 @@ class DisplayList{
 		this.list[depth] = object;
 	}
 
+	set_background_color(r,g,b){
+		this.background_color="rgb("+r+","+g+","+b+")";
+	}
+
 	get_by_depth(depth){
 		return this.list[depth];
 	}
 
 	draw(){
 		//this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+		this.ctx.fillStyle = this.background_color;
 		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
 		for(let i=0;i<this.list.length;i++){
 			let el = this.list[i];

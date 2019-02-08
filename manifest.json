@@ -17,11 +17,12 @@
   },
 
   "web_accessible_resources": ["helpers/ffmpeg_wrapper/ffmpeg.wasm"],
-
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "run_at" : "document_start",
+      "match_about_blank": true,
+      "all_frames": true,
       "js": [
         "helpers/pako/pako_inflate.min.js",
         "helpers/query.js",
@@ -35,5 +36,8 @@
         "jsFlashPlayer.js"
       ]
     }
+  ],
+   "permissions": [
+    "<all_urls>"
   ]
 }

@@ -7,11 +7,18 @@ function show_error(message){
 //Отправка запроса
 function send_query(filename,query,after_complete){
 
+	try {
 	var xmlhttp = getXmlHttp(); // Создаём объект XMLHTTP
 	xmlhttp.open("GET", filename, true); // Открываем асинхронное соединение
 	//xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); // Отправляем кодировку
 	xmlhttp.responseType = "arraybuffer";
-	xmlhttp.send(query);
+	
+		xmlhttp.send(query);
+	} catch(e) {
+		// statements
+		console.log(e);
+	}
+	
 	//t=outP.innerHTML;
 	query_in_process=true;
 	xmlhttp.onreadystatechange = function() { // Ждём ответа от сервера
