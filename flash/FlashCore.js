@@ -30,6 +30,7 @@ class FlashCore{
         this.redraw_interval_id=0;
 
         this.reset_address=-1;
+        this.playing = true;
         
         let me = this;
         send_query(url,[],function(data){
@@ -129,6 +130,27 @@ class FlashCore{
             this.cur--;*/
         this.cur--; 
         return { shift : shift, value : out};
+    }
+
+    read_UB_loc(shift,bitsize,data,cur){
+        let out = 0;
+        let temp = data[cur]; cur++;     
+        for(let i=0;i<bitsize;i++){
+
+            out |= ((temp << shift) & 0b10000000) > 0 ? 1 : 0;
+
+            //this.debug(((temp << shift) & 0b10000000) > 0 ? 1 : 0);
+
+            if((i+1)<bitsize)
+                out = out << 1;
+            shift++;
+            if(shift>7){
+                temp = data[cur]; cur++;
+                shift = 0;
+            }
+        }
+        cur--; 
+        return { shift : shift, value : out, cur:cur};
     }
 
     read_FB(shift,bitsize){
@@ -342,7 +364,8 @@ class FlashCore{
 			streamSoundSize,
 			streamSoundType,
 			streamSoundSampleCount,
-			latencySeek
+			latencySeek,
+            this
 			);
 
 		//this.debug(this.sound_stream);
@@ -463,7 +486,19 @@ class FlashCore{
 
     process_ShowFrame(){
         this.debug('tag ShowFrame');
-        return this.display_list.draw();
+
+
+        let ret = this.display_list.draw();
+
+        let sstream =this.sound_stream;
+        //console.log(sstream);
+        //return false;
+        if(sstream!==null){
+            if(sstream.state==sstream.STATE_IDLE)
+                sstream.play();
+        }
+
+        return ret;
     }
 
     process_FileAttributes(){
@@ -491,9 +526,66 @@ class FlashCore{
         return true;
     }
 
+    count_mp3_frames(mp3_data){
+
+        let frames_count=0;
+        let cur=0;
+
+        while(cur<mp3_data.length){
+
+            let obj={};
+
+            let header = mp3_data[cur]<<24; cur++;
+            header |= mp3_data[cur]<<16; cur++;
+            header |= mp3_data[cur]<<8; cur++;
+            header |= mp3_data[cur]; cur++;
+
+            if(((header>>21)&0x7ff) != 0x7ff){
+                return frames_count;
+            }
+
+            frames_count++;
+
+            obj.mpeg_version = (header>>19) & 0b11;
+            obj.layer = (header>>17) & 0b11;
+            obj.protection = (header>>16) & 0b1;
+            obj.bitrate = (header>>12) & 0b1111;
+            obj.samplingRate = (header>>10) & 0b11;
+            obj.paddingBit = (header>>9) & 0b1;
+
+            obj.channelMode = (header>>6) & 0b11;
+            obj.modeExtension = (header>>4) & 0b11;
+            obj.copyright = (header>>3) & 0b1;
+            obj.original = (header>>2) & 0b1;
+            obj.emphasis = header & 0b11;
+
+            let bitrate_table_mpeg1 = [0,32,40,48,56,64,80,96,112,128,160,192,224,256,320,-1];
+            let bitrate_table_mpeg2 = [0,8,16,24,32,40,48,56,64,80,96,112,128,144,160,-1];
+
+            obj.bitrate_value = (obj.mpeg_version == 3) ? bitrate_table_mpeg1[obj.bitrate]*1000 : bitrate_table_mpeg2[obj.bitrate]*1000;
+
+            let sample_rate_table_mpeg1   = [44100,48000,32000];
+            let sample_rate_table_mpeg2   = [22050,24000,16000];
+            let sample_rate_table_mpeg2_5 = [11025,12000,8000];
+
+            obj.sample_rate_value = (obj.mpeg_version == 3) ? 
+                sample_rate_table_mpeg1[obj.samplingRate] : 
+                (
+                    (obj.mpeg_version == 2) ? 
+                    sample_rate_table_mpeg2[obj.samplingRate] : 
+                    sample_rate_table_mpeg2_5[obj.samplingRate]
+                );
+
+            obj.data_size = Math.floor((((obj.mpeg_version == 3) ? 144 : 72 ) * obj.bitrate_value) / obj.sample_rate_value + obj.paddingBit-4);
+
+
+            cur+=obj.data_size;
+        }
+        return frames_count;
+    }
+
     process_SoundStreamBlock(length){
         this.debug('tag SoundStreamBlock');
-        let start_cur = this.cur;
         
         let sstream = this.sound_stream;
         this.debug(sstream);
@@ -503,103 +595,13 @@ class FlashCore{
                 let obj={};
                 let data = (new Uint8Array(this.raw_data.buffer,this.cur+4,length-4)).slice(0);
 
-                if(this.bcounter==undefined)
-                    this.bcounter=0;
-                this.bcounter++;
-                this.append_blob(data);
-                if(this.bcounter<1000)
-                    return true;
 
-                this.save_blob(this.blob);
+                let frames_count = this.count_mp3_frames(data);
+                
+                sstream.append_cbuffer(data,frames_count);
 
-                /*console.log("encoded:",data);
-                this.audio_ctx.decodeAudioData(data.buffer,function(decoded){
-                    console.log('decoded',decoded);
-                });*/
+                return true;
 
-
-
-
-
-                /*
-
-                while(this.cur<start_cur+length){
-
-                    let temp  = this.read_UB(0, 11);
-                    console.log(temp.value.toString(16));
-                    while(temp.value!=0x7FF) {
-                        temp = this.read_UB(0, 11);
-                        console.log(temp.value.toString(16));
-                        if(this.cur>start_cur+length) break;
-                    }
-
-                    temp=this.read_UB(temp.shift, 2);
-                    obj.mpeg_version = temp.value;
-                    temp=this.read_UB(temp.shift, 2);
-                    obj.layer = temp.value;
-                    temp=this.read_UB(temp.shift, 1);
-                    obj.protection = temp.value;
-                    temp=this.read_UB(temp.shift, 4);
-                    obj.bitrate = temp.value;
-                    temp=this.read_UB(temp.shift, 2);
-                    obj.samplingRate = temp.value;
-                    temp=this.read_UB(temp.shift, 1);
-                    obj.paddingBit = temp.value;
-
-                    temp.shift=0;
-                    this.cur++;
-
-                    temp=this.read_UB(temp.shift, 2);
-                    obj.channelMode = temp.value;
-                    temp=this.read_UB(temp.shift, 2);
-                    obj.modeExtension = temp.value;
-                    temp=this.read_UB(temp.shift, 1);
-                    obj.copyright = temp.value;
-                    temp=this.read_UB(temp.shift, 1);
-                    obj.original = temp.value;
-                    temp=this.read_UB(temp.shift, 2);
-                    obj.emphasis = temp.value;
-
-                    console.log(temp);
-
-                    let bitrate_table_mpeg1 = [0,32,40,48,56,64,80,96,112,128,160,192,224,256,320,-1];
-                    let bitrate_table_mpeg2 = [0,8,16,24,32,40,48,56,64,80,96,112,128,144,160,-1];
-
-                    obj.bitrate_value = (obj.mpeg_version == 3) ? bitrate_table_mpeg1[obj.bitrate]*1000 : bitrate_table_mpeg2[obj.bitrate]*1000;
-
-                    let sample_rate_table_mpeg1   = [44100,48000,32000];
-                    let sample_rate_table_mpeg2   = [22050,24000,16000];
-                    let sample_rate_table_mpeg2_5 = [11025,12000,8000];
-
-                    obj.sample_rate_value = (obj.mpeg_version == 3) ? 
-                        sample_rate_table_mpeg1[obj.samplingRate] : 
-                        (
-                            (obj.mpeg_version == 2) ? 
-                            sample_rate_table_mpeg2[obj.samplingRate] : 
-                            sample_rate_table_mpeg2_5[obj.samplingRate]
-                        );
-
-                    obj.data_size = Math.floor((((obj.mpeg_version == 3) ? 144 : 72 ) * obj.bitrate_value) / obj.sample_rate_value + obj.paddingBit-4);
-
-
-                    
-
-                    /*if(sstream.buffer == undefined){
-                        sstream.buffer = this.audio_ctx.createBuffer(sstream.get_channels_count(),2*sstream.get_sample_rate(),sstream.get_sample_rate());
-                    }*/
-
-                    
-                    /*
-
-                    this.cur+=obj.data_size;
-                    this.debug(obj);
-
-                }*/
-
-
-
-
-                return false;
                 }break;
             default:
                 alert("TODO: SoundStreamBlock compression "+sstream.streamSoundCompression);
@@ -707,7 +709,7 @@ class FlashCore{
         for(let i=0;i<this.raw_data.length;i++){
             let ret = this.process_tag();
 
-            if(ret === false){
+            if((ret === false) || (!this.playing)){
                 cancelAnimationFrame(this.redraw_interval_id);
                 return false;
             }
@@ -718,6 +720,9 @@ class FlashCore{
         
     }
 
+    stop(){
+        this.playing=false;
+    }
 
     debug(...args){
     	if(this.debug_mode){
