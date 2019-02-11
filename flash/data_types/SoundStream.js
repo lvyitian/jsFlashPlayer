@@ -55,7 +55,7 @@ class SoundStream{
         this.buffer=t;
 
         this.frames_buffered+=frames_count;
-        if(this.frames_buffered>=2){
+        if(this.frames_buffered>=15){
         	let me = this;
             //sstream.frame_num++;
             this.core.audio_ctx.decodeAudioData(this.buffer.buffer,function(decoded){
