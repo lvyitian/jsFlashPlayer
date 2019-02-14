@@ -4,15 +4,38 @@ class AVM2{
 	constructor(){
 		this.raw_data = null;
 		this.cur = 0;
+
+		this.minor_version = 0;
+		this.major_version = 0;
+
+		this.constat_pool = null;
 	}
 
 	run_abc(abc_file){
 		this.raw_data = abc_file;
+		this.cur=0;
 
-		let obj = {};
-		obj.minor_version = this.read_u16();
-		obj.major_version = this.read_u16();
+		this.minor_version = this.read_u16();
+		this.major_version = this.read_u16();
 
+		if(this.major_version > 46){
+			this.debug("Warning major_version is"+this.major_version);
+		}
+
+		if(!this.read_constat_pool())
+			return false;
+
+		let method_count;
+
+		method_count = this.read_u30();
+
+
+		this.debug(method_count);
+
+		return false;
+	}
+
+	read_constat_pool(){
 		//cpool info
 		let cpool_info = {};
 		//int
@@ -62,11 +85,43 @@ class AVM2{
 		}
 		//multiname
 		cpool_info.multiname_count=this.read_u30();
+		cpool_info.multiname = [{}];
+		for(let i=0;i<cpool_info.multiname_count-1;i++){
+			let mn = {};
+			mn.kind = this.read_u8();
+			switch (mn.kind) {
+				case 0x7:
+				case 0xd:
+					mn.ns = this.read_u30();
+					mn.name = this.read_u30();
+					break;
+				case 0xf:
+				case 0x10:
+					mn.name = this.read_u30();
+					break
+				case 0x11:
+				case 0x12:
+					break;
+				case 0x09:
+				case 0x0E:
+					mn.name = this.read_u30();
+					mn.ns_set = this.read_u30();
+					break;
+				case 0x1B:
+				case 0x1C:
+					mn.ns_set = this.read_u30();
+					break;
+				default:
+					this.debug("unknown multiname kind: "+mn.kind);
+					return false;
+					break;
+			}
+			cpool_info.multiname.push(mn);
+		}
 
+		this.constant_pool = cpool_info;
 		//
-
-		this.debug(cpool_info);
-		return false;
+		return true;
 	}
 
 
