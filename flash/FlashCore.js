@@ -23,8 +23,11 @@ class FlashCore{
 
         this.dictionary = new Dictionary(this);
         this.display_list = new DisplayList(canvas,this.dictionary);
+        this.avm2 = new AVM2();
+
         this.canvas = canvas;
         this.audio_ctx = new window.AudioContext();
+        this.sceneLabelsInfo = null;
 
         this.last_redraw_time = 0;
         this.redraw_interval_id=0;
@@ -512,6 +515,8 @@ class FlashCore{
         obj.actionScript3 = ((t & 0b00001000) > 0);
         obj.useNetwork =    ((t & 0b00000001) > 0);
 
+        this.file_attributes = obj;
+
         this.cur+=3;
         this.action_script3 = obj.actionScript3;
         return true;
@@ -614,10 +619,12 @@ class FlashCore{
 
     process_tag(){
         let tag = this.read_tag_info();
-        //let tag_data = new Uint8Array(this.raw_data.buffer,this.cur,tag.length);
+        let tag_data = new Uint8Array(this.raw_data.buffer,this.cur,tag.length);
 
         switch(tag.code){
             case 0: //END OF FILE
+                this.debug('EndOfFile');
+                return false;
                 return this.reset();
             break;
             case 1:
@@ -656,6 +663,18 @@ class FlashCore{
             break;
             case 69:
                 return this.process_FileAttributes();
+            break;
+            case 82:{
+                let t = new DoABC(this,tag_data);
+                this.cur+=tag.length;
+                return t.no_error;
+            }break;
+
+            case 86:{
+                let t = new DefineSceneAndFrameLabelData(this,tag_data);
+                this.cur+=tag.length;
+                return t.no_error;
+            }
             break;
             default:
                 if(this.skip_tags.indexOf(tag.code)>=0){
