@@ -26,13 +26,172 @@ class AVM2{
 			return false;
 
 		let method_count;
-
 		method_count = this.read_u30();
 
+		let method = [];
+		let obj = {};
+		for(let i = 0; i < method_count; i++){
+		 	obj.param_count = this.read_u30();
+		 	obj.return_type = this.read_u30();
+		 	obj.param_type = [];
+		 	for(let k=0;k<obj.param_count;k++)
+		 		obj.param_type.push(this.read_u30());
+	 		obj.name = this.read_u30();
+	 		obj.flags = this.read_u8();
+	 		if((obj.flags & 0x08)>0){
+	 			let option_count = this.read_u30();
+	 			let option=[];
+	 			for(let k=0;k<option_count;k++){
+	 				let o = {};
+	 				o.val = this.read_u30();
+	 				o.kind = this.read_u8();
+	 				option.push(o);
+	 			}
+	 			obj.option = option;
+	 		}
+	 		if((obj.flags & 0x80)>0){
+	 			obj.param_name = [];
+	 			for(let k=0;k<obj.param_count;k++){
+ 					obj.param_name.push(this.read_u30());
+	 			}
+	 		}
+		 	method.push(obj);
+		 } 
 
-		this.debug(method_count);
+		this.method = method;
+
+		let metadata_count = this.read_u30();
+		if(metadata_count>0){
+			alert("TODO: AVM2 read metadata_info!");
+			return false;
+		}
+
+		//instance info
+		let class_count = this.read_u30();
+		let instance = [];
+		for(let i=0;i<class_count;i++){
+			let ins = {};
+			ins.name = this.read_u30();
+			ins.super_name = this.read_u30();
+			ins.flags = this.read_u8();
+			ins.protectedNs = this.read_u30();
+			ins.interface_count = this.read_u30();
+			ins.interface = [];
+			for(let k=0;k<ins.interface_count;k++){
+				ins.interface.push(this.read_u30());
+			}
+			ins.iinit = this.read_u30();
+			ins.trait = this.read_trait_info();
+			if(ins.trait===false)
+				return false;
+			instance.push(ins);
+		}
+		this.instance = instance;
+
+		//class info
+		let classes = [];
+		for(let i=0;i<class_count;i++){
+			let cl = {};
+			cl.cinit = this.read_u30();
+			cl.traits = this.read_trait_info();
+			if(cl.traits===false)
+				return false;
+			classes.push(cl);
+		}
+		this.classes=classes;
+		
+		//script info
+		let script_info_count = this.read_u30();
+		let script_info = [];
+		for(let i=0;i<script_info_count;i++){
+			let si = {};
+			si.init = this.read_u30();
+			si.trait = this.read_trait_info();
+			script_info.push(si);
+		}
+		this.script_info = script_info;
+		this.debug(script_info_count);
+
+		let method_body_count = this.read_u30();
+		this.method_body = [];
+		for(let i=0;i<method_body_count;i++){
+			let bi = {};
+			bi.method = this.read_u30();
+			bi.max_stack = this.read_u30();
+			bi.local_count = this.read_u30();
+			bi.init_scope_depth = this.read_u30();
+			bi.max_scope_depth = this.read_u30();
+			bi.code_length = this.read_u30();
+			bi.code = new Uint8Array(this.raw_data.buffer,this.cur+this.raw_data.byteOffset,bi.code_length);
+			this.cur+=bi.code_length;
+			bi.exception_count = this.read_u30();
+			bi.exception = [];
+			for(let k=0;k<bi.exception_count;k++){
+				let ei={};
+				ei.from = this.read_u30();
+				ei.to = this.read_u30();
+				ei.target = this.read_u30();
+				ei.exc_type = this.read_u30();
+				ei.var_name = this.read_u30();
+			}
+			bi.trait = this.read_trait_info();
+
+			this.method_body.push(bi);
+		}
+
+		this.execute_script(this.script_info.length-1);
 
 		return false;
+	}
+
+
+	execute_script(script_id){
+		let script = this.script_info[script_id];
+		this.debug(script);
+	}
+
+	execute_method(method_id){
+
+	}
+
+	read_trait_info(){
+		let trait_count = this.read_u30();
+		let trait = [];
+		for(let k=0;k<trait_count;k++){
+			let t = {};
+			t.name = this.read_u30();
+			t.kind = this.read_u8();
+			t.data = {};
+			switch (t.kind) {
+				case 1: //trait_method
+				case 2: //trait_getter
+				case 3: //trait_setter
+					t.data.disp_id = this.read_u30();
+					t.data.method = this.read_u30();
+					break;
+				case 0: //trait_slot
+				case 6: //trait_const
+					t.data.slot_id = this.read_u30();
+					t.data.type_name = this.read_u30();
+					t.data.vindex = this.read_u30();
+					t.data.vkind = this.read_u8();
+					break;
+				case 4: //trait_class
+					t.data.slot_id = this.read_u30();
+					t.data.classi = this.read_u30();
+					break;
+				case 5: //trait_funtion
+					t.data.slot_id = this.read_u30();
+					t.data.function = this.read_u30();
+					break;
+				default:
+					alert("TODO: AVM2 instance trait kind "+t.kind);
+					return false;
+					break;
+			}
+			trait.push(t);
+		}
+		return trait;
 	}
 
 	read_constat_pool(){
