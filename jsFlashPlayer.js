@@ -18,13 +18,17 @@ window.wrappedJSObject.navigator.mimeTypes[mimetype.type]=cloneInto(mimetype,win
 
 
 //init
+console.log('initpako',pako);
+var mypako=pako;
 //TODO: make it more relyable
-setTimeout(init,1000);
+setTimeout(init,1000, mypako);
 console.log("ok");
 
 
 
-function init(){
+function init(pako_){
+    let l_pako = pako_;
+    let flash = null;
     //searching flash objects in the DOM
     let objects = document.getElementsByTagName('OBJECT');
     for(let i=0;i<objects.length;i++){
@@ -38,7 +42,7 @@ function init(){
         let height = el.getAttribute('height');
         let canvas = create_canvas(el,'100%','100%');
 
-        let flash = new FlashCore(url,canvas);
+        flash = new FlashCore(url,canvas);
     }
 
     objects = document.getElementsByTagName('EMBED');
@@ -60,8 +64,13 @@ function init(){
         el.style = 'display:block;'+align+'width:'+width+'; height:'+height;
         let canvas = create_canvas(el,'100%','100%');
 
-        let flash = new FlashCore(url,canvas);
+        flash = new FlashCore(url,canvas);
     }
+
+    if(!flash)
+        return;
+    
+    flash.setPako(l_pako);
 }
 
 function get_swf_real_path(url){

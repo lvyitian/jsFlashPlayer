@@ -28,6 +28,7 @@
         "helpers/query.js",
         "helpers/ffmpeg_wrapper/ffmpeg_wrapper.js",
         "helpers/ffmpeg_wrapper/ffmpeg.js",
+        "flash/interface/FlashParser.js",
         "flash/AVM2.js",
         "flash/data_types/Rect.js",
         "flash/data_types/SoundStream.js",
@@ -36,6 +37,7 @@
         "flash/tags/genericTag.js",
         "flash/tags/DefineSceneAndFrameLabelData.js",
         "flash/tags/DoABC.js",
+        "flash/tags/DefineSound.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]
