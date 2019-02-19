@@ -9,6 +9,8 @@ class AVM2{
 		this.major_version = 0;
 
 		this.constat_pool = null;
+
+		this.objects = [{}];
 	}
 
 	run_abc(abc_file){
@@ -110,7 +112,6 @@ class AVM2{
 			script_info.push(si);
 		}
 		this.script_info = script_info;
-		this.debug(script_info_count);
 
 		let method_body_count = this.read_u30();
 		this.method_body = [];
@@ -139,19 +140,53 @@ class AVM2{
 			this.method_body.push(bi);
 		}
 
-		this.execute_script(this.script_info.length-1);
+		if(!this.execute_script(this.script_info.length-1))
+			return false;
 
-		return false;
+		return true;
 	}
 
 
 	execute_script(script_id){
 		let script = this.script_info[script_id];
-		this.debug(script);
+		//this.debug(script);
+		return this.execute_method(script.init,this.objects[0]);
 	}
 
-	execute_method(method_id){
+	execute_method(method_id,this_object){
+		let method = this.method[method_id];
+		let body = this.method_body[method_id];
+		let code = body.code;
 
+		this.debug(body);
+
+		let pc=0;
+		let register = [this_object];
+		let stack = [];
+		let scope = [];
+		while(pc<code.length){
+			let op = code[pc];
+			switch (op) {
+				case 0x30: //pushscope
+					scope.push(stack.pop());
+					pc++;
+				break;
+				case 0x65: //getscopeobject
+					pc++;
+					stack.push(scope[scope.length-code[pc]-1]);
+					pc++;
+				break;
+				case 0xd0: //getlocal_0
+					stack.push(register[0]);
+					pc++;
+				break;
+				default:
+					alert("AVM2: Unknown op code: "+op+" (0x"+op.toString(16)+")");
+					return false;
+					break;
+			}
+		}
+		return true;
 	}
 
 	read_trait_info(){
