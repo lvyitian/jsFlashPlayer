@@ -34,10 +34,12 @@
         "flash/data_types/SoundStream.js",
         "flash/data_types/Dictionary.js",
         "flash/data_types/DisplayList.js",
+        "flash/data_types/Sound.js",
         "flash/tags/genericTag.js",
         "flash/tags/DefineSceneAndFrameLabelData.js",
         "flash/tags/DoABC.js",
         "flash/tags/DefineSound.js",
+        "flash/tags/StartSound.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

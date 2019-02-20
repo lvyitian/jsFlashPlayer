@@ -279,4 +279,9 @@ class FlashParser{
 		
 		return result;
     }
+    read_sub_array(length){
+        let t = new Uint8Array(this.raw_data.buffer,this.cur+this.raw_data.byteOffset,length);
+        this.cur+=length;
+        return t;
+    }
 }

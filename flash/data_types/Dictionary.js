@@ -10,7 +10,10 @@ class Dictionary{
 	}
 
 	add(characterID, object){
+		if(characterID in this.dict)
+			return false;
 		this.dict[characterID] = object;
+		return true;
 	}
 
 	get(characterID){

@@ -14,6 +14,8 @@ class FlashCore{
         this.frame_rate = 0;
         this.frames_count = 0;
 
+        this.current_frame = 0;
+
         this.action_script3 = false;
         this.file_attributes = {};
 
@@ -288,6 +290,11 @@ class FlashCore{
                 sstream.play();
         }
 
+        /*if(this.current_frame==0){
+            this.reset_address = this.data.cur;
+        }*/
+
+        this.current_frame++;
         return ret;
     }
 
@@ -411,7 +418,7 @@ class FlashCore{
         switch(tag.code){
             case 0: //END OF FILE
                 this.debug('EndOfFile');
-                return false;
+                //return false;
                 return this.reset();
             break;
             case 1:
@@ -424,9 +431,12 @@ class FlashCore{
                 return this.process_SetBackgroundColor();
             break;
             case 14: //DefineSound
-                let t = new DefineSound(this,tag_data);
                 this.data.cur+=tag.length;
-                return t.no_error;
+                return (new DefineSound(this,tag_data)).no_error;
+            break;
+            case 15: //StartSound
+                this.data.cur+=tag.length;
+                return (new StartSound(this,tag_data)).no_error;
             break;
             case 19:{
                 let next=this.data.cur+tag.length;
@@ -502,6 +512,7 @@ class FlashCore{
         if(this.reset_address<0)
             return false;
         this.data.cur=this.reset_address;
+        this.current_frame = 0;
         return true;
     }
 

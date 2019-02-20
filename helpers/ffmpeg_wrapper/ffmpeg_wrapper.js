@@ -10,6 +10,10 @@ var Libav = {
     },
     decode_frame : function(encoded_frame_array,width, height){
         //var d1 = new Date();
+        /*if(encoded_frame_array ==undefined){
+            return true;
+        }*/
+
         if(this._decode_frame == undefined){
             console.log('"decode_frame" is not loaded!');
             return false;
