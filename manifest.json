@@ -40,6 +40,7 @@
         "flash/tags/DoABC.js",
         "flash/tags/DefineSound.js",
         "flash/tags/StartSound.js",
+        "flash/tags/DefineShape.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

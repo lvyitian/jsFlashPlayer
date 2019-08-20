@@ -37,6 +37,7 @@ class FlashCore{
         this.playing = true;
         this.pako=null;
         
+        
         let me = this;
         send_query(url,[],function(data){
             me.raw_data = data;
@@ -427,6 +428,9 @@ class FlashCore{
                     return 2;
                 }else return false;
             break;
+            case 2: //DefineShape
+                this.data.cur+=tag.length;
+                return (new DefineShape(this,tag_data)).no_error;
             case 9:
                 return this.process_SetBackgroundColor();
             break;

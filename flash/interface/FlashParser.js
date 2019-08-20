@@ -284,4 +284,20 @@ class FlashParser{
         this.cur+=length;
         return t;
     }
+
+    read_RGB(){
+        let obj = {};
+        obj.r = this.read_UI8();
+        obj.g = this.read_UI8();
+        obj.b = this.read_UI8();
+        return obj;
+    }
+    read_RGBA(){
+        let obj = {};
+        obj.r = this.read_UI8();
+        obj.g = this.read_UI8();
+        obj.b = this.read_UI8();
+        obj.a = this.read_UI8();
+        return obj;
+    }
 }
