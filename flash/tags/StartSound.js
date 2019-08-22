@@ -2,9 +2,11 @@
 
 class StartSound extends genericTag{
 	read(){
+
 		let obj = {};
 		let soundId = this.read_UI16();
 		let sound = this.core.dictionary.get(soundId);
+
 
 		let temp = this.read_UI8();
 		obj.SyncStop = (temp >> 5) & 1;

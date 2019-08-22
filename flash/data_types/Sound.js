@@ -4,7 +4,7 @@ class Sound{
 
 	constructor(core, data){
 		this.STATE_IDLE = 0;
-		this.STATE_PLAYING = 0;
+		this.STATE_PLAYING = 1;
 		this.data = data;
 		this.core = core;
 
@@ -48,9 +48,10 @@ class Sound{
 	}
 
 	play(){
-		if(this.STATE_PLAYING)
+		if(this.state==this.STATE_PLAYING)
 			return;
 
+		//alert('ok');
 		if(!this.ready){
 			this.ready_promise.then(this.play.bind(this));
 			return;

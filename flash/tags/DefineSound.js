@@ -4,6 +4,9 @@ class DefineSound extends genericTag{
 
 		obj.soundId = this.read_UI16();
 
+		if(this.core.dictionary.has(obj.soundId))
+			return true;
+
 		let temp = this.read_UI8();
 		obj.soundFormat = (temp >> 4) & 0b1111;
 		obj.soundRate = (temp >> 2) & 0b11;
