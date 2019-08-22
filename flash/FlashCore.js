@@ -388,7 +388,7 @@ class FlashCore{
         this.debug('tag SoundStreamBlock');
         
         let sstream = this.sound_stream;
-        this.debug(sstream);
+        //this.debug(sstream);
         switch (sstream.streamSoundCompression) {
             case 2:{
                 
@@ -452,6 +452,7 @@ class FlashCore{
                 if(!t)
                     return false;
                 this.data.cur=next;
+                break;
             }
             case 20:
                 this.data.cur+=tag.length;

@@ -17,8 +17,14 @@ class DefineBitsLossless extends genericTag{
 		if(obj.bitmapFormat==3){ //8-bit colormapped image
 			obj.bitmapColorTableSize = this.read_UI8();
 		}
-
-		let data = this.core.pako.inflate(this.raw_data.slice(this.cur));
+		try {
+			let data = this.core.pako.inflate(this.raw_data.slice(this.cur));
+		} catch(e) {
+			// statements
+			console.log(e);
+			return false;
+		}
+		
 		data = new FlashParser(data);
 
 		if(obj.bitmapFormat==3){ //8-bit colormapped image
