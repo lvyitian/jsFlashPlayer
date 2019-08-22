@@ -6,6 +6,8 @@ class Dictionary{
 		this.core = core;
 
 		//constants or some like them
+		this.TypeShape = 2;
+		this.TypeBitsLossless = 20;
 		this.TypeVideoStream = 60;
 	}
 
@@ -20,8 +22,17 @@ class Dictionary{
 		return this.dict[characterID];
 	}
 
+	has(characterID){
+		return characterID in this.dict;
+	}
+
 	draw(ctx,characterID,ratio){
 		let el = this.dict[characterID];
+		if(!el){
+			console.log("error");
+			console.log(el);
+			return false;
+		}
 		//console.log(el);
 		switch (el.type) {
 			case this.TypeVideoStream:
@@ -60,8 +71,13 @@ class Dictionary{
 				ctx.putImageData(el.img_data,0,0);*/
 
 				break;
+
+			case this.TypeShape:
+				return el.draw();
+			break;
 			default:
 				alert("TODO: Draw character "+el.type);
+				console.log(el);
 				return false;
 		}
 

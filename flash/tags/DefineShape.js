@@ -67,9 +67,8 @@ class DefineShape extends genericTag{
 					(o.type == this.FILLTYPE_NON_SMOOTHED_CLIPPED_BITMAP_FILL) 
 				){
 
-				alert("TODO: read bitmap fill!");
-				return null;
-
+				o.bitmapId = this.read_UI16();
+				o.bitmapMatrix = this.read_MATRIX();
 			}
 
 			obj.push(o);
@@ -103,7 +102,7 @@ class DefineShape extends genericTag{
 
 	read_ShapeRecords(shape3mode){
 
-		var debug_draw=true;
+		var debug_draw=false;
 		//this.cur--;
 		let t2 = this.read_UI8();
 		let numFillBits = (t2 >> 4) & 0b1111;
@@ -129,7 +128,7 @@ class DefineShape extends genericTag{
 		let cou2=0;
 		while(this.cur<this.raw_data.length){
 			cou2++;
-			if(cou2>100) {console.log('limit');break;}
+			//if(cou2>100) {console.log('limit');break;}
 
 
 			let count = 0;
@@ -295,12 +294,13 @@ class DefineShape extends genericTag{
 
 			if(debug_draw)
 			ctx.stroke();
+			//ctx.fill();
 
 			shapes.push(ar);
 			ar=[];
 
 			if(t.shift>0) this.cur++;
-			console.log(this.cur,this.raw_data.length);
+			//console.log(this.cur,this.raw_data.length);
 			if(this.cur>=this.raw_data.length) break;
 		}
 		
@@ -340,10 +340,14 @@ class DefineShape extends genericTag{
 
 		obj.shapes = shapes;
 		
-
-		console.log(obj);
-		this.core.dictionary.add(obj.shapeID,obj);
+		obj.type = this.header.code;
 		
+		let shape_id = obj.shapeID
+
+		obj = new Shape(this.core,obj);
+
+		this.core.dictionary.add(shape_id,obj);
+
 		return true;
 	}
 

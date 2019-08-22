@@ -1,10 +1,11 @@
 "use strict";
 
 class genericTag  extends FlashParser{
-	constructor(core,data){
+	constructor(core,tag){
         super();
 		this.core = core;
-		this.raw_data = data;
+		this.header = tag.header;
+		this.raw_data = tag.data;
 		this.cur=0;
 		core.debug("tag "+this.constructor.name);
 

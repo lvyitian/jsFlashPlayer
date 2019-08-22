@@ -62,7 +62,14 @@ class DisplayList{
 						}
 					}
 					//console.log('element:',el);
-					this.ctx.setTransform(scaleX,rotate1,rotate0,scaleY,el.matrix.translateX,el.matrix.translateY);
+					if(el.hasMatrix){
+						if(!el.matrix){
+							console.log('no matrix!');
+							console.log(el);
+							return false;
+						}
+						this.ctx.setTransform(scaleX,rotate1,rotate0,scaleY,el.matrix.translateX,el.matrix.translateY);
+					}
 					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio))
 						return false;
 					break;

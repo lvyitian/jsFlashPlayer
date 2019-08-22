@@ -415,6 +415,10 @@ class FlashCore{
     process_tag(){
         let tag = this.read_tag_info();
         let tag_data = new Uint8Array(this.raw_data.buffer,this.data.cur,tag.length);
+        let tag_obj = {
+            header: tag,
+            data: tag_data
+        };
 
         switch(tag.code){
             case 0: //END OF FILE
@@ -430,17 +434,17 @@ class FlashCore{
             break;
             case 2: //DefineShape
                 this.data.cur+=tag.length;
-                return (new DefineShape(this,tag_data)).no_error;
+                return (new DefineShape(this,tag_obj)).no_error;
             case 9:
                 return this.process_SetBackgroundColor();
             break;
             case 14: //DefineSound
                 this.data.cur+=tag.length;
-                return (new DefineSound(this,tag_data)).no_error;
+                return (new DefineSound(this,tag_obj)).no_error;
             break;
             case 15: //StartSound
                 this.data.cur+=tag.length;
-                return (new StartSound(this,tag_data)).no_error;
+                return (new StartSound(this,tag_obj)).no_error;
             break;
             case 19:{
                 let next=this.data.cur+tag.length;
@@ -449,6 +453,10 @@ class FlashCore{
                     return false;
                 this.data.cur=next;
             }
+            case 20:
+                this.data.cur+=tag.length;
+                return (new DefineBitsLossless(this,tag_obj)).no_error;
+            break;
             break;
             case 24: //protect
                 this.data.cur+=tag.length;
@@ -474,13 +482,13 @@ class FlashCore{
                 return this.process_FileAttributes();
             break;
             case 82:{
-                let t = new DoABC(this,tag_data);
+                let t = new DoABC(this,tag_obj);
                 this.data.cur+=tag.length;
                 return t.no_error;
             }break;
 
             case 86:{
-                let t = new DefineSceneAndFrameLabelData(this,tag_data);
+                let t = new DefineSceneAndFrameLabelData(this,tag_obj);
                 this.data.cur+=tag.length;
                 return t.no_error;
             }
@@ -583,6 +591,24 @@ class FlashCore{
         document.body.appendChild(link);
         link.click();
         this.blob = new Uint8Array(0);
+    }
+
+    //workaround firefox bugs
+    bug_create_image_from_array(image_array, width, height){
+        let obj = {
+            bitmap  : image_array,
+            width   : width,
+            height  : height
+        }
+        window.wrappedJSObject.__flashplayer_temp_data=cloneInto(obj,window);
+        let script = document.createElement('script');
+        script.innerHTML='__flashplayer_generate_image_from_array();';
+        document.head.appendChild(script);
+        script.remove();
+        let src = window.wrappedJSObject.__flashplayer_temp_data.image;
+        let img = new Image();
+        img.src = src;
+        return img;
     }
 }
     
