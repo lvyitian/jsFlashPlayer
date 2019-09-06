@@ -26,6 +26,7 @@
       "js": [
         "helpers/pako/pako_inflate.min.js",
         "helpers/query.js",
+        "helpers/debug.js",
         "helpers/ffmpeg_wrapper/ffmpeg_wrapper.js",
         "helpers/ffmpeg_wrapper/ffmpeg.js",
         "flash/interface/FlashParser.js",

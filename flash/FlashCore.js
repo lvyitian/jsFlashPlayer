@@ -517,6 +517,7 @@ class FlashCore{
             return;
         }
 
+        debug.stop();
         this.draw();
         
     }

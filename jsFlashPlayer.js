@@ -76,8 +76,8 @@ function init(pako_){
 function get_swf_real_path(url){
     if(url.startsWith('//')){
         url = window.location.protocol+url;
-    }
-    if(url.indexOf('/')<0){
+    }else
+    if( (url.indexOf('/')<0) || url.startsWith('/') ){
         //console.log(window.location.href);
         let location = window.location.href;
         url = location.substr(0,location.lastIndexOf('/')+1)+url;
@@ -99,6 +99,10 @@ function create_canvas(element, width, height){
     let ctx = canvas.getContext('2d');
     ctx.fillStyle = '#00FF55';
     ctx.fillRect(0,0,canvas.width, canvas.height);
+    debug.start(ctx);
+    canvas.onclick=function(){
+    	debug.toggle();
+	};
 
     //workaround a bug "Permission denied for set function of imagedata"
     let script = document.createElement('script');
@@ -129,3 +133,12 @@ function create_canvas(element, width, height){
 
     return canvas;
 }
+
+(function(){
+    var oldLog = console.log;
+    console.log = function (message) {
+    	var args = Array.prototype.slice.call(arguments);
+    	debug.log(args.join(' '));
+        oldLog.apply(console, arguments);
+    };
+})();
