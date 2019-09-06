@@ -139,7 +139,7 @@ class FlashCore{
 		this.debug('streamSoundType:',streamSoundType);*/
 
 		let streamSoundSampleCount = this.data.read_UI16();
-		//this.debug('streamSoundSampleCount:',streamSoundSampleCount);
+		//this.debug('streamSoundSampleCount:',streamSoundSampleCount);'
 		
 		let latencySeek = 0;
 
@@ -446,6 +446,10 @@ class FlashCore{
                 this.data.cur+=tag.length;
                 return (new StartSound(this,tag_obj)).no_error;
             break;
+            case 18:
+                this.data.cur+=tag.length;
+                return (new SoundStreamHead(this,tag_obj)).no_error;
+            break;
             case 19:{
                 let next=this.data.cur+tag.length;
                 let t = this.process_SoundStreamBlock(tag.length);
@@ -466,7 +470,7 @@ class FlashCore{
         		if(!this.process_PlaceObject2()) return false;
         	break;
             case 45:
-            	this.process_SoundStreamHead2();
+            	this.process_SoundStreamHead2iii();
             break;
             case 60:
             	this.process_DefineVideoStream();
@@ -550,6 +554,7 @@ class FlashCore{
 
             if((ret === false) || (!this.playing)){
                 cancelAnimationFrame(this.redraw_interval_id);
+                //debug.start();
                 return false;
             }
             if(ret===2){

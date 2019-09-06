@@ -11,14 +11,14 @@ var debug={
 		this.ctx=ctx;
 		this.is_drawing=true;
 		window.requestAnimationFrame(this.draw.bind(this));
-		alert("start end");
+		//alert("start end");
     },
     draw:function(){
     	//alert("draw begin");
     	let c = this.ctx;
         let y = 10;
         
-        c.globalAlpha=0.2;
+        c.globalAlpha=0.3;
         c.fillStyle="#ffffff";
         c.fillRect(0,0,c.canvas.width,this.con.length*10+10);
         
@@ -42,5 +42,15 @@ var debug={
 	toggle: function(){
 	    if(this.is_drawing) this.stop();
 	    else this.start();
-	}
+	},
+	obj:function(o){
+		console.log('{');
+		
+		let k=Object.keys(o);
+		for(let i=0;i<k.length;i++){
+			console.log("  ",k[i]+":",o[k[i]]);
+		}
+		
+		console.log('}');
+    }
 }
