@@ -37,6 +37,7 @@
         "flash/data_types/DisplayList.js",
         "flash/data_types/Sound.js",
         "flash/data_types/Shape.js",
+        "flash/data_types/Font.js",
         "flash/tags/genericTag.js",
         "flash/tags/DefineSceneAndFrameLabelData.js",
         "flash/tags/DoABC.js",
@@ -45,6 +46,7 @@
         "flash/tags/DefineShape.js",
         "flash/tags/DefineBitsLossless.js",
         "flash/tags/SoundStreamHead.js",
+        "flash/tags/DefineFont2.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

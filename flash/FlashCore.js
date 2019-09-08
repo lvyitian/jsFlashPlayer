@@ -472,6 +472,10 @@ class FlashCore{
             case 45:
             	this.process_SoundStreamHead2iii();
             break;
+            case 48:
+                this.data.cur+=tag.length;
+                return (new DefineFont2(this,tag_obj)).no_error;
+            break;
             case 60:
             	this.process_DefineVideoStream();
             break;

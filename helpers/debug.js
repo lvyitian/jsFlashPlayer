@@ -4,7 +4,7 @@ var debug={
 	ctx:null,
 	log : function(message){
 		this.con.push(message);
-		if(this.con.length > 10) this.con.shift();
+		if(this.con.length > 15) this.con.shift();
 		//alert(message);
 	},
 	start:function(ctx){
@@ -43,12 +43,21 @@ var debug={
 	    if(this.is_drawing) this.stop();
 	    else this.start();
 	},
-	obj:function(o){
+	obj:function(o, recursive=true){
+		if(typeof(o)!='object')
+			return console.log(o);
 		console.log('{');
 		
 		let k=Object.keys(o);
+		
 		for(let i=0;i<k.length;i++){
-			console.log("  ",k[i]+":",o[k[i]]);
+			let e = o[k[i]];
+			if(recursive)
+			if(typeof(e)=='object'){
+				this.obj(e);
+				continue;
+			}
+			console.log("  ",k[i]+":",e);
 		}
 		
 		console.log('}');

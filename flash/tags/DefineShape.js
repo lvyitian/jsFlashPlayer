@@ -100,13 +100,17 @@ class DefineShape extends genericTag{
 		return obj;
 	}
 
-	read_ShapeRecords(shape3mode){
+	read_ShapeRecords(shape3mode, no_new_style=false){
+
 
 		var debug_draw=false;
 		//this.cur--;
 		let t2 = this.read_UI8();
 		let numFillBits = (t2 >> 4) & 0b1111;
 		let numLineBits = t2 & 0b1111;
+		
+		//console.log(numFillBits);
+		//console.log(numLineBits);
 
 		//console.log(this.raw_data.slice(this.cur));
 
@@ -160,8 +164,12 @@ class DefineShape extends genericTag{
 					
 					//StyleChangeRecord
 					//console.log("stateNewStyles: shift: "+t.shift+", size: "+(1)+", byte: "+this.raw_data[this.cur]);
-					t = this.read_UB(t.shift,1);
-					obj.stateNewStyles = t.value;
+					if(no_new_style){
+						obj.stateNewStyles = 0;
+					}else{
+						t = this.read_UB(t.shift,1);
+						obj.stateNewStyles = t.value;
+					}
 					t = this.read_UB(t.shift,1);
 					obj.stateLineStyle = t.value;
 					t = this.read_UB(t.shift,1);
@@ -203,8 +211,9 @@ class DefineShape extends genericTag{
 							ctx.stroke();
 						alert("TODO: stateNewStyles read!");
 						console.log("error");
-						console.log(obj);
+						debug.obj(obj);
 						console.log(this.raw_data.slice(start_cur,this.cur));
+						return false;
 						break;
 						obj.fillStyles = this.read_FILLSTYLEARRAY(shape3mode);
 						if(obj.fillStyles == null)
