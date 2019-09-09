@@ -47,6 +47,7 @@
         "flash/tags/DefineBitsLossless.js",
         "flash/tags/SoundStreamHead.js",
         "flash/tags/DefineFont2.js",
+        "flash/tags/DefineFontInfo.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

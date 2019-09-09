@@ -438,6 +438,10 @@ class FlashCore{
             case 9:
                 return this.process_SetBackgroundColor();
             break;
+            case 13:
+            	this.data.cur+=tag.length;
+                return (new DefineFontInfo(this,tag_obj)).no_error;
+            break;
             case 14: //DefineSound
                 this.data.cur+=tag.length;
                 return (new DefineSound(this,tag_obj)).no_error;
