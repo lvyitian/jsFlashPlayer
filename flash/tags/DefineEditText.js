@@ -35,7 +35,33 @@ class DefineEditText extends genericTag{
 			o.fontClass = this.read_STRING();
 		}
 		
-		debug.obj(o);
-		return false;
+		if(o.hasFont){
+			o.fontHeight = this.read_UI16();
+		}
+
+		if(o.hasTextColor){
+			o.textColor = this.read_RGBA();
+		}
+
+		if(o.hasMaxLength){
+			o.maxLength = this.read_UI16();
+		}
+
+		if(o.hasLayout){
+			o.align = this.read_UI8();
+			o.leftMargin = this.read_UI16();
+			o.rightMargin = this.read_UI16();
+			o.indent = this.read_UI16();
+			o.leading = this.read_UI16();
+		}
+
+		o.variableName = this.read_STRING();
+
+		if(o.hasText){
+			o.initialText = this.read_STRING();
+		}
+
+		this.core.dictionary.add(o.characterID,o)
+		return true;
 	}
 }

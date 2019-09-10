@@ -86,7 +86,7 @@ class DefineFont2 extends DefineShape{
 		}
 		//debug.obj(o,false);
 		
-		o.type=this.type;
+		o.type=this.header.code;
 		t = new Font(this.core,o);
 		
 		this.core.dictionary.add(o.fontID, t);

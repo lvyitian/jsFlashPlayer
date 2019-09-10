@@ -39,11 +39,12 @@ class FlashCore{
         
         
         let me = this;
+        debug.log('Loading...');
         send_query(url,[],function(data){
             me.raw_data = data;
             me.data = new FlashParser(me.raw_data);
             me.process();
-         });
+         },me.download_progress);
 
         
     }
@@ -279,7 +280,7 @@ class FlashCore{
 
     process_ShowFrame(){
         this.debug('tag ShowFrame');
-
+        debug.stop();
 
         let ret = this.display_list.draw();
 
@@ -420,10 +421,13 @@ class FlashCore{
             data: tag_data
         };
 
+        //console.log(tag_obj);
+
         switch(tag.code){
             case 0: //END OF FILE
                 this.debug('EndOfFile');
-                //return false;
+
+                return false;
                 return this.reset();
             break;
             case 1:
@@ -437,6 +441,10 @@ class FlashCore{
                 return (new DefineShape(this,tag_obj)).no_error;
             case 9:
                 return this.process_SetBackgroundColor();
+            break;
+            case 10:
+                this.data.cur+=tag.length;
+                return (new DefineFont(this,tag_obj)).no_error;
             break;
             case 13:
             	this.data.cur+=tag.length;
@@ -472,12 +480,20 @@ class FlashCore{
         	case 26:
         		if(!this.process_PlaceObject2()) return false;
         	break;
+            case 36:
+                this.data.cur+=tag.length;
+                return (new DefineBitsLossless2(this,tag_obj)).no_error;
+            break;
         	case 37:
         		this.data.cur+=tag.length;
                 return (new DefineEditText(this,tag_obj)).no_error;
         	break;
+            case 39:
+                this.data.cur+=tag.length;
+                return (new DefineSprite(this,tag_obj)).no_error;
+            break;
             case 45:
-            	this.process_SoundStreamHead2iii();
+            	this.process_SoundStreamHead2();
             break;
             case 48:
                 this.data.cur+=tag.length;
@@ -532,7 +548,6 @@ class FlashCore{
             return;
         }
 
-        debug.stop();
         this.draw();
         
     }
@@ -546,6 +561,9 @@ class FlashCore{
     }
 
     draw(){
+        /*if(this.do_stop===true)
+            return false;*/
+        //console.log('draw');
 
         let interval_time = 1000 / this.frame_rate;
 
@@ -564,8 +582,11 @@ class FlashCore{
             let ret = this.process_tag();
 
             if((ret === false) || (!this.playing)){
+                //console.log('stop');
+                //this.do_stop=true;
                 cancelAnimationFrame(this.redraw_interval_id);
-                //debug.start();
+                /*let ctx = this.canvas.getContext('2d');
+                debug.start(ctx);*/
                 return false;
             }
             if(ret===2){
@@ -609,6 +630,13 @@ class FlashCore{
         document.body.appendChild(link);
         link.click();
         this.blob = new Uint8Array(0);
+    }
+
+    download_progress(e){
+        let loaded = e.loaded;
+        let total = e.total;
+        let precent = 100*loaded/total;
+        debug.update('Loading '+precent+'% ('+loaded+'/'+total+')');
     }
 
     //workaround firefox bugs

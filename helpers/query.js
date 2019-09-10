@@ -5,10 +5,12 @@ function show_error(message){
 }
 
 //Отправка запроса
-function send_query(filename,query,after_complete){
+function send_query(filename,query,after_complete, updateProgress){
 
 	try {
 	var xmlhttp = getXmlHttp(); // Создаём объект XMLHTTP
+	if(updateProgress!=undefined)
+		xmlhttp.onprogress = updateProgress;
 	xmlhttp.open("GET", filename, true); // Открываем асинхронное соединение
 	//xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); // Отправляем кодировку
 	xmlhttp.responseType = "arraybuffer";

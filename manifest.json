@@ -38,6 +38,7 @@
         "flash/data_types/Sound.js",
         "flash/data_types/Shape.js",
         "flash/data_types/Font.js",
+        "flash/data_types/Sprite.js",
         "flash/tags/genericTag.js",
         "flash/tags/DefineSceneAndFrameLabelData.js",
         "flash/tags/DoABC.js",
@@ -45,10 +46,13 @@
         "flash/tags/StartSound.js",
         "flash/tags/DefineShape.js",
         "flash/tags/DefineBitsLossless.js",
+        "flash/tags/DefineBitsLossless2.js",
         "flash/tags/SoundStreamHead.js",
+        "flash/tags/DefineFont.js",
         "flash/tags/DefineFont2.js",
         "flash/tags/DefineFontInfo.js",
         "flash/tags/DefineEditText.js",
+        "flash/tags/DefineSprite.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

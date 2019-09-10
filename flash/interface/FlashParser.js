@@ -300,4 +300,18 @@ class FlashParser{
         obj.a = this.read_UI8();
         return obj;
     }
+
+    read_tag_data(){
+        let temp = this.read_UI16();
+        let tag_code = (temp >> 6) & 0b1111111111;
+        let tag_length = temp & 0b111111;
+
+        if(tag_length==63){
+            tag_length = this.read_UI32();
+        }
+
+        let tag_data = this.read_sub_array(tag_length);
+        
+        return {code:tag_code, length:tag_length, data:tag_data};
+    }
 }
