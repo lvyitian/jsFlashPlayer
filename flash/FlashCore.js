@@ -466,12 +466,15 @@ class FlashCore{
                 this.data.cur+=tag.length;
                 return (new DefineBitsLossless(this,tag_obj)).no_error;
             break;
-            break;
             case 24: //protect
                 this.data.cur+=tag.length;
             break;
         	case 26:
         		if(!this.process_PlaceObject2()) return false;
+        	break;
+        	case 37:
+        		this.data.cur+=tag.length;
+                return (new DefineEditText(this,tag_obj)).no_error;
         	break;
             case 45:
             	this.process_SoundStreamHead2iii();

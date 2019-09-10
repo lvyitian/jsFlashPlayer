@@ -48,6 +48,7 @@
         "flash/tags/SoundStreamHead.js",
         "flash/tags/DefineFont2.js",
         "flash/tags/DefineFontInfo.js",
+        "flash/tags/DefineEditText.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

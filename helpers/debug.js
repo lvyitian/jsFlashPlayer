@@ -2,6 +2,7 @@ var debug={
 	con: [],
 	is_drawing: false,
 	ctx:null,
+	tab:'',
 	log : function(message){
 		this.con.push(message);
 		if(this.con.length > 15) this.con.shift();
@@ -11,7 +12,9 @@ var debug={
 		this.ctx=ctx;
 		this.is_drawing=true;
 		window.requestAnimationFrame(this.draw.bind(this));
-		//alert("start end");
+		/*ctx.fillStyle="#ffffff";
+		ctx.fillRect(0,0,100,100);
+		alert("start end");*/
     },
     draw:function(){
     	//alert("draw begin");
@@ -46,9 +49,10 @@ var debug={
 	obj:function(o, recursive=true){
 		if(typeof(o)!='object')
 			return console.log(o);
-		console.log('{');
+		console.log(this.tab+'{');
 		
 		let k=Object.keys(o);
+		this.tab+='  ';
 		
 		for(let i=0;i<k.length;i++){
 			let e = o[k[i]];
@@ -57,9 +61,10 @@ var debug={
 				this.obj(e);
 				continue;
 			}
-			console.log("  ",k[i]+":",e);
+			console.log(this.tab,k[i]+":",e);
 		}
-		
-		console.log('}');
+		this.tab=this.tab.substr(2);
+		//this.tab.length-=2;
+		console.log(this.tab+'}');
     }
 }
