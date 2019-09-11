@@ -13,8 +13,7 @@ class DefineFontInfo extends genericTag{
 		
 		let len=this.read_UI8();
 		let decoder = new TextDecoder('utf-8');
-		o.fontName = decoder.decode(this.raw_data.slice(this.cur,this.cur+len));
-		this.cur+=len;
+		o.fontName = decoder.decode(this.read_sub_array(len));
 		
 		let t=this.read_UI8();
 		
@@ -26,11 +25,11 @@ class DefineFontInfo extends genericTag{
 		o.fontFlagsWideCodes = (t&0b00000001)>0;
 		
 		let font = this.core.dictionary.get(o.fontID);
-		let count = font.data.numGlyphs;
+		//let count = font.data.numGlyphs;
 		
 		o.codeTable = [];
 		
-		for(let i=0; i<count; i++){
+		while(this.cur < this.raw_data.length){
 			if(o.fontFlagsWideCodes){
 				o.codeTable.push(this.read_UI16());
 			}else{

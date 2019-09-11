@@ -78,7 +78,13 @@ class FlashCore{
         if(this.zipped){
             this.debug('inflating');
             let pako = this.pako;
-            this.raw_data = pako.inflate(this.raw_data.slice(8));
+            try {
+                this.raw_data = pako.inflate(this.raw_data.slice(8));
+            } catch(e) {
+                console.log(e);
+                return false;
+            }
+            
             this.data = new FlashParser(this.raw_data);
             data = this.data;
             data.cur=0;
@@ -446,6 +452,10 @@ class FlashCore{
                 this.data.cur+=tag.length;
                 return (new DefineFont(this,tag_obj)).no_error;
             break;
+            case 11:
+                this.data.cur+=tag.length;
+                return (new DefineText(this,tag_obj)).no_error;
+            break;
             case 13:
             	this.data.cur+=tag.length;
                 return (new DefineFontInfo(this,tag_obj)).no_error;
@@ -509,6 +519,10 @@ class FlashCore{
                     if(!this.process_VideoFrame(end_address)) return false;
                     this.data.cur=end_address;
                 }
+            break;
+            case 62:
+                this.data.cur+=tag.length;
+                return (new DefineFontInfo2(this,tag_obj)).no_error;
             break;
             case 69:
                 return this.process_FileAttributes();
@@ -587,6 +601,7 @@ class FlashCore{
                 cancelAnimationFrame(this.redraw_interval_id);
                 /*let ctx = this.canvas.getContext('2d');
                 debug.start(ctx);*/
+                //console.log('stopped by error');
                 return false;
             }
             if(ret===2){

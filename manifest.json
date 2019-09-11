@@ -39,6 +39,7 @@
         "flash/data_types/Shape.js",
         "flash/data_types/Font.js",
         "flash/data_types/Sprite.js",
+        "flash/data_types/Text.js",
         "flash/tags/genericTag.js",
         "flash/tags/DefineSceneAndFrameLabelData.js",
         "flash/tags/DoABC.js",
@@ -51,8 +52,10 @@
         "flash/tags/DefineFont.js",
         "flash/tags/DefineFont2.js",
         "flash/tags/DefineFontInfo.js",
+        "flash/tags/DefineFontInfo2.js",
         "flash/tags/DefineEditText.js",
         "flash/tags/DefineSprite.js",
+        "flash/tags/DefineText.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]
