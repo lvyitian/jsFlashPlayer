@@ -62,7 +62,7 @@ class Sound{
 
 		if(this.params.HasLoops){
 			this.player.loop = true;
-			console.log(this.player);
+			//console.log(this.player);
 			let me = this;
 			this.player.onended = function(){
 				console.log('ended');

@@ -26,10 +26,10 @@ class Dictionary{
 		return characterID in this.dict;
 	}
 
-	draw(ctx,characterID,ratio){
+	draw(ctx,characterID,ratio,matrix){
 		let el = this.dict[characterID];
 		if(!el){
-			console.log("error");
+			console.log("Character #"+characterID+' not found!');
 			console.log(el);
 			return false;
 		}
@@ -76,7 +76,14 @@ class Dictionary{
 				return el.draw();
 			break;
 			default:
-				alert("TODO: Draw character "+el.type);
+
+				if('draw' in el){
+					return el.draw(matrix);
+				}
+
+				let m = "TODO: Draw character "+el.type + ' (' + el.constructor.name+') ';
+				//alert(m);
+				console.log(m);
 				console.log(el);
 				return false;
 		}

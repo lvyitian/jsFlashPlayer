@@ -21,9 +21,9 @@ class DefineSprite extends genericTag{
 		}
 
 		//console.log(o);
-		let spr = new Sprite(this.header.code,o);
+		let spr = new Sprite(this.header.code,o, this.core);
 
-		this.dictionary.add(o.spriteID,spr);
+		this.core.dictionary.add(o.spriteID,spr);
 
 		return true;
 	}

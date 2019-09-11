@@ -24,13 +24,19 @@ var mypako=pako;
 setTimeout(init,1000, mypako);
 console.log("ok");
 
+//webNavigation.onDOMContentLoaded.addListener(init);
+//body.addEventListener('load', init);
+//document.body.onload=init;
+
 
 
 function init(pako_){
+    console.log('init');
     let l_pako = pako_;
     let flash = null;
     //searching flash objects in the DOM
     let objects = document.getElementsByTagName('OBJECT');
+
     for(let i=0;i<objects.length;i++){
         let el = objects.item(i);
         let type = el.getAttribute('type');
@@ -67,13 +73,19 @@ function init(pako_){
         flash = new FlashCore(url,canvas);
     }
 
-    if(!flash)
+    if(!flash){
+        console.log('init fail');
+        setTimeout(init,1000, mypako);
         return;
+    }
     
     flash.setPako(l_pako);
 }
 
 function get_swf_real_path(url){
+    if(!url){
+        setTimeout(init, 1000, mypako);
+    }
     if(url.startsWith('//')){
         url = window.location.protocol+url;
     }else
@@ -135,10 +147,12 @@ function create_canvas(element, width, height){
 }
 
 (function(){
-    var oldLog = console.log;
-    console.log = function (message) {
+    /*var oldLog = console.log.bind(console);
+    console.log = function tlog(message) {
     	var args = Array.prototype.slice.call(arguments);
     	debug.log(args.join(' '));
         oldLog.apply(console, arguments);
-    };
+        //oldLog(console.stack());
+        //return Function.prototype.bind.call(oldLog, console)
+    };*/
 })();

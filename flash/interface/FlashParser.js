@@ -165,8 +165,8 @@ class FlashParser{
         let matrix = {
             has_scale: false,
             has_rotate: false,
-            scaleX: 1,
-            scaleY: 1,
+            scaleX: 20,
+            scaleY: 20,
             translateX: 0,
             translateY: 0,
             rotateSkew0:0,
@@ -213,6 +213,24 @@ class FlashParser{
         //this.debug('shift:'+temp.shift);
         if(temp.shift!=0)
             this.cur++;
+
+        matrix.matrix = new DOMMatrix([
+            matrix.scaleX/20,      matrix.rotateSkew0,
+            matrix.rotateSkew1,    matrix.scaleY/20,
+            matrix.translateX/20,  matrix.translateY/20
+        ]);
+
+        let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+
+        matrix.svgMatrix = svg.createSVGMatrix();
+        matrix.svgMatrix.a = matrix.scaleX/20;
+        matrix.svgMatrix.b = matrix.rotateSkew0;
+        matrix.svgMatrix.c = matrix.rotateSkew1;
+        matrix.svgMatrix.d = matrix.scaleY/20;
+        matrix.svgMatrix.e = matrix.translateX/20;
+        matrix.svgMatrix.f = matrix.translateY/20;
+        
 
         return matrix;
     }

@@ -1,11 +1,13 @@
 "use strict";
 
 class DisplayList{
-	constructor(canvas,dictionary){
+	constructor(canvas,dictionary,sprite_mode=false){
 		this.list = [];
 
 		this.canvas = canvas;
 		this.dictionary = dictionary;
+		this.sprite_mode = sprite_mode;
+		//this.parent_matrix = parent_matrix;
 
 		this.background_color = 'white';
 
@@ -26,13 +28,18 @@ class DisplayList{
 		return this.list[depth];
 	}
 
-	draw(){
+	draw(parent_matrix=null){
+		//console.log(parent_matrix);
 		//this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
-		this.ctx.fillStyle = this.background_color;
-		this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+		if(!this.sprite_mode){
+			this.ctx.fillStyle = this.background_color;
+			this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+		}
+		//console.log(this.list);
 		for(let i=0;i<this.list.length;i++){
 			let el = this.list[i];
 			if(!el) continue;
+			//console.log(el);
 			switch (el.type) {
 				case this.TYPE_PlaceObject2:
 					if(el.hasClipActions){
@@ -47,30 +54,30 @@ class DisplayList{
 						alert("TODO: DisplayList PlaceObject2 hasColorTransform");
 						return false;
 					}
-					let scaleX = 1;
-					let scaleY = 1;
-					let rotate0 = 0;
-					let rotate1 = 0;
-					if(el.hasMatrix){
-						if(el.matrix.has_scale){
-							scaleX=el.matrix.scaleX;
-							scaleY=el.matrix.scaleY;
-						}
-						if(el.matrix.has_rotate){
-							rotate0 = el.matrix.rotateSkew0;
-							rotate1 = el.matrix.rotateSkew1;
-						}
-					}
-					//console.log('element:',el);
+					
+					//console.log('element:',el);*/
+					let matrix = new DOMMatrix();
 					if(el.hasMatrix){
 						if(!el.matrix){
 							console.log('no matrix!');
 							console.log(el);
 							return false;
 						}
-						this.ctx.setTransform(scaleX,rotate1,rotate0,scaleY,el.matrix.translateX,el.matrix.translateY);
+						let m = el.matrix.matrix;
+						if(parent_matrix){
+							m = m.multiplySelf(parent_matrix);
+						}
+						matrix = m;
 					}
-					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio))
+					
+					this.ctx.setTransform(
+						matrix.a, matrix.b, 
+						matrix.c, matrix.d,
+						matrix.e, matrix.f
+					);
+					
+					//this.ctx.setTransform(1,0,0,1,300,0);
+					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio, matrix))
 						return false;
 					break;
 				default:

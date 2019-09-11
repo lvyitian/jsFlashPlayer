@@ -192,69 +192,6 @@ class FlashCore{
 		this.dictionary.add(object.characterID,object);
     }
 
-    process_PlaceObject2(){
-        this.debug('tag PlaceObject2');
-        let flags = this.data.read_UI8();
-
-        let obj = {
-            type : this.display_list.TYPE_PlaceObject2,
-            typeName : 'PlaceObject2',
-            hasClipActions  : (flags & 0b10000000)>0,
-            hasClipDepth    : (flags & 0b01000000)>0,
-            hasName         : (flags & 0b00100000)>0,
-            hasRatio        : (flags & 0b00010000)>0,
-            hasColorTransform:(flags & 0b00001000)>0,
-            hasMatrix       : (flags & 0b00000100)>0,
-            hasCharacter    : (flags & 0b00000010)>0,
-            move            : (flags & 0b00000001)>0,
-            depth : 0
-    	};
-        obj.depth = this.data.read_UI16();
-
-        if(!obj.hasCharacter){
-            let tobj = this.display_list.get_by_depth(obj.depth);
-            if(tobj.type=obj.type){
-                tobj.hasClipActions = obj.hasClipActions;
-                tobj.hasClipDepth   = obj.hasClipDepth;
-                tobj.hasName   = obj.hasName;
-                tobj.hasRatio   = obj.hasRatio;
-                tobj.hasColorTransform   = obj.hasColorTransform;
-                tobj.hasMatrix   = obj.hasMatrix;
-                tobj.hasCharacter   = obj.hasCharacter;
-                tobj.move   = obj.move;
-                obj = tobj;
-            }
-        }
-
-        if(obj.hasCharacter){
-            obj.characterID = this.data.read_UI16();
-        }
-        if(obj.hasMatrix){
-            obj.matrix = this.data.read_MATRIX();
-            if(obj.matrix===false) return false;
-        }
-        if(obj.hasColorTransform){
-            alett('TODO: Reading ColorTransform from PlaceObject2!');
-            return false;
-        }
-        if(obj.hasRatio){
-            obj.ratio = this.data.read_UI16();
-        }
-        if(obj.hasName){
-            obj.name = this.data.read_STRING();
-        }
-        if(obj.hasClipDepth){
-            obj.clipDepth = this.data.read_UI16();
-        }
-        if(obj.hasClipActions){
-            alert('TODO: Reading ClipActions from PlaceObject2!');
-            return false;   
-        }
-
-        this.display_list.add(obj.depth,obj);
-        
-        return true;
-    }
 
     process_VideoFrame(end_address){
         this.debug('tag VideoFrame');
@@ -485,10 +422,12 @@ class FlashCore{
                 return (new DefineBitsLossless(this,tag_obj)).no_error;
             break;
             case 24: //protect
+                console.log('tag Protect');
                 this.data.cur+=tag.length;
             break;
         	case 26:
-        		if(!this.process_PlaceObject2()) return false;
+                this.data.cur+=tag.length;
+                return (new PlaceObject2(this,tag_obj)).no_error;
         	break;
             case 36:
                 this.data.cur+=tag.length;
@@ -650,7 +589,7 @@ class FlashCore{
     download_progress(e){
         let loaded = e.loaded;
         let total = e.total;
-        let precent = 100*loaded/total;
+        let precent = Math.floor(100*loaded/total);
         debug.update('Loading '+precent+'% ('+loaded+'/'+total+')');
     }
 
@@ -668,7 +607,14 @@ class FlashCore{
         script.remove();
         let src = window.wrappedJSObject.__flashplayer_temp_data.image;
         let img = new Image();
+
+        img.onload = function(){
+            document.body.removeChild(img);
+        }
+
         img.src = src;
+
+        document.body.appendChild(img);
         return img;
     }
 }

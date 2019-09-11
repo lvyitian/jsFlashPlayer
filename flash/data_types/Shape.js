@@ -19,6 +19,7 @@ class Shape{
 		this.FILLTYPE_NON_SMOOTHED_CLIPPED_BITMAP_FILL = 0x43;
 	}
 
+
 	fill_path(fill_style, path){
 		if(!fill_style)
 			return true;
@@ -29,7 +30,7 @@ class Shape{
 		switch (fill_style.type) {
 			case this.FILLTYPE_CLIPPED_BITMAP_FILL:{
 				let matrix = fill_style.bitmapMatrix;
-				if	(
+				/*if	(
 						matrix.has_rotate || 
 						matrix.translateX ||
 						matrix.translateY ||
@@ -37,14 +38,32 @@ class Shape{
 						matrix.scaleX != 20 ||
 						matrix.scaleY != 20
 					){
-					alert("TODO: wrong matrix for fill");
+					//alert("TODO: wrong matrix for fill");
 					console.log("wrong matrix for fill");
+					console.log(matrix);
 					return false;
-				}
+				}*/
 				let char_id = fill_style.bitmapId;
 				let img = this.core.dictionary.get(char_id).image;
 				let pattern = this.ctx.createPattern(img, 'no-repeat');
-				this.ctx.fillStyle = pattern;
+				if(pattern==null){
+					//do{
+						console.log('pattern',pattern);
+						console.log(img.complete);
+						if(!img.complete){
+							/*img.onload = function(){
+								console.log('img loaded!');
+								pattern = this.ctx.createPattern(img, 'no-repeat');
+								pattern.setTransform(matrix.svgMatrix);
+								this.ctx.fillStyle = pattern;
+							}*/
+						}
+						
+					//}while(pattern===null);
+				}else{
+					pattern.setTransform(matrix.svgMatrix);
+					this.ctx.fillStyle = pattern;
+				}
 
 			}break;
 			default:

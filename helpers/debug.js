@@ -16,6 +16,7 @@ var debug={
 		this.ctx=ctx;
 		this.is_drawing=true;
 		this.interval = requestAnimationFrame(this.draw.bind(this));
+		this.ctx.setTransform(1,0,0,1,0,0);
 		/*ctx.fillStyle="#ffffff";
 		ctx.fillRect(0,0,100,100);
 		alert("start end");*/

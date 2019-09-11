@@ -20,9 +20,10 @@ class DefineText extends genericTag{
 			o.textRecords.push(rec);
 		}
 		
-		let t = new Text(this.header.code,o);
+		
+		let t = new Text(this.header.code, o, this.core);
 
-		this.dictionary.add(o.characterID,t);
+		this.core.dictionary.add(o.characterID,t);
 		return true;
 	}
 
