@@ -13,12 +13,14 @@ class PlaceObject2 extends genericTag{
             hasMatrix       : (flags & 0b00000100)>0,
             hasCharacter    : (flags & 0b00000010)>0,
             move            : (flags & 0b00000001)>0,
-            depth : 0
+            depth : 0,
+            ratio : 0,
+            matrix : null
     	};
         obj.depth = this.read_UI16();
 
         if(!obj.hasCharacter){
-            let tobj = this.display_list.get_by_depth(obj.depth);
+            let tobj = this.core.display_list.get_by_depth(obj.depth);
             if(tobj.type=obj.type){
                 tobj.hasClipActions = obj.hasClipActions;
                 tobj.hasClipDepth   = obj.hasClipDepth;
@@ -29,6 +31,8 @@ class PlaceObject2 extends genericTag{
                 tobj.hasCharacter   = obj.hasCharacter;
                 tobj.move   = obj.move;
                 obj = tobj;
+                /*console.log(obj);
+                return false*/
             }
         }
 

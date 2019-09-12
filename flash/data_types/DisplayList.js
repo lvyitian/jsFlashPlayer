@@ -29,7 +29,7 @@ class DisplayList{
 	}
 
 	draw(parent_matrix=null){
-		console.log(parent_matrix);
+		//console.log(parent_matrix);
 		//this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
 		if(!this.sprite_mode){
 			this.ctx.fillStyle = this.background_color;
@@ -57,12 +57,7 @@ class DisplayList{
 					
 					//console.log('element:',el);*/
 					let matrix = new DOMMatrix();
-					if(el.hasMatrix){
-						if(!el.matrix){
-							console.log('no matrix!');
-							console.log(el);
-							return false;
-						}
+					if(el.matrix){
 						let m = el.matrix.matrix;
 						if(parent_matrix){
 							m = m.multiplySelf(parent_matrix);
@@ -80,6 +75,10 @@ class DisplayList{
 						matrix.e, matrix.f
 					);
 					
+					/*if(el.ratio==1){
+						console.log(parent_matrix);
+						return false
+					}*/
 					//this.ctx.setTransform(1,0,0,1,300,0);
 					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio, matrix)){
 						console.log('dictionary draw fails!');

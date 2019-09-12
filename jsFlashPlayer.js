@@ -121,11 +121,16 @@ function create_canvas(element, width, height){
     script.innerHTML='\
         function __flashplayer_draw_bitmap_on_canvas(){ \
             let obj = __flashplayer_draw_data;\
-            let canvas = document.getElementById(obj.canvas_id);\
+            let canvas = document.createElement("canvas");\
+            canvas.width = obj.width;\
+            canvas.height = obj.height;\
             let ctx = canvas.getContext(\'2d\');\
             let imd = ctx.createImageData(obj.width,obj.height);\
             imd.data.set(obj.bitmap);\
             ctx.putImageData(imd,0,0);\
+            let c2 = document.getElementById(obj.canvas_id);\
+            let c = c2.getContext(\'2d\');\
+            c.drawImage(canvas,0,0);\
         }\
         function __flashplayer_generate_image_from_array(){ \
             let obj = __flashplayer_temp_data;\

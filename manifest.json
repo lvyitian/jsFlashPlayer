@@ -25,6 +25,7 @@
       "all_frames": true,
       "js": [
         "helpers/pako/pako_inflate.min.js",
+        "helpers/lzma/lzma-d-min.js",
         "helpers/query.js",
         "helpers/debug.js",
         "helpers/ffmpeg_wrapper/ffmpeg_wrapper.js",

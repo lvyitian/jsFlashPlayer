@@ -46,7 +46,7 @@ class Shape{
 				this.ctx.fillStyle = "rgb("+color.r+","+color.g+","+color.b+")";
 				//console.log();
 			}break;
-
+			
 			case this.FILLTYPE_CLIPPED_BITMAP_FILL:{
 				let matrix = fill_style.bitmapMatrix;
 				/*if	(

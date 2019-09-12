@@ -215,8 +215,8 @@ class FlashParser{
             this.cur++;
 
         matrix.matrix = new DOMMatrix([
-            matrix.scaleX/20,      matrix.rotateSkew0,
-            matrix.rotateSkew1,    matrix.scaleY/20,
+            (Math.abs(matrix.scaleX>1)) ? matrix.scaleX/20 : matrix.scaleX,      matrix.rotateSkew0,
+            matrix.rotateSkew1,    (Math.abs(matrix.scaleY>1)) ? matrix.scaleY/20 : matrix.scaleY,
             matrix.translateX/20,  matrix.translateY/20
         ]);
 
@@ -224,12 +224,12 @@ class FlashParser{
 
 
         matrix.svgMatrix = svg.createSVGMatrix();
-        matrix.svgMatrix.a = matrix.scaleX/20;
-        matrix.svgMatrix.b = matrix.rotateSkew0;
-        matrix.svgMatrix.c = matrix.rotateSkew1;
-        matrix.svgMatrix.d = matrix.scaleY/20;
-        matrix.svgMatrix.e = matrix.translateX/20;
-        matrix.svgMatrix.f = matrix.translateY/20;
+        matrix.svgMatrix.a = matrix.matrix.a;
+        matrix.svgMatrix.b = matrix.matrix.b;
+        matrix.svgMatrix.c = matrix.matrix.c;
+        matrix.svgMatrix.d = matrix.matrix.d;
+        matrix.svgMatrix.e = matrix.matrix.e;
+        matrix.svgMatrix.f = matrix.matrix.f;
         
 
         return matrix;

@@ -41,7 +41,11 @@ class Dictionary{
 					alert("TODO: Draw VideoStream codecID:"+el.codecID);
 					return false;
 				}
-				
+
+				if(ratio==undefined){
+					console.log((new Error()).stack);
+					return false;
+				}
 				let imdat = Libav.decode_frame(el.frames[ratio],el.width,el.height);
 				if(imdat===false)
 					return false;
@@ -70,7 +74,7 @@ class Dictionary{
 				console.log(imd);
 				ctx.putImageData(el.img_data,0,0);*/
 
-				break;
+			break;
 
 			/*case this.TypeShape:
 				return el.draw();

@@ -7,6 +7,7 @@ class FlashCore{
         this.debug(url);
         this.raw_data = null;
         this.zipped = false;
+        this.lzma_zipped = false;
         this.data = null;
         this.flash_version = 0;
         this.file_length = 0;
@@ -59,12 +60,16 @@ class FlashCore{
         let decoder = new TextDecoder('utf-8');
         let signature = decoder.decode(this.raw_data.slice(0,3));
 
+        this.lzma_zipped = false;
         if(signature=='FWS')
             this.zipped = false;
         else if(signature=='CWS')
             this.zipped = true;
-        else
+        else if(signature=='ZWS'){
+            this.lzma_zipped = true;   
+        }else
             {console.log("Error: unknown signature:"+signature); return false;}
+        
         
         this.debug('zipped:',this.zipped);
         let data= this.data;
@@ -91,6 +96,15 @@ class FlashCore{
             data = this.data;
             data.cur=0;
             this.debug('raw data length:', this.raw_data.length);
+        }
+
+        if(this.lzma_zipped){
+            this.debug('lzma zipped!');
+            let d = this.raw_data.slice(8);
+            this.save_blob(d);
+            console.log(LZMA.decompress(d));
+
+            return false;
         }
 
         this.frame_size = data.read_RECT();
@@ -561,6 +575,9 @@ class FlashCore{
     debug(...args){
     	if(this.debug_mode){
     		console.log('flash:',...args);
+
+            var argss = Array.prototype.slice.call(arguments);
+            debug.log(argss.join(' '));
     	}
     }
 

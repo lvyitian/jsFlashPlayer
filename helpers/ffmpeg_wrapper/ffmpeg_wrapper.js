@@ -1,5 +1,11 @@
 var Libav = {
     _arrayToHeap : function (typedArray){
+
+        if(!typedArray){
+            //alert('no array!');
+            console.log((new Error).stack);
+        }
+
         var numBytes = typedArray.length * typedArray.BYTES_PER_ELEMENT;
         var ptr = Module._malloc(numBytes);
         /*var heapBytes = new Uint8Array(Module.HEAPU8.buffer, ptr, numBytes);
