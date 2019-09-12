@@ -11,4 +11,9 @@ class Font {
 	set_font_info(font_info){
 		this.font_info = font_info;
 	}
+
+	get_shape(index){
+		//console.log(this.data);
+		return this.data.glyphShapeTable[index];
+	}
 }

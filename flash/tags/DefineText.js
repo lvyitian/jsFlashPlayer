@@ -29,7 +29,10 @@ class DefineText extends genericTag{
 
 	read_TEXTRECORD(define_text2=false){
 
-		let o = {};
+		let o = {
+			xOffset : 0,
+			yOffset : 0
+		};
 		let t = this.read_UI8();
 		if(t==0)
 			return false;

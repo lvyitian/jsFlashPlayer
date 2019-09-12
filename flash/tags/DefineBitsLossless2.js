@@ -3,6 +3,8 @@ class DefineBitsLossless2 extends genericTag{
 		let o={};
 
 		o.characterID = this.read_UI16();
+		if(this.core.dictionary.has(o.characterID))
+			return true;
 		o.bitmapFormat = this.read_UI8(); // 3 = 8-bit colormapped image / 5 = 32-bit ARGB
 
 		o.bitmapWidth = this.read_UI16();
@@ -58,6 +60,15 @@ class DefineBitsLossless2 extends genericTag{
 		}
 
 		this.core.dictionary.add(o.characterID, o);
+		if(!o.image.complete){
+			console.log('image not loaded!');
+			let core = this.core;
+			o.image.onload = function(){
+				console.log('image loaded!');
+				core.continue_processing();
+			}
+			return false;
+		}
 		return true;
 	}
 }

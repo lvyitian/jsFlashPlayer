@@ -27,6 +27,7 @@ class FlashCore{
         this.avm2 = new AVM2();
 
         this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
         this.audio_ctx = new window.AudioContext();
         this.sceneLabelsInfo = null;
 
@@ -34,6 +35,7 @@ class FlashCore{
         this.redraw_interval_id=0;
 
         this.reset_address=-1;
+        this.last_tag_addr=-1;
         this.playing = true;
         this.pako=null;
         
@@ -357,6 +359,8 @@ class FlashCore{
     }
 
     process_tag(){
+
+        this.last_tag_addr = this.data.cur;
         let tag = this.read_tag_info();
         let tag_data = new Uint8Array(this.raw_data.buffer,this.data.cur,tag.length);
         let tag_obj = {
@@ -370,7 +374,7 @@ class FlashCore{
             case 0: //END OF FILE
                 this.debug('EndOfFile');
 
-                return false;
+                //return false;
                 return this.reset();
             break;
             case 1:
@@ -586,6 +590,17 @@ class FlashCore{
         this.blob = new Uint8Array(0);
     }
 
+    repeat_current_tag(){
+        this.data.cur = this.last_tag_addr;
+        requestAnimationFrame(this.draw.bind(this));
+        this.debug('--------repeat-current-tag---------')
+    }
+
+    continue_processing(){
+        requestAnimationFrame(this.draw.bind(this));
+        this.debug('--------continue after sleep ---------')
+    }
+
     download_progress(e){
         let loaded = e.loaded;
         let total = e.total;
@@ -608,13 +623,13 @@ class FlashCore{
         let src = window.wrappedJSObject.__flashplayer_temp_data.image;
         let img = new Image();
 
-        img.onload = function(){
+        /*img.onload = function(){
             document.body.removeChild(img);
-        }
+        }*/
 
         img.src = src;
 
-        document.body.appendChild(img);
+        //document.body.appendChild(img);
         return img;
     }
 }

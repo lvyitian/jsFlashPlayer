@@ -100,7 +100,7 @@ class DefineShape extends genericTag{
 		return obj;
 	}
 
-	read_ShapeRecords(shape3mode, no_new_style=false){
+	read_ShapeRecords(shape3mode){
 
 
 		var debug_draw=false;
@@ -130,7 +130,7 @@ class DefineShape extends genericTag{
 		let shapes = [];
 
 		let cou2=0;
-		while(this.cur<this.raw_data.length){
+		//while(this.cur<this.raw_data.length){
 			cou2++;
 			//if(cou2>100) {console.log('limit');break;}
 
@@ -157,19 +157,19 @@ class DefineShape extends genericTag{
 					let cur_before = this.cur;
 					let t2 = this.read_UB(t.shift,5);
 					if(t2.value==0){
+						//console.log('end!!');
 						end=true;
+
 						break;
 					}
 					this.cur=cur_before;
 					
 					//StyleChangeRecord
 					//console.log("stateNewStyles: shift: "+t.shift+", size: "+(1)+", byte: "+this.raw_data[this.cur]);
-					if(no_new_style){
-						obj.stateNewStyles = 0;
-					}else{
-						t = this.read_UB(t.shift,1);
-						obj.stateNewStyles = t.value;
-					}
+
+					t = this.read_UB(t.shift,1);
+					obj.stateNewStyles = t.value;
+					
 					t = this.read_UB(t.shift,1);
 					obj.stateLineStyle = t.value;
 					t = this.read_UB(t.shift,1);
@@ -187,8 +187,8 @@ class DefineShape extends genericTag{
 						obj.moveDeltaY = t.value;
 
 						if(debug_draw){
-							cur_x+=(obj.moveDeltaX/debug_draw_scale);
-							cur_y+=(obj.moveDeltaY/debug_draw_scale);
+							cur_x=(obj.moveDeltaX/debug_draw_scale);
+							cur_y=(obj.moveDeltaY/debug_draw_scale);
 							ctx.moveTo(cur_x,cur_y);
 						}
 					}
@@ -213,6 +213,7 @@ class DefineShape extends genericTag{
 						console.log("error");
 						debug.obj(obj);
 						console.log(this.raw_data.slice(start_cur,this.cur));
+						console.log(shapes);
 						return false;
 						break;
 						obj.fillStyles = this.read_FILLSTYLEARRAY(shape3mode);
@@ -310,16 +311,16 @@ class DefineShape extends genericTag{
 
 			if(t.shift>0) this.cur++;
 			//console.log(this.cur,this.raw_data.length);
-			if(this.cur>=this.raw_data.length) break;
-		}
+			//if(this.cur>=this.raw_data.length) break;
+	//	}
 		
 
-		if(this.raw_data.length>this.cur){
+	/*	if(this.raw_data.length>this.cur){
 			console.log(this.cur,this.raw_data.length);
 			alert("Size mismatch!");
 			console.log("Size mismatch!");
 			return false;
-		}
+		}*/
 
 		return shapes;
 	}

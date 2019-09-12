@@ -72,9 +72,9 @@ class Dictionary{
 
 				break;
 
-			case this.TypeShape:
+			/*case this.TypeShape:
 				return el.draw();
-			break;
+			break;*/
 			default:
 
 				if('draw' in el){

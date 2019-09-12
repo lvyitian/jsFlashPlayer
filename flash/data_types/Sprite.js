@@ -27,6 +27,10 @@ class Sprite{
 			//console.log(tag);
 			let r = true;
 			switch (tag.code) {
+				case 0:
+					this.cur_tag=0;
+					this.cur_frame=0;
+				break;
 				case 1:
 					r = this.tag_ShowFrame();
 				break;
@@ -40,19 +44,26 @@ class Sprite{
 					console.log('sprite: unimplemented tag #'+tag.code);
 					return false;
 				break;
-				if(!r) return false;
 			}
+			if(!r) return false;
 			this.cur_tag++;
 		}while(tag.code!=1);
 
+		/*if(this.cur_frame == 2){
+			console.log(this.data.spriteID);
+			if(this.data.spriteID==164)
+				return false;
+		}*/
 		//console.log(this.data);
 		return true;
 	}
 
 	tag_ShowFrame(){
 		this.debug('tag ShowFrame');
+		console.log(this.matrix);
 		let ret = this.display_list.draw(this.matrix);
 
+		this.cur_frame++;
 		return ret;
 	}
 

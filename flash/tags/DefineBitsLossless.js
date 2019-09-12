@@ -6,6 +6,7 @@ class DefineBitsLossless extends genericTag{
 		obj.type = this.header.code;
 
 		obj.characterID = this.read_UI16();
+
 		if(this.core.dictionary.has(obj.characterID))
 			return true;
 
@@ -54,6 +55,16 @@ class DefineBitsLossless extends genericTag{
 		//console.log(obj);
 
 		this.core.dictionary.add(obj.characterID, obj);
+
+		if(!obj.image.complete){
+			console.log('image not loaded!');
+			let core = this.core;
+			obj.image.onload = function(){
+				console.log('image loaded!');
+				core.continue_processing();
+			}
+			return false;
+		}
 		return true;
 	}
 }

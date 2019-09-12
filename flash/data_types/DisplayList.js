@@ -29,7 +29,7 @@ class DisplayList{
 	}
 
 	draw(parent_matrix=null){
-		//console.log(parent_matrix);
+		console.log(parent_matrix);
 		//this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
 		if(!this.sprite_mode){
 			this.ctx.fillStyle = this.background_color;
@@ -68,6 +68,10 @@ class DisplayList{
 							m = m.multiplySelf(parent_matrix);
 						}
 						matrix = m;
+					}else{
+						if(parent_matrix){
+							matrix = matrix.multiplySelf(parent_matrix);
+						}
 					}
 					
 					this.ctx.setTransform(
@@ -77,8 +81,10 @@ class DisplayList{
 					);
 					
 					//this.ctx.setTransform(1,0,0,1,300,0);
-					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio, matrix))
+					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio, matrix)){
+						console.log('dictionary draw fails!');
 						return false;
+					}
 					break;
 				default:
 					alert("TODO: Draw DisplayList type:"+el.type);
