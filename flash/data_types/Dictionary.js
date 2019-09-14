@@ -46,9 +46,22 @@ class Dictionary{
 					console.log((new Error()).stack);
 					return false;
 				}
-				let imdat = Libav.decode_frame(el.frames[ratio],el.width,el.height);
-				if(imdat===false)
+				let imdat = false;
+				if(el.frames[ratio]==undefined){
+					if(el.last_frame)
+						imdat = el.last_frame;
+				}else{
+					imdat = Libav.decode_frame(el.frames[ratio],el.width,el.height);
+				}
+				if(imdat===false){
+					console.log('len:',el.frames.length);
+					console.log('ratio:',ratio);
+					console.log('frame:',el.frames);
 					return false;
+				}
+
+				el.last_frame = imdat;
+
 				var d1 = new Date();
 
 				//workaround a bug

@@ -5,6 +5,9 @@ class DefineSprite extends genericTag{
 		let o = {};
 
 		o.spriteID = this.read_UI16();
+		if(this.core.dictionary.has(o.spriteID))
+			return true;
+		
 		o.frameCount = this.read_UI16();
 
 		o.tags = [];

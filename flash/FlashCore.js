@@ -100,11 +100,29 @@ class FlashCore{
 
         if(this.lzma_zipped){
             this.debug('lzma zipped!');
-            let d = this.raw_data.slice(8);
-            this.save_blob(d);
-            console.log(LZMA.decompress(d));
+            let o = {};
+            o.zipped_size = data.read_UI32();
+            o.props = data.read_sub_array(5);
+            o.zipped_data = data.read_sub_array(o.zipped_size);
 
-            return false;
+
+            let lzma = new Uint8Array(o.zipped_size+5+8);
+            lzma.set(o.props);
+            lzma.set(this.raw_data.slice(4,4),o.props.length)
+            lzma.set(o.zipped_data,o.props.length+8);
+            this.debug('decompressing...');
+
+            try {
+                this.raw_data = LZMA.decompress(lzma);
+            } catch(e) {
+                console.log(e);
+                return false
+            }
+            
+            this.data = new FlashParser(this.raw_data);
+            data = this.data;
+            data.cur=0;
+            this.debug('raw data length:', this.raw_data.length);
         }
 
         this.frame_size = data.read_RECT();
@@ -206,35 +224,6 @@ class FlashCore{
 		object.codecID = this.data.read_UI8();
 
 		this.dictionary.add(object.characterID,object);
-    }
-
-
-    process_VideoFrame(end_address){
-        this.debug('tag VideoFrame');
-        let frame = {
-            streamId : -1,
-            frameNum : -1,
-            videoData : null
-        }
-
-        frame.streamId = this.data.read_UI16();
-        frame.frameNum = this.data.read_UI16();
-
-        let stream = this.dictionary.get(frame.streamId);
-        if(stream.type!=this.dictionary.TypeVideoStream){
-            alert('Error: VideoFrame pointing to not VideoStream block!');
-            return false;
-        }
-
-        //copying video packet to video stream
-        frame.videoData = this.raw_data.slice(this.data.cur,end_address);
-
-        if(stream.frames==undefined)
-            stream.frames = [];
-        stream.frames[frame.frameNum] = frame.videoData;
-
-        //this.save_blob(frame.videoData);
-        return true;
     }
 
     process_ShowFrame(){
@@ -470,16 +459,16 @@ class FlashCore{
             	this.process_DefineVideoStream();
             break;
             case 61:
-                {
-                    let start = this.data.cur;
-                    let end_address = start+tag.length;
-                    if(!this.process_VideoFrame(end_address)) return false;
-                    this.data.cur=end_address;
-                }
+                this.data.cur+=tag.length;
+                return (new VideoFrame(this,tag_obj)).no_error;
             break;
             case 62:
                 this.data.cur+=tag.length;
                 return (new DefineFontInfo2(this,tag_obj)).no_error;
+            break;
+            case 77:
+                this.data.cur+=tag.length;
+                return (new Metadata(this,tag_obj)).no_error;
             break;
             case 69:
                 return this.process_FileAttributes();
@@ -501,7 +490,7 @@ class FlashCore{
                     this.data.cur+=tag.length;
                     return true;
                 }
-                console.log("unimplemented tag: #"+tag.code);
+                this.debug("unimplemented tag: #"+tag.code);
                 let skip = confirm('Skip unimplemented tag #'+tag.code+' ?');
                 this.data.cur+=tag.length;
                 if(skip){

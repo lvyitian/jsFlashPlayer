@@ -40,6 +40,9 @@ class Sprite{
 				case 45:
 					r = (new SoundStreamHead2(this,tag_obj)).no_error;
 				break;
+				case 61:
+					r = (new VideoFrame(this,tag_obj)).no_error;
+				break;
 				default:
 					console.log('sprite: unimplemented tag #'+tag.code);
 					return false;
@@ -60,8 +63,11 @@ class Sprite{
 
 	tag_ShowFrame(){
 		this.debug('tag ShowFrame');
-		console.log(this.matrix);
+		//console.log(this.matrix);
 		let ret = this.display_list.draw(this.matrix);
+		if(!ret)
+			console.log(this.data.tags);
+		console.log("frame:",this.cur_frame);
 
 		this.cur_frame++;
 		return ret;
@@ -69,7 +75,7 @@ class Sprite{
 
 	debug(...args){
     	if(this.core.debug_mode){
-    		console.log('sprite #'+this.data.spriteID+':',...args);
+    		this.core.debug('sprite #'+this.data.spriteID+':',...args);
     	}
     }
 }

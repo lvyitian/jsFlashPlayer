@@ -59,6 +59,8 @@
         "flash/tags/DefineSprite.js",
         "flash/tags/DefineText.js",
         "flash/tags/PlaceObject2.js",
+        "flash/tags/Metadata.js",
+        "flash/tags/VideoFrame.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]
