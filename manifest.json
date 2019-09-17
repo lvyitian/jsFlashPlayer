@@ -47,6 +47,7 @@
         "flash/tags/DefineSound.js",
         "flash/tags/StartSound.js",
         "flash/tags/DefineShape.js",
+        "flash/tags/DefineShape3.js",
         "flash/tags/DefineBitsLossless.js",
         "flash/tags/DefineBitsLossless2.js",
         "flash/tags/SoundStreamHead.js",
@@ -61,6 +62,7 @@
         "flash/tags/PlaceObject2.js",
         "flash/tags/Metadata.js",
         "flash/tags/VideoFrame.js",
+        "flash/tags/DoAction.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

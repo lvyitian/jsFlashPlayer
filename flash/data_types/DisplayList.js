@@ -13,11 +13,18 @@ class DisplayList{
 
 		this.ctx = canvas.getContext('2d');
 
+		this.actions = [];
+
 		//constants
 		this.TYPE_PlaceObject2 = 26;
 	}
 	add(depth, object){
 		this.list[depth] = object;
+	}
+
+	add_actions(new_actions){
+		this.actions.push(new_actions);
+		//console.log(this.actions);
 	}
 
 	set_background_color(r,g,b){
@@ -82,6 +89,8 @@ class DisplayList{
 					//this.ctx.setTransform(1,0,0,1,300,0);
 					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio, matrix)){
 						console.log('dictionary draw fails!');
+						console.log(this.list);
+						console.log(this.dictionary);
 						return false;
 					}
 					break;
@@ -90,6 +99,13 @@ class DisplayList{
 					return false;
 			}
 		}
+
+		if(this.actions.length){
+			console.log('TODO: execute actions');
+			console.log(this.actions);
+			return false;
+		}
+
 		return true;
 	}
 }

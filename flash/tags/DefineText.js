@@ -19,6 +19,8 @@ class DefineText extends genericTag{
 		while(rec = this.read_TEXTRECORD()){
 			o.textRecords.push(rec);
 		}
+
+		//console.log(o.textRecords);
 		
 		
 		let t = new Text(this.header.code, o, this.core);
@@ -29,13 +31,19 @@ class DefineText extends genericTag{
 
 	read_TEXTRECORD(define_text2=false){
 
-		let o = {
-			xOffset : 0,
-			yOffset : 0
-		};
+		let o = {};
 		let t = this.read_UI8();
+
 		if(t==0)
 			return false;
+
+		if(((t>>4)&0b1111) != 0b1000){
+			console.log('error reading TEXTRECORD');
+			console.log(this.read_sub_array(this.raw_data.length - this.cur));
+			this.error=true;
+			return false;
+		}
+		
 
 		o.styleFlagsHasFont    = (t&0b1000) > 0;
 		o.styleFlagsHasColor   = (t&0b0100) > 0;
@@ -66,6 +74,7 @@ class DefineText extends genericTag{
 		}
 
 		o.glyphCount = this.read_UI8();
+
 		o.glyphEntries = [];
 
 		t = {shift:0};
@@ -80,9 +89,11 @@ class DefineText extends genericTag{
 
 			o.glyphEntries.push(g);
 		}
+		if(t.shift>0)
+			this.cur++;
 
-
-
+		//console.log(o);
+		//console.log('byte:',this.read_UI8());
 		return o;
 	}
 

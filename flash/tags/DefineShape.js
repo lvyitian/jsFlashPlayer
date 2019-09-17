@@ -49,12 +49,29 @@ class DefineShape extends genericTag{
 
 				o.gradientMatrix = this.read_MATRIX();
 
-				alert("TODO: read gradient fill!");
-				return null;
+				
 				if(o.type == this.FILLTYPE_FOCAL_RADIAL_GRADIENT_FILL){
-					//o.gradient = 	
+					let t = this.read_UI8();
+					o.gradient = {};
+					o.gradient.spreadMode = (t>>6) & 0b11;
+					o.gradient.interpolationMode = (t>>4) & 0b11;
+					o.gradient.numGradients = (t & 0b1111);
+					o.gradient.gradientRecord = [];
+					for(let i=0;i<o.gradient.numGradients;i++){
+						t = {};
+						t.ratio = this.read_UI8();
+						if(shape3mode)
+							t.color = this.read_RGBA();
+						else
+							t.color = this.read_RGB();
+						o.gradient.gradientRecord.push(t);
+					}
+					o.gradient.focalPoint = this.read_FIXED8();
+					
 				}else{
 					// o.gradient =
+					alert("TODO: read gradient fill!");
+					return null;
 				}
 				
 
@@ -102,8 +119,13 @@ class DefineShape extends genericTag{
 
 	read_ShapeRecords(shape3mode){
 
-
 		var debug_draw=false;
+		if(debug_draw){
+			this.core.ctx.fillStyle = '#FFFFFF';
+			this.core.ctx.fillRect(-100,-100,this.core.canvas.width,this.core.canvas.height);
+			this.core.ctx.setTransform(1,0,0,1,100,100);
+			debug.stop();
+		}
 		//this.cur--;
 		let t2 = this.read_UI8();
 		let numFillBits = (t2 >> 4) & 0b1111;
@@ -209,17 +231,27 @@ class DefineShape extends genericTag{
 						//ctx.fill();
 						if(debug_draw)
 							ctx.stroke();
+						/*
 						alert("TODO: stateNewStyles read!");
 						console.log("error");
 						debug.obj(obj);
 						console.log(this.raw_data.slice(start_cur,this.cur));
 						console.log(shapes);
 						return false;
-						break;
+						break;*/
+
+						console.log(obj);
+						return false;
+						//console.log(t);
+						if(t.shift>0)
+							this.cur++;
+
 						obj.fillStyles = this.read_FILLSTYLEARRAY(shape3mode);
 						if(obj.fillStyles == null)
-							break;
+							return false;
 						obj.lineStyles = this.read_LINESTYLEARRAY(shape3mode);
+						
+						
 						let t2 = this.read_UI8();
 						obj.newStylesNumFillBits = (t2 >> 4) & 0b1111;
 						obj.newStylesNumLineBits = t2 & 0b1111;
@@ -285,19 +317,6 @@ class DefineShape extends genericTag{
 					
 				}
 				
-
-				//console.log(this.raw_data.slice(start_cur,this.cur));
-				/*if(8-t.shift >0){
-					console.log(this.raw_data[this.cur]);
-					let t2 = this.read_UB(t.shift,8-t.shift);
-					console.log('t2:',t2);
-					console.log(obj);
-					console.log(this.raw_data.slice(start_cur,this.cur));
-					if(t2.value>0){
-						console.log("error2");
-						break;
-					}
-				}*/
 				ar.push(obj);
 			}
 			
@@ -310,17 +329,7 @@ class DefineShape extends genericTag{
 			ar=[];
 
 			if(t.shift>0) this.cur++;
-			//console.log(this.cur,this.raw_data.length);
-			//if(this.cur>=this.raw_data.length) break;
-	//	}
-		
-
-	/*	if(this.raw_data.length>this.cur){
-			console.log(this.cur,this.raw_data.length);
-			alert("Size mismatch!");
-			console.log("Size mismatch!");
-			return false;
-		}*/
+			
 
 		return shapes;
 	}

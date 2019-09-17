@@ -126,9 +126,20 @@ class Shape{
 				this.ctx.lineTo(x/20, y/20);
 				//console.log('lineTo:',this.x/20,this.y/20);
 			}else{
-				alert("TODO: non straight edges");
-				console.log("non straight edges");
-				return false;
+				
+
+				x+=this.cc(e.controlDeltaX);
+				y+=this.cc(e.controlDeltaY);
+
+				let tx = x / 20; 
+				let ty = y / 20;
+				
+				x+=this.cc(e.anchorDeltaX);
+				y+=this.cc(e.anchorDeltaY);
+				
+				this.ctx.quadraticCurveTo(tx,ty,x/20,y/20);
+
+				//return false;
 			}
 		}
 		this.ctx.closePath();

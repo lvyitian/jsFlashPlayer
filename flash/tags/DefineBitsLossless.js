@@ -1,5 +1,7 @@
 class DefineBitsLossless extends genericTag{
 
+	
+
 	read(){
 		let obj = {};
 
@@ -46,6 +48,7 @@ class DefineBitsLossless extends genericTag{
 			}
 			image = this.core.bug_create_image_from_array(image,w,h);
 			obj.image = image;
+
 		}else{
 			console.log("TODO: reading 15-bit RGB and 24-bit rgb!");
 			alert("TODO: reading 15-bit RGB and 24-bit rgb");

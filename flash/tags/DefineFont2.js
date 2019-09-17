@@ -25,6 +25,10 @@ class DefineFont2 extends DefineShape{
 		this.cur+=len;
 		
 		o.numGlyphs = this.read_UI16();
+
+		let offsetTable_addr = this.cur;
+		let shape_addr;
+
 		o.offsetTable =[];
 		
 		for(let i=0;i<o.numGlyphs;i++){
@@ -44,14 +48,43 @@ class DefineFont2 extends DefineShape{
         
         this.set_constants();
         
-	    t=this.read_ShapeRecords(false, true);
+		o.glyphShapeTable = [];
+        /*for(let i=0;i<o.numGlyphs;i++){
+	    	t=this.read_ShapeRecords(false, true);
+	    	o.glyphShapeTable.push(t);
+		}
+	    
 	    if(t===false)
-	        return false;
+	        return false;*/
 	
-		o.glyphShapeTable = t;
+		//o.glyphShapeTable = t;
 		//debug.obj(t);
+
+
+		shape_addr = o.offsetTable[0];
+		for(let i = 0; i<o.numGlyphs; i++){
+        	this.cur = offsetTable_addr+o.offsetTable[i];
+
+        	let t=this.read_ShapeRecords(false);
+		    if(t===false)
+		        return false;	
+		    t = new Shape(this.core,{
+		    	shapes:{
+		    		shapeRecords: t,
+		    		fillStyles: [null,{
+		    			type : 0,
+		    			color : {r:0,g:0,b:0}
+		    		}],
+		    	}
+			});
+		    o.glyphShapeTable.push(t);
+        }
+
+        
 		
 		o.codeTable = [];
+
+
 		
 		for(let i=0;i<o.numGlyphs;i++){
 			if(o.fontFlagsWideCodes){
@@ -94,6 +127,9 @@ class DefineFont2 extends DefineShape{
 
 		//debug.obj(t.data);
 		//console.log(t.data.fontID);
+
+		/*console.log(o);
+        return false;*/
 		return true;
 		
 	}

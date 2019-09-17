@@ -400,6 +400,10 @@ class FlashCore{
                 this.data.cur+=tag.length;
                 return (new DefineText(this,tag_obj)).no_error;
             break;
+            case 12:
+                this.data.cur+=tag.length;
+                return (new DoAction(this,tag_obj)).no_error;
+            break;
             case 13:
             	this.data.cur+=tag.length;
                 return (new DefineFontInfo(this,tag_obj)).no_error;
@@ -436,6 +440,10 @@ class FlashCore{
                 this.data.cur+=tag.length;
                 return (new PlaceObject2(this,tag_obj)).no_error;
         	break;
+            case 32:
+                this.data.cur+=tag.length;
+                return (new DefineShape3(this,tag_obj)).no_error;
+            break;
             case 36:
                 this.data.cur+=tag.length;
                 return (new DefineBitsLossless2(this,tag_obj)).no_error;
@@ -628,15 +636,9 @@ class FlashCore{
         script.remove();
         let src = window.wrappedJSObject.__flashplayer_temp_data.image;
         let img = new Image();
-
-        /*img.onload = function(){
-            document.body.removeChild(img);
-        }*/
-
         img.src = src;
-
-        //document.body.appendChild(img);
         return img;
     }
+
 }
     

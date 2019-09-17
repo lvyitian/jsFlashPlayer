@@ -65,9 +65,10 @@ class Sprite{
 		this.debug('tag ShowFrame');
 		//console.log(this.matrix);
 		let ret = this.display_list.draw(this.matrix);
-		if(!ret)
+		if(!ret){
 			console.log(this.data.tags);
-		console.log("frame:",this.cur_frame);
+			console.log("frame:",this.cur_frame);
+		}
 
 		this.cur_frame++;
 		return ret;
