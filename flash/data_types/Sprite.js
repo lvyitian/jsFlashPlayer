@@ -52,10 +52,17 @@ class Sprite{
 			this.cur_tag++;
 		}while(tag.code!=1);
 
-		/*if(this.cur_frame == 2){
-			console.log(this.data.spriteID);
-			if(this.data.spriteID==164)
+		/*if(this.cur_frame == 1){
+			if(![
+					9,64,73
+				].includes(this.data.spriteID)){
+				console.log(this.data.spriteID);
+				console.log(this.matrix);
+				console.log((new Error()).stack);
+
 				return false;
+			}
+			
 		}*/
 		//console.log(this.data);
 		return true;
@@ -69,6 +76,7 @@ class Sprite{
 			console.log(this.data.tags);
 			console.log("frame:",this.cur_frame);
 		}
+
 
 		this.cur_frame++;
 		return ret;

@@ -7,6 +7,7 @@ class DisplayList{
 		this.canvas = canvas;
 		this.dictionary = dictionary;
 		this.sprite_mode = sprite_mode;
+		this.core = dictionary.core;
 		//this.parent_matrix = parent_matrix;
 
 		this.background_color = 'white';
@@ -20,6 +21,10 @@ class DisplayList{
 	}
 	add(depth, object){
 		this.list[depth] = object;
+	}
+
+	remove_by_depth(depth){
+		delete this.list[depth];
 	}
 
 	add_actions(new_actions){
@@ -39,6 +44,7 @@ class DisplayList{
 		//console.log(parent_matrix);
 		//this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
 		if(!this.sprite_mode){
+			this.ctx.setTransform(1,0,0,1,0,0);
 			this.ctx.fillStyle = this.background_color;
 			this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
 		}
@@ -67,12 +73,12 @@ class DisplayList{
 					if(el.matrix){
 						let m = el.matrix.matrix;
 						if(parent_matrix){
-							m = m.multiplySelf(parent_matrix);
+							matrix.multiplySelf(parent_matrix);
 						}
-						matrix = m;
+						matrix.multiplySelf(m);
 					}else{
 						if(parent_matrix){
-							matrix = matrix.multiplySelf(parent_matrix);
+							matrix.multiplySelf(parent_matrix);
 						}
 					}
 					
@@ -87,6 +93,13 @@ class DisplayList{
 						return false
 					}*/
 					//this.ctx.setTransform(1,0,0,1,300,0);
+					//if(this.sprite_mode){
+					/*	console.log(i);
+						console.log(parent_matrix);
+						console.log(el);
+						console.log(matrix);
+						*/
+					//}
 					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio, matrix)){
 						console.log('dictionary draw fails!');
 						console.log(this.list);
@@ -101,9 +114,15 @@ class DisplayList{
 		}
 
 		if(this.actions.length){
-			console.log('TODO: execute actions');
-			console.log(this.actions);
-			return false;
+			/*console.log('TODO: execute actions');
+			console.log(this.actions);*/
+			if(!this.core.avm.execute(this.actions)){
+				console.log('fail to execute actions')
+				return false;
+			}
+			this.actions.length=0;
+
+			return true;
 		}
 
 		return true;

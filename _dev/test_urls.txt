@@ -1,12 +1,9 @@
 ---------------- almost ---------------
-https://z0r.de/1311
 https://z0r.de/5856
 https://z0r.de/7342
 https://z0r.de/1198
 https://z0r.de/125
 https://z0r.de/35
-https://z0r.de/38
-https://z0r.de/73
 https://z0r.de/90
 https://z0r.de/117
 https://z0r.de/126
@@ -17,14 +14,11 @@ https://z0r.de/194
 https://z0r.de/196
 https://z0r.de/200
 https://z0r.de/202
-https://z0r.de/203
 https://z0r.de/255
 https://z0r.de/259
 https://z0r.de/281
-https://z0r.de/284
 https://z0r.de/285
 https://z0r.de/293
-https://z0r.de/300
 https://z0r.de/463
 https://z0r.de/613
 https://z0r.de/6425
@@ -37,15 +31,60 @@ https://z0r.de/3067
 https://z0r.de/2692
 https://z0r.de/7816
 https://z0r.de/520
-https://z0r.de/806
-https://z0r.de/611
 https://z0r.de/5727
 https://z0r.de/2541
 https://z0r.de/7020
 https://z0r.de/4856
-https://z0r.de/5146
 https://z0r.de/6867
 https://z0r.de/6865
+https://z0r.de/2440
+https://z0r.de/6666
+https://z0r.de/5639
+
+----------------- ok -----------------
+https://z0r.de/5476
+https://z0r.de/1201
+https://z0r.de/4562
+https://z0r.de/5146
+https://z0r.de/611
+https://z0r.de/806
+https://z0r.de/300
+https://z0r.de/284
+https://z0r.de/203
+https://z0r.de/73		(as2, bitlossless, sound)
+https://z0r.de/38		(bitlossless, sound)
+https://z0r.de/1311		(as2, text, bitLossless, sound)
+https://z0r.de/7190		(video, sound) (tails)
+https://z0r.de/6715		(video, sound) (squerrel)
+https://z0r.de/3401		(video)	(portal gun)
+https://z0r.de/7639		(video) (JPEG)
+https://z0r.de/3924		(video)
+https://z0r.de/4781		(video)
+https://z0r.de/134		(video)
+https://z0r.de/163		(images, sound)
+https://z0r.de/294		(video)
+https://z0r.de/401		(text, bitLossless, sound) (lurk more) 
+https://z0r.de/1544		(video)
+https://z0r.de/2355		(video)
+https://z0r.de/7160		(video)
+https://z0r.de/3506		(video)
+https://z0r.de/5413		(video)
+https://z0r.de/7828		(video)
+https://z0r.de/4966		(video)
+https://z0r.de/2276		(video)
+https://z0r.de/5299		(video)
+https://z0r.de/4785		(video)
+https://z0r.de/2427		(video)
+https://z0r.de/2038		(video)
+https://z0r.de/4354		(video)
+https://z0r.de/4918		(video)
+https://z0r.de/3664		(video)
+https://z0r.de/2540		(images+sound)
+https://z0r.de/1698		(images+sound)
+https://z0r.de/3919		(video)
+https://z0r.de/3930		(video)
+https://z0r.de/4584		(video)
+https://z0r.de/4554		(video)
 
 ---------------- fail --------------
 
@@ -106,36 +145,3 @@ https://z0r.de/1418
 https://z0r.de/6197
 https://z0r.de/4819
 https://z0r.de/3967
-
------------------ ok -----------------
-https://z0r.de/7190
-https://z0r.de/6715
-https://z0r.de/3401
-https://z0r.de/7639
-https://z0r.de/3924
-https://z0r.de/4781
-https://z0r.de/134
-https://z0r.de/163
-https://z0r.de/294
-https://z0r.de/401		(text+bitLossless+sound) (lurk more) 
-https://z0r.de/1544		(video)
-https://z0r.de/2355		(video)
-https://z0r.de/7160		(video)
-https://z0r.de/3506		(video)
-https://z0r.de/5413		(video)
-https://z0r.de/7828		(video)
-https://z0r.de/4966		(video)
-https://z0r.de/2276		(video)
-https://z0r.de/5299		(video)
-https://z0r.de/4785		(video)
-https://z0r.de/2427		(video)
-https://z0r.de/2038		(video)
-https://z0r.de/4354		(video)
-https://z0r.de/4918		(video)
-https://z0r.de/3664		(video)
-https://z0r.de/2540		(images+sound)
-https://z0r.de/1698		(images+sound)
-https://z0r.de/3919		(video)
-https://z0r.de/3930		(video)
-https://z0r.de/4584		(video)
-https://z0r.de/4554

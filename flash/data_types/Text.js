@@ -12,6 +12,11 @@ class Text{
 		let matrix = parent_matrix.multiplySelf(this.data.textMatrix.matrix);
 		let ctx = this.core.ctx;
 
+		//console.log(parent_matrix);
+		//console.log(this.data.textMatrix.matrix);
+		//console.log(matrix);
+		//console.log((new Error).stack);
+
 		ctx.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f);
 
 		let font;
@@ -39,7 +44,10 @@ class Text{
 			ctx.lineTo(this.data.textBounds.Xmin/20,this.data.textBounds.Ymax/20);
 			ctx.closePath();
 			ctx.stroke();
-			*/
+
+			console.log(matrix);*/
+			//ctx.setTransform(1,0,0,1,0,0);
+			
 
 			if(rec.styleFlagsHasYOffset)
 				y += rec.yOffset;

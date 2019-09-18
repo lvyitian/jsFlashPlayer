@@ -215,10 +215,16 @@ class FlashParser{
             this.cur++;
 
         matrix.matrix = new DOMMatrix([
-            (Math.abs(matrix.scaleX>1)) ? matrix.scaleX/20 : matrix.scaleX,      matrix.rotateSkew0,
-            matrix.rotateSkew1,    (Math.abs(matrix.scaleY>1)) ? matrix.scaleY/20 : matrix.scaleY,
+            (matrix.scaleX>=20) ? matrix.scaleX/20 : matrix.scaleX,      matrix.rotateSkew0,
+            matrix.rotateSkew1,    (matrix.scaleY>=20) ? matrix.scaleY/20 : matrix.scaleY,
             matrix.translateX/20,  matrix.translateY/20
         ]);
+
+        /*matrix.matrix = new DOMMatrix([
+            matrix.scaleX,      matrix.rotateSkew0,
+            matrix.rotateSkew1,    matrix.scaleY,
+            matrix.translateX/20,  matrix.translateY/20
+        ]);*/
 
         let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 

@@ -16,6 +16,7 @@ class FlashCore{
         this.frames_count = 0;
 
         this.current_frame = 0;
+        this.timeline = new Timeline(this);
 
         this.action_script3 = false;
         this.file_attributes = {};
@@ -26,6 +27,7 @@ class FlashCore{
         this.dictionary = new Dictionary(this);
         this.display_list = new DisplayList(canvas,this.dictionary);
         this.avm2 = new AVM2();
+        this.avm = new AVM(this);
 
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
@@ -138,6 +140,7 @@ class FlashCore{
         this.debug('frames count:',this.frames_count);
 
         this.reset_address = data.cur;
+        this.timeline.add_frame(this.reset_address, 0);
         return true;
     }
 
@@ -240,11 +243,12 @@ class FlashCore{
                 sstream.play();
         }
 
-        /*if(this.current_frame==0){
-            this.reset_address = this.data.cur;
-        }*/
+        if(!this.playing){
+            this.goto_frame(this.current_frame);
+        }
 
         this.current_frame++;
+        this.timeline.add_frame(this.data.cur,this.current_frame);
         return ret;
     }
 
@@ -440,6 +444,10 @@ class FlashCore{
                 this.data.cur+=tag.length;
                 return (new PlaceObject2(this,tag_obj)).no_error;
         	break;
+            case 28:
+                this.data.cur+=tag.length;
+                return (new RemoveObject2(this,tag_obj)).no_error;
+            break;
             case 32:
                 this.data.cur+=tag.length;
                 return (new DefineShape3(this,tag_obj)).no_error;
@@ -549,7 +557,7 @@ class FlashCore{
         for(let i=0;i<this.raw_data.length;i++){
             let ret = this.process_tag();
 
-            if((ret === false) || (!this.playing)){
+            if(ret === false){
                 //console.log('stop');
                 //this.do_stop=true;
                 cancelAnimationFrame(this.redraw_interval_id);
@@ -565,8 +573,59 @@ class FlashCore{
         
     }
 
+    get_current_frame(){
+        return this.current_frame;
+    }
+
     stop(){
         this.playing=false;
+    }
+
+    play(){
+        this.playing=true;
+    }
+
+    goto_frame(frame){
+        this.debug('goto_frame: ',frame)
+        /*console.log(frame);
+        console.log(this.timeline);
+        console.log(this.current_frame);*/
+        let addr = this.timeline.get_address(frame);
+        if(addr<0){
+            //console.log('TODO: frame '+frame+' is not present on the timeline!');
+            addr=this.search_frame_address(frame);
+
+            if(addr<0){
+                this.debug('error! cannot find frame '+frame);
+                return false;
+            }
+        }
+
+        this.current_frame = frame - 1;
+        this.data.cur=addr;
+        return true;
+    }
+
+    search_frame_address(frame){
+        let addr = -1;
+        let tframe = frame;
+        while((addr=this.timeline.get_address(tframe))<0) {
+            tframe--;
+        }       
+
+        this.data.cur = addr;
+        while (tframe<frame) {
+            let tag = this.data.read_tag_data();
+            if(tag.code==0){
+                return -1;
+            }
+            if(tag.code==1){
+                tframe++;
+                this.timeline.add_frame(this.data.cur,tframe);
+            }
+        }
+        addr = this.data.cur;
+        return addr
     }
 
     debug(...args){

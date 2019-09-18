@@ -32,6 +32,7 @@
         "helpers/ffmpeg_wrapper/ffmpeg.js",
         "flash/interface/FlashParser.js",
         "flash/AVM2.js",
+        "flash/AVM.js",
         "flash/data_types/Rect.js",
         "flash/data_types/SoundStream.js",
         "flash/data_types/Dictionary.js",
@@ -41,6 +42,7 @@
         "flash/data_types/Font.js",
         "flash/data_types/Sprite.js",
         "flash/data_types/Text.js",
+        "flash/data_types/Timeline.js",
         "flash/tags/genericTag.js",
         "flash/tags/DefineSceneAndFrameLabelData.js",
         "flash/tags/DoABC.js",
@@ -60,6 +62,7 @@
         "flash/tags/DefineSprite.js",
         "flash/tags/DefineText.js",
         "flash/tags/PlaceObject2.js",
+        "flash/tags/RemoveObject2.js",
         "flash/tags/Metadata.js",
         "flash/tags/VideoFrame.js",
         "flash/tags/DoAction.js",
@@ -72,3 +75,4 @@
     "<all_urls>"
   ]
 }
+

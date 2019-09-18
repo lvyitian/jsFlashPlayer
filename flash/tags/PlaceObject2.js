@@ -19,22 +19,31 @@ class PlaceObject2 extends genericTag{
     	};
         obj.depth = this.read_UI16();
 
-        if(!obj.hasCharacter){
+        //if(!obj.hasCharacter){
             let tobj = this.core.display_list.get_by_depth(obj.depth);
-            if(tobj.type=obj.type){
-                tobj.hasClipActions = obj.hasClipActions;
-                tobj.hasClipDepth   = obj.hasClipDepth;
-                tobj.hasName   = obj.hasName;
-                tobj.hasRatio   = obj.hasRatio;
-                tobj.hasColorTransform   = obj.hasColorTransform;
-                tobj.hasMatrix   = obj.hasMatrix;
-                tobj.hasCharacter   = obj.hasCharacter;
-                tobj.move   = obj.move;
-                obj = tobj;
-                /*console.log(obj);
-                return false*/
+            if(tobj){
+                //console.log(tobj);
+                
+                if(tobj.type==obj.type){
+                    tobj.hasClipActions = obj.hasClipActions;
+                    tobj.hasClipDepth   = obj.hasClipDepth;
+                    tobj.hasName   = obj.hasName;
+                    tobj.hasRatio   = obj.hasRatio;
+                    tobj.hasColorTransform   = obj.hasColorTransform;
+                    tobj.hasMatrix   = obj.hasMatrix;
+                    tobj.hasCharacter   = obj.hasCharacter;
+                    tobj.move   = obj.move;
+                    tobj.type = obj.type;
+                    tobj.typeName = obj.typeName;
+                    obj = tobj;
+                    //console.log(obj);
+                    //return false
+                }
+                //console.log(obj);
+                //return false;
             }
-        }
+        //}
+        
 
         if(obj.hasCharacter){
             obj.characterID = this.read_UI16();

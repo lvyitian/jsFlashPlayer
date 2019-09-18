@@ -34,7 +34,7 @@ class DefineBitsLossless2 extends genericTag{
 				colors.push(data.read_RGBA());
 			}
 
-			let w = o.bitmapWidth;
+			let w = this.align_width(o.bitmapWidth);
 			let h = o.bitmapHeight;
 			let image = new Uint8ClampedArray(w*h*4);
 
@@ -47,6 +47,20 @@ class DefineBitsLossless2 extends genericTag{
 			}
 			image = this.core.bug_create_image_from_array(image,w,h);
 			o.image = image;
+
+			/*if(![
+					10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,
+					65,67,69,71,
+					74,76,78,80,82,84,
+					100,102,104,106,108,110,112,114,116,118,120,122,124,126,128,130,132,134,136,138,
+					141,143,145,147,149,151,153,155,157,159,161,
+					164,166,168,170,172,174,176,178,180,182,184,186,188,190,192,194,
+					197,199,201
+				].includes(o.characterID)){
+				console.log(o);
+				this.debug_img(image, this.core);
+				return false;
+			}*/
 			//debug.stop();
 			//let c=this.core.canvas.getContext('2d');
 			//c.drawImage(image,0,0);
@@ -70,5 +84,27 @@ class DefineBitsLossless2 extends genericTag{
 			return false;
 		}
 		return true;
+	}
+
+	align_width(width){
+		while((width&3)>0){
+			width++;
+		}
+		return width;
+	}
+
+	debug_img(img,core){
+		core.ctx.setTransform(1,0,0,1,0,0);
+		console.log('debug draw');
+		if(!img.complete){
+			console.log('not loaded');
+			img.onload = function(){
+				console.log('loaded');
+				core.ctx.drawImage(img,0,0);
+			}
+		}else{
+			core.ctx.drawImage(img,0,0);
+		}
+
 	}
 }

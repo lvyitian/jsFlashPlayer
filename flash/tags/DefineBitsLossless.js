@@ -36,7 +36,7 @@ class DefineBitsLossless extends genericTag{
 			for(let i=0; i<=obj.bitmapColorTableSize; i++){
 				colors.push(data.read_RGB());
 			}
-			let w = obj.bitmapWidth;
+			let w = this.align_width(obj.bitmapWidth);
 			let h = obj.bitmapHeight;
 			let image = new Uint8ClampedArray(w*h*4);
 			for(let i=0;i<w*h;i++){
@@ -48,6 +48,14 @@ class DefineBitsLossless extends genericTag{
 			}
 			image = this.core.bug_create_image_from_array(image,w,h);
 			obj.image = image;
+
+			/*if(![
+					87,89,91,93,95,97
+				].includes(obj.characterID)){
+				console.log(obj);
+				this.debug_img(image, this.core);
+				return false;
+			}*/
 
 		}else{
 			console.log("TODO: reading 15-bit RGB and 24-bit rgb!");
@@ -69,5 +77,27 @@ class DefineBitsLossless extends genericTag{
 			return false;
 		}
 		return true;
+	}
+
+	debug_img(img,core){
+		core.ctx.setTransform(1,0,0,1,0,0);
+		console.log('debug draw');
+		if(!img.complete){
+			console.log('not loaded');
+			img.onload = function(){
+				console.log('loaded');
+				core.ctx.drawImage(img,0,0);
+			}
+		}else{
+			core.ctx.drawImage(img,0,0);
+		}
+
+	}
+
+	align_width(width){
+		while((width&3)>0){
+			width++;
+		}
+		return width;
 	}
 }

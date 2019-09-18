@@ -95,6 +95,7 @@ class Dictionary{
 			default:
 
 				if('draw' in el){
+					//console.log(matrix);
 					return el.draw(matrix);
 				}
 

@@ -48,8 +48,17 @@ class Sound{
 	}
 
 	play(){
-		if(this.state==this.STATE_PLAYING)
+		if(this.state==this.STATE_PLAYING){
+
+			if(this.params.HasLoops)
+				return;
+			//alert(this.params.HasLoops);
+			this.state =this.STATE_IDLE;
+			this.ready = false;
+			this.init();
+			this.ready_promise.then(this.play.bind(this));
 			return;
+		}
 
 		//alert('ok');
 		if(!this.ready){
