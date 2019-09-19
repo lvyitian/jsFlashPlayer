@@ -67,10 +67,20 @@ class DefineBitsLossless2 extends genericTag{
 			//this.core.save_blob(o.image.src);
 
 		}else{
-			let m="Reading 32-bit ARGB image!";
-			console.log(m);
-			alert(m);
-			return false;
+			let w = o.bitmapWidth;
+			let h = o.bitmapHeight;
+
+			let image = new Uint8ClampedArray(w*h*4);
+
+			for(let i=0;i<w*h;i++){
+				image[i*4+3] = data.read_UI8();
+				image[i*4+0] = data.read_UI8();
+				image[i*4+1] = data.read_UI8();
+				image[i*4+2] = data.read_UI8();
+			}
+
+			image = this.core.bug_create_image_from_array(image,w,h);
+			o.image = image;
 		}
 
 		this.core.dictionary.add(o.characterID, o);

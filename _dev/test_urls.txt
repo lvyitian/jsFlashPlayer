@@ -1,6 +1,4 @@
 ---------------- almost ---------------
-https://z0r.de/5856
-https://z0r.de/7342
 https://z0r.de/1198
 https://z0r.de/125
 https://z0r.de/35
@@ -40,8 +38,10 @@ https://z0r.de/6865
 https://z0r.de/2440
 https://z0r.de/6666
 https://z0r.de/5639
+https://z0r.de/5856		(timebomb.swf)
 
 ----------------- ok -----------------
+https://z0r.de/7342
 https://z0r.de/5476
 https://z0r.de/1201
 https://z0r.de/4562
@@ -53,7 +53,7 @@ https://z0r.de/284
 https://z0r.de/203
 https://z0r.de/73		(as2, bitlossless, sound)
 https://z0r.de/38		(bitlossless, sound)
-https://z0r.de/1311		(as2, text, bitLossless, sound)
+https://z0r.de/1311		(as2, text, bitLossless, sound)  (guru guru mawaru)
 https://z0r.de/7190		(video, sound) (tails)
 https://z0r.de/6715		(video, sound) (squerrel)
 https://z0r.de/3401		(video)	(portal gun)
@@ -88,6 +88,7 @@ https://z0r.de/4554		(video)
 
 ---------------- fail --------------
 
+https://dagobah.net/flash/timebomb.swf
 https://z0r.de/6732
 https://z0r.de/196
 https://z0r.de/2426

@@ -26,6 +26,7 @@ class DefineShape extends genericTag{
 		let obj = [];
 		obj.push(null);
 		let count = this.read_UI8();
+		console.log(count);
 		if(count==0xFF){
 			count = this.read_UI16();
 		}
@@ -240,13 +241,13 @@ class DefineShape extends genericTag{
 						return false;
 						break;*/
 
-						console.log(obj);
-						return false;
 						//console.log(t);
 						if(t.shift>0)
 							this.cur++;
 
 						obj.fillStyles = this.read_FILLSTYLEARRAY(shape3mode);
+						console.log(obj.fillStyles);
+						return false;
 						if(obj.fillStyles == null)
 							return false;
 						obj.lineStyles = this.read_LINESTYLEARRAY(shape3mode);

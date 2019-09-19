@@ -60,8 +60,11 @@ class DefineEditText extends genericTag{
 		if(o.hasText){
 			o.initialText = this.read_STRING();
 		}
+		//console.log(o);
+		//this.core.save_blob(this.raw_data);
 
-		this.core.dictionary.add(o.characterID,o)
+		let te = new TextEdit(this.header.code, o, this.core);
+		this.core.dictionary.add(o.characterID,te)
 		return true;
 	}
 }

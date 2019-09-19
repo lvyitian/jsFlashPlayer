@@ -1,7 +1,7 @@
 class DoAction extends genericTag{
 	read(){
 
-		let actions = [];
+		/*let actions = [];
 
 		let o;
 		do{
@@ -13,8 +13,9 @@ class DoAction extends genericTag{
 			}
 			if(o.code>0)
 				actions.push(o);
-		}while(o.code>0);
-		
+		}while(o.code>0);*/
+
+		let actions = new FlashParser(this.read_sub_array(this.raw_data.length));
 		this.core.display_list.add_actions(actions);
 
 		return true;

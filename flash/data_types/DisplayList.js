@@ -41,6 +41,17 @@ class DisplayList{
 	}
 
 	draw(parent_matrix=null){
+
+		if(this.actions.length){
+			/*console.log('TODO: execute actions');
+			console.log(this.actions);*/
+			if(!this.core.avm.execute(this.actions)){
+				console.log('fail to execute actions')
+				return false;
+			}
+			this.actions.length=0;
+		}
+
 		//console.log(parent_matrix);
 		//this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
 		if(!this.sprite_mode){
@@ -113,17 +124,7 @@ class DisplayList{
 			}
 		}
 
-		if(this.actions.length){
-			/*console.log('TODO: execute actions');
-			console.log(this.actions);*/
-			if(!this.core.avm.execute(this.actions)){
-				console.log('fail to execute actions')
-				return false;
-			}
-			this.actions.length=0;
-
-			return true;
-		}
+		
 
 		return true;
 	}

@@ -58,7 +58,7 @@ class PlaceObject2 extends genericTag{
             if(obj.matrix===false) return false;
         }
         if(obj.hasColorTransform){
-            alett('TODO: Reading ColorTransform from PlaceObject2!');
+            alert('TODO: Reading ColorTransform from PlaceObject2!');
             return false;
         }
         if(obj.hasRatio){
@@ -66,6 +66,15 @@ class PlaceObject2 extends genericTag{
         }
         if(obj.hasName){
             obj.name = this.read_STRING();
+
+            let avm_obj = this.core.dictionary.get(obj.characterID);
+            if('avm_obj' in avm_obj){
+                this.core.avm.register_object(obj.name, avm_obj.avm_obj);
+            }else{
+                console.log('object dont have avm info!');
+                return false;
+            }
+
         }
         if(obj.hasClipDepth){
             obj.clipDepth = this.read_UI16();

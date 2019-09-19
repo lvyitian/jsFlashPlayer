@@ -338,4 +338,21 @@ class FlashParser{
         
         return {code:tag_code, length:tag_length, data:tag_data};
     }
+
+    read_DOUBLE(){
+        let buf = this.read_sub_array(8);
+        //console.log(buf);
+        let t = new DataView(buf.buffer,buf.byteOffset,8);
+        return t.getFloat64(0, true);
+    }
+
+    read_AVM_action(){
+        let a = {};
+        a.code = this.read_UI8();
+        if(a.code>=0x80){
+            a.length = this.read_UI16();
+            a.data = new FlashParser(this.read_sub_array(a.length));
+        }
+        return a;
+    }
 }
