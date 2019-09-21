@@ -41,6 +41,8 @@ class FlashCore{
         this.last_tag_addr=-1;
         this.playing = true;
         this.pako=null;
+
+        this.do_frame_finish=false;
         
         
         let me = this;
@@ -207,30 +209,10 @@ class FlashCore{
 
 		//this.debug(this.sound_stream);
     }
-    process_DefineVideoStream(){
-		this.debug('tag DefineVideoStream');
-		
-		let object = {
-			type: this.dictionary.TypeVideoStream,
-			typeName : 'VideoStream',
-			characterID : this.data.read_UI16(),
-			numFrames : this.data.read_UI16(),
-			width : this.data.read_UI16(),
-			height : this.data.read_UI16()
-		}
-
-		let temp = this.data.read_UI8();
-
-		object.videoFlagsDeblocking = (temp>>1)&0b111;
-		object.videoFlagsSmoothing = temp & 1;
-		
-		object.codecID = this.data.read_UI8();
-
-		this.dictionary.add(object.characterID,object);
-    }
 
     process_ShowFrame(){
         this.debug('tag ShowFrame');
+        this.do_frame_finish=true;
         debug.stop();
 
         let ret = this.display_list.draw();
@@ -245,6 +227,7 @@ class FlashCore{
 
         if(!this.playing){
             this.goto_frame(this.current_frame);
+            this.do_frame_finish=true;
         }
 
         this.current_frame++;
@@ -385,10 +368,7 @@ class FlashCore{
                 return this.reset();
             break;
             case 1:
-                if(this.process_ShowFrame()) {
-                    this.data.cur+=tag.length;
-                    return 2;
-                }else return false;
+                return this.process_ShowFrame();
             break;
             case 2: //DefineShape
                 this.data.cur+=tag.length;
@@ -476,7 +456,8 @@ class FlashCore{
                 return (new DefineFont2(this,tag_obj)).no_error;
             break;
             case 60:
-            	this.process_DefineVideoStream();
+                this.data.cur+=tag.length;
+                return (new DefineVideoStream(this,tag_obj)).no_error;
             break;
             case 61:
                 this.data.cur+=tag.length;
@@ -557,8 +538,8 @@ class FlashCore{
 
         if(diff>1000)
             this.last_redraw_time = Date.now();
-
-        for(let i=0;i<this.raw_data.length;i++){
+        this.do_frame_finish=false;
+        do{
             let ret = this.process_tag();
 
             if(ret === false){
@@ -570,10 +551,7 @@ class FlashCore{
                 //console.log('stopped by error');
                 return false;
             }
-            if(ret===2){
-                break;
-            }
-        }
+        }while(!this.do_frame_finish);
         
     }
 
@@ -590,7 +568,14 @@ class FlashCore{
     }
 
     goto_frame(frame){
-        this.debug('goto_frame: ',frame)
+        this.debug('goto_frame: ',frame);
+        
+        if(frame >= this.frames_count){
+            this.debug('oops its bigger than frames count!');
+            frame = this.frames_count-1;
+            this.debug('goto_frame: ',frame);
+        }
+
         /*console.log(frame);
         console.log(this.timeline);
         console.log(this.current_frame);*/
@@ -607,6 +592,8 @@ class FlashCore{
 
         this.current_frame = frame - 1;
         this.data.cur=addr;
+        this.display_list.abort_frame();
+        this.do_frame_finish=false;
         return true;
     }
 

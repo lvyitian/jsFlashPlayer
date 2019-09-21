@@ -72,6 +72,7 @@ class PlaceObject2 extends genericTag{
                 this.core.avm.register_object(obj.name, avm_obj.avm_obj);
             }else{
                 console.log('object dont have avm info!');
+                console.log(avm_obj);
                 return false;
             }
 

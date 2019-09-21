@@ -35,6 +35,7 @@ class TextEdit{
 		}
 		if(this.data.useOutlines){
 			console.log('TODO: useOutlines');
+			return false;
 		}
 
 		let font = null;

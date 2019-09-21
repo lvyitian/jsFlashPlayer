@@ -11,6 +11,8 @@ class Shape{
 
 		this.ctx = this.core.ctx;
 
+		this.avm_obj = {};
+
 		this.FILLTYPE_SOLID_FILL = 0x00;
 		this.FILLTYPE_LINEAR_GRADIENT_FILL = 0x10;
 		this.FILLTYPE_RADIAL_GRADIENT_FILL = 0x12;
@@ -53,6 +55,7 @@ class Shape{
 				let char_id = fill_style.bitmapId;
 				let img = this.core.dictionary.get(char_id);
 				if(img===undefined){
+					console.log(path,fill_style);
 					console.log('no image!');
 					return false;
 				}
@@ -135,6 +138,9 @@ class Shape{
 
 		let shapes = this.data.shapes;
 
+		let fillStyles = shapes.fillStyles;
+		let lineStyles = shapes.lineStyles;
+
 		for(let k=0; k<shapes.shapeRecords.length; k++){
 			let shape = shapes.shapeRecords[k];
 
@@ -153,19 +159,20 @@ class Shape{
 				let e = shape[i];
 
 				if(e.typeFlag==0){ //move / change style
+
 					if(e.stateFillStyle0){
-						/*if(!this.fill_path(shapes.fillStyles[last_fill_0],fill_0_edges))
+						if(!this.fill_path(fillStyles[last_fill_0],fill_0_edges))
 							return false;
 						last_fill_0=e.fillStyle0;
-						fill_0_edges = [];*/
-						last_fill_0=e.fillStyle0;
+						fill_0_edges = [];
+						//last_fill_0=e.fillStyle0;
 					}
 					if(e.stateFillStyle1){
-						/*if(!this.fill_path(shapes.fillStyles[last_fill_1],fill_1_edges))
+						if(!this.fill_path(fillStyles[last_fill_1],fill_1_edges))
 							return false;
 						last_fill_1=e.fillStyle1;
-						fill_1_edges = [];*/
-						last_fill_1=e.fillStyle1;
+						fill_1_edges = [];
+						//last_fill_1=e.fillStyle1;
 					}
 					if(e.stateLineStyle){
 						if(e.lineStyle!=0){
@@ -175,6 +182,14 @@ class Shape{
 							return false;
 						}
 					}
+
+					if(e.stateNewStyles){
+						//console.log("TODO: stateNewStyles");
+						//console.log(e);
+						fillStyles = e.fillStyles;
+						lineStyles = e.lineStyles;
+					}
+
 					if(e.stateMoveTo){
 						/*console.log("TODO: stateMoveTo");
 						alert("TODO: stateMoveTo");*/
@@ -185,11 +200,6 @@ class Shape{
 						if(last_fill_1!=0){
 							fill_1_edges.push(e);
 						}
-					}
-					if(e.stateNewStyles){
-						console.log("TODO: stateNewStyles");
-						console.log(e);
-						return false;
 					}
 				}else{
 					if(last_fill_0!=0){
@@ -202,15 +212,15 @@ class Shape{
 			}
 
 			
-			if(!this.fill_path(shapes.fillStyles[last_fill_0], fill_0_edges))
+			if(!this.fill_path(fillStyles[last_fill_0], fill_0_edges))
 				return false
 			
-			if(!this.fill_path(shapes.fillStyles[last_fill_1], fill_1_edges))
+			if(!this.fill_path(fillStyles[last_fill_1], fill_1_edges))
 				return false
 		}
 
 		//console.log(this.data);
-
+		//return false;
 		return true;
 	}
 }

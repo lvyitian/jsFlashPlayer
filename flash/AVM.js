@@ -208,13 +208,15 @@ class AVM{
 	action_wait_for_frame(a, state){
 		a.frame = a.data.read_UI16();
 		a.skip_count = a.data.read_UI8();
-
+		console.log('frame:',a.frame);
 		/** all data already in RAM so this is always be false*/
 		return true;
 	}
 
 	action_goto_frame(a, state){
 		a.frame = a.data.read_UI16();
+		console.log('frame', a.frame);
+		//return false;
 		return state.target.goto_frame(a.frame);
 	}
 

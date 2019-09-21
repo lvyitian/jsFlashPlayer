@@ -26,7 +26,7 @@ class DefineShape extends genericTag{
 		let obj = [];
 		obj.push(null);
 		let count = this.read_UI8();
-		console.log(count);
+		//console.log(count);
 		if(count==0xFF){
 			count = this.read_UI16();
 		}
@@ -86,6 +86,10 @@ class DefineShape extends genericTag{
 				){
 
 				o.bitmapId = this.read_UI16();
+				//console.log('id:',o.bitmapId);
+				//console.log(this.core.dictionary.has(o.bitmapId));
+				//console.log(this.character_id);
+
 				o.bitmapMatrix = this.read_MATRIX();
 			}
 
@@ -242,12 +246,14 @@ class DefineShape extends genericTag{
 						break;*/
 
 						//console.log(t);
-						if(t.shift>0)
+						if(t.shift>0){
+							t.shift=0;
 							this.cur++;
+						}
 
 						obj.fillStyles = this.read_FILLSTYLEARRAY(shape3mode);
-						console.log(obj.fillStyles);
-						return false;
+						//console.log(obj.fillStyles);
+						//return false;
 						if(obj.fillStyles == null)
 							return false;
 						obj.lineStyles = this.read_LINESTYLEARRAY(shape3mode);
@@ -256,6 +262,10 @@ class DefineShape extends genericTag{
 						let t2 = this.read_UI8();
 						obj.newStylesNumFillBits = (t2 >> 4) & 0b1111;
 						obj.newStylesNumLineBits = t2 & 0b1111;
+						numFillBits = obj.newStylesNumFillBits;
+						numLineBits = obj.newStylesNumLineBits;
+						//console.log(obj);
+						//return false;
 					}
 					
 					

@@ -8,6 +8,8 @@ class Sprite{
 
 		this.cur_frame=0;
 		this.cur_tag=0;
+
+		this.avm_obj = {}
 	}
 
 	draw(matrix){

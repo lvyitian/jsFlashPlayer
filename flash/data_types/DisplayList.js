@@ -16,6 +16,8 @@ class DisplayList{
 
 		this.actions = [];
 
+		this.do_abort_frame = false;
+
 		//constants
 		this.TYPE_PlaceObject2 = 26;
 	}
@@ -40,7 +42,13 @@ class DisplayList{
 		return this.list[depth];
 	}
 
+	abort_frame(){
+		this.do_abort_frame=true;
+	}
+
 	draw(parent_matrix=null){
+
+		this.do_abort_frame=false;
 
 		if(this.actions.length){
 			/*console.log('TODO: execute actions');
@@ -50,6 +58,9 @@ class DisplayList{
 				return false;
 			}
 			this.actions.length=0;
+			if(this.do_abort_frame){
+				return true;
+			}
 		}
 
 		//console.log(parent_matrix);

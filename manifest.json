@@ -44,6 +44,7 @@
         "flash/data_types/Text.js",
         "flash/data_types/Timeline.js",
         "flash/data_types/TextEdit.js",
+        "flash/data_types/VideoStream.js",
         "flash/tags/genericTag.js",
         "flash/tags/DefineSceneAndFrameLabelData.js",
         "flash/tags/DoABC.js",
@@ -68,6 +69,7 @@
         "flash/tags/Metadata.js",
         "flash/tags/VideoFrame.js",
         "flash/tags/DoAction.js",
+        "flash/tags/DefineVideoStream.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

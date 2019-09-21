@@ -6,6 +6,7 @@ class DefineShape2 extends DefineShape{
 		obj.shapeID = this.read_UI16();
 		obj.shapeBounds = this.read_RECT();
 
+		this.character_id = obj.shapeID;
 
 		//SHAPEWITHSTYLE
 		let shapes = {}
@@ -21,6 +22,7 @@ class DefineShape2 extends DefineShape{
 		
 
 		shapes.shapeRecords = this.read_ShapeRecords(false);
+
 		if(!shapes.shapeRecords)
 			return false;
 
@@ -33,6 +35,7 @@ class DefineShape2 extends DefineShape{
 		obj = new Shape(this.core,obj);
 
 		this.core.dictionary.add(shape_id,obj);
+
 
 		return true;
 	}
