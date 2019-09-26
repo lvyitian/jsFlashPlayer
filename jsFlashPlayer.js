@@ -18,6 +18,7 @@ window.wrappedJSObject.navigator.mimeTypes[mimetype.type]=cloneInto(mimetype,win
 
 
 //init
+var init_try=0;
 console.log('initpako',pako);
 var mypako=pako;
 //TODO: make it more relyable
@@ -74,8 +75,11 @@ function init(pako_){
     }
 
     if(!flash){
-        console.log('init fail');
-        setTimeout(init,1000, mypako);
+        if(init_try<5){
+            console.log('init fail',init_try);
+            setTimeout(init,1000, mypako);
+            init_try++;
+        }
         return;
     }
     

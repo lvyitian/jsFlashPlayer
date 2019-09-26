@@ -36,6 +36,9 @@ class Sprite{
 				case 1:
 					r = this.tag_ShowFrame();
 				break;
+				case 15:
+					r = (new StartSound(this,tag_obj)).no_error;
+				break;
 				case 26:
 	                r = (new PlaceObject2(this,tag_obj)).no_error;
         		break;
@@ -54,9 +57,9 @@ class Sprite{
 			this.cur_tag++;
 		}while(tag.code!=1);
 
-		/*if(this.cur_frame == 1){
+		/*if(this.cur_frame == 4){
 			if(![
-					9,64,73
+					//125
 				].includes(this.data.spriteID)){
 				console.log(this.data.spriteID);
 				console.log(this.matrix);

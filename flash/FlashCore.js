@@ -539,6 +539,7 @@ class FlashCore{
         if(diff>1000)
             this.last_redraw_time = Date.now();
         this.do_frame_finish=false;
+        //console.log('frame:',this.current_frame);
         do{
             let ret = this.process_tag();
 
@@ -552,6 +553,7 @@ class FlashCore{
                 return false;
             }
         }while(!this.do_frame_finish);
+
         
     }
 
@@ -621,7 +623,7 @@ class FlashCore{
 
     debug(...args){
     	if(this.debug_mode){
-    		console.log('flash:',...args);
+    		console.debug('flash:',...args);
 
             var argss = Array.prototype.slice.call(arguments);
             debug.log(argss.join(' '));
@@ -663,6 +665,10 @@ class FlashCore{
     continue_processing(){
         requestAnimationFrame(this.draw.bind(this));
         this.debug('--------continue after sleep ---------')
+    }
+
+    abort(){
+        cancelAnimationFrame(this.redraw_interval_id);
     }
 
     download_progress(e){

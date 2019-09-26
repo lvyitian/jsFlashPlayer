@@ -29,7 +29,7 @@ https://z0r.de/285		(tag #75)
 https://z0r.de/189		(tag #75)
 https://z0r.de/1434		(tag #75)
 https://z0r.de/6666		(tag #83)
-https://z0r.de/6112		(15 or 32 bit in bitlossless)
+https://z0r.de/6112		(tag #83)
 https://z0r.de/6867		(as2 action 0x9f)
 https://z0r.de/7870		(sound codec 1)(as2 action 0x9f)
 https://z0r.de/5856		(TextEdit useOutlines) [timebomb.swf]
@@ -38,7 +38,9 @@ https://z0r.de/7321		(video artefact)
 https://z0r.de/3933		(video artefact)
 
 ----------------- ok -----------------
-https://z0r.de/2623
+https://z0r.de/56
+https://z0r.de/652
+https://z0r.de/2623		(ikamusume)
 https://z0r.de/1296
 https://z0r.de/6756
 https://z0r.de/2701
@@ -81,7 +83,7 @@ https://z0r.de/134		(video)
 https://z0r.de/163		(images, sound)
 https://z0r.de/294		(video)
 https://z0r.de/401		(text, bitLossless, sound) (lurk more) 
-https://z0r.de/1544		(video)
+https://z0r.de/1544		(video)	(lucky star)
 https://z0r.de/2355		(video)
 https://z0r.de/7160		(video)
 https://z0r.de/3506		(video)
@@ -104,7 +106,7 @@ https://z0r.de/4584		(video)
 https://z0r.de/4554		(video)
 https://z0r.de/2426
 https://z0r.de/3578
-https://z0r.de/1418
+https://z0r.de/1418		(potemayo)
 
 ---------------- fail --------------
 

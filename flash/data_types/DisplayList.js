@@ -74,7 +74,8 @@ class DisplayList{
 		for(let i=0;i<this.list.length;i++){
 			let el = this.list[i];
 			if(!el) continue;
-			//console.log(el);
+
+
 			switch (el.type) {
 				case this.TYPE_PlaceObject2:
 					if(el.hasClipActions){
@@ -122,6 +123,7 @@ class DisplayList{
 						console.log(matrix);
 						*/
 					//}
+					
 					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio, matrix)){
 						console.log('dictionary draw fails!');
 						console.log(this.list);
@@ -135,7 +137,11 @@ class DisplayList{
 			}
 		}
 
-		
+		/*if(!this.sprite_mode){
+			console.log(this);
+			console.log(this.core.dictionary);
+			return false;
+		}*/
 
 		return true;
 	}

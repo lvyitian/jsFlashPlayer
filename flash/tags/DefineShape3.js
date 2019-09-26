@@ -30,6 +30,9 @@ class DefineShape3 extends DefineShape{
 
 		obj = new Shape(this.core,obj);
 
+		if(obj.error)
+			return false;
+
 		this.core.dictionary.add(shape_id,obj);
 
 		return true;

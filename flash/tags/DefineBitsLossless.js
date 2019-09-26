@@ -40,15 +40,22 @@ class DefineBitsLossless extends genericTag{
 			let h = obj.bitmapHeight;
 			let image = new Uint8ClampedArray(w*h*4);
 			for(let i=0;i<w*h;i++){
-				let color = data.read_UI8();
-				image[i*4+0] = colors[color].r;
-				image[i*4+1] = colors[color].g;
-				image[i*4+2] = colors[color].b;
+				let color_id = data.read_UI8();
+				if(color_id>=colors.length){
+					/*console.log('error, color_id is larger than colors array!');
+					console.log(color_id,colors);
+					return false;*/
+					color_id = colors.length-1;
+				}
+				let color = colors[color_id];
+
+				image[i*4+0] = color.r;
+				image[i*4+1] = color.g;
+				image[i*4+2] = color.b;
 				image[i*4+3] = 255;
 			}
 			image = this.core.bug_create_image_from_array(image,w,h);
 			obj.image = image;
-
 			/*if(![
 					87,89,91,93,95,97
 				].includes(obj.characterID)){
@@ -57,9 +64,28 @@ class DefineBitsLossless extends genericTag{
 				return false;
 			}*/
 
-		}else{
-			console.log("TODO: reading 15-bit RGB and 24-bit rgb!");
-			alert("TODO: reading 15-bit RGB and 24-bit rgb");
+		}else if(obj.bitmapFormat==5){ //24-bit format
+			let w = this.align_width(obj.bitmapWidth);
+			let h = obj.bitmapHeight;
+
+			let image = new Uint8ClampedArray(w*h*4);
+			for(let i=0;i<w*h;i++){
+				let t = data.read_UI8();
+				image[i*4+0] = data.read_UI8();
+				image[i*4+1] = data.read_UI8();
+				image[i*4+2] = data.read_UI8();
+				image[i*4+3] = 255;
+			}
+
+			image = this.core.bug_create_image_from_array(image,w,h);
+			obj.image = image;
+
+			//this.debug_img(image, this.core);
+
+		}else {	
+			console.log("TODO: reading 15-bit RGB!");
+			console.log(obj);
+			alert("TODO: reading 15-bit RGB");
 			return false;
 		}
 

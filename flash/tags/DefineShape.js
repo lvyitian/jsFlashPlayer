@@ -333,8 +333,9 @@ class DefineShape extends genericTag{
 			
 
 			if(debug_draw)
-			ctx.stroke();
+				ctx.stroke();
 			//ctx.fill();
+			//return false;
 
 			shapes.push(ar);
 			ar=[];
@@ -375,6 +376,9 @@ class DefineShape extends genericTag{
 		let shape_id = obj.shapeID
 
 		obj = new Shape(this.core,obj);
+
+		if(obj.error)
+			return false;
 
 		this.core.dictionary.add(shape_id,obj);
 

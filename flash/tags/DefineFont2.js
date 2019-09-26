@@ -77,6 +77,8 @@ class DefineFont2 extends DefineShape{
 		    		}],
 		    	}
 			});
+			if(t.error)
+				return false;
 		    o.glyphShapeTable.push(t);
         }
 

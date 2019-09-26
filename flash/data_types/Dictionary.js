@@ -12,6 +12,7 @@ class Dictionary{
 	}
 
 	add(characterID, object){
+		//console.log('adding ',characterID,'to dictionary');
 		if(characterID in this.dict)
 			return false;
 		this.dict[characterID] = object;
