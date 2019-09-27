@@ -1,5 +1,6 @@
 ---------------- almost ---------------
-https://z0r.de/100		(sprite tag #15)
+
+https://z0r.de/137		(change line style)		
 https://z0r.de/1198		(preloader) [haruhi]
 https://z0r.de/125		(preloader)
 https://z0r.de/35		(preloader) [win xp]
@@ -38,6 +39,8 @@ https://z0r.de/7321		(video artefact)
 https://z0r.de/3933		(video artefact)
 
 ----------------- ok -----------------
+https://z0r.de/34
+https://z0r.de/100
 https://z0r.de/56
 https://z0r.de/652
 https://z0r.de/2623		(ikamusume)
@@ -110,12 +113,12 @@ https://z0r.de/1418		(potemayo)
 
 ---------------- fail --------------
 
+https://z0r.de/29       (reading color transform from PlaceObject2)
 https://z0r.de/7101		(parse error(!!!))
 https://z0r.de/1959		(parse error(!!!))
 https://z0r.de/6489		(gradient fill)
 https://z0r.de/3360		(gradient fill)
 https://z0r.de/17		(as2 action 0x8c)
-https://z0r.de/137		(change line style)
 https://z0r.de/1976		(change line style)
 https://z0r.de/1280		(change line style)
 https://z0r.de/2586		(video codec 4)

@@ -11,6 +11,7 @@ class Shape{
 
 		this.ctx = this.core.ctx;
 		this.fill_shapes = null;
+		this.lines = null;
 
 		this.avm_obj = {};
 
@@ -42,7 +43,7 @@ class Shape{
 		}
 	}
 
-	fill_path(ctx, path, state){
+	fill_path(ctx, path, state={x:this.base_x, y:this.base_y}){
 
 		/*this.base_x=1000;
 		this.base_y=1000;*/
@@ -53,8 +54,11 @@ class Shape{
 		let y = state.y;
 		
 		for( let i=0; i< path.length ; i++){
-			//if(i==5)
-			//	return true;
+			/*if(i==154){
+				console.log(path[i-1]);
+
+				break;
+			}*/
 			let e = path[i];
 			//console.log(e);
 			if(e.typeFlag==0){
@@ -63,9 +67,9 @@ class Shape{
 					y = this.cc(e.moveDeltaY)+this.base_y;
 					/*console.log(x/20);
 					console.log(y/20);*/
-					this.ctx.closePath();
+					//ctx.closePath();
 					ctx.moveTo(x/20, y/20);
-					//this.ctx.lineTo(x/20, y/20);
+					//ctx.lineTo(x/20, y/20);
 				}
 			}else if(e.straightFlag){
 				if(e.generalLineFlag){
@@ -100,6 +104,7 @@ class Shape{
 
 		//state.x = x;
 		//state.y = y;
+		ctx.closePath();
 		
 		return true;
 	}
@@ -133,6 +138,7 @@ class Shape{
 					fill_0 : [],
 					fill_1 : [],
 					cache_path : null,
+					order: 0
 				};
 			});
 
@@ -173,6 +179,7 @@ class Shape{
 								fill_0 : [],
 								fill_1 : [],
 								cache_path : null,
+								order: 0
 							};
 						});
 
@@ -249,6 +256,7 @@ class Shape{
 						return false
 					}
 					t.fill_0.push(e);
+					t.order = i;
 				}
 
 				if(cur_fill_1>0){
@@ -258,6 +266,7 @@ class Shape{
 						return false
 					}
 					t.fill_1.push(e);
+					t.order = i;
 				}
 
 				if(cur_line_style>0){
@@ -274,6 +283,26 @@ class Shape{
 
 		//}
 		this.fill_shapes = fill_shapes;
+		this.lines = lines;
+
+
+		//sort fill_shapes
+		fill_shapes.sort(function(a,b){
+			if(a.order>b.order)
+				return 1;
+			else if(a.order<b.order)
+				return -1;
+			else
+				return 0;
+		});
+
+
+		for(let i=0; i<fill_shapes.length; i++){
+			let st = fill_shapes[i];
+			st.fill_1 = this.normalize_path(st.fill_1);
+			st.fill_0 = this.normalize_path(st.fill_0);
+		}
+
 		return true;
 	}
 
@@ -285,8 +314,15 @@ class Shape{
 
 		if(!this.draw_fill_shapes(this.fill_shapes))
 			return false;
-		/*console.log('id:',this.data.shapeID);
-		return false;*/
+
+		if(!this.draw_lines(this.lines))
+			return false;
+		
+
+		/*if (![1,2,3,4,6].includes(this.data.shapeID)) {
+			console.log('id:',this.data.shapeID);
+			return false;
+		}*/
 
 		return true;
 
@@ -359,6 +395,9 @@ class Shape{
 			}*/
 				//return false;
 
+			/*ctx.fillStyle="#507070";
+			ctx.fillRect(-400,-400,1300,1000);*/
+
 			if(st.fill_0.length>0 || st.fill_1.length>0)
 				if(!this.set_fill_style(st.style))
 					return false;
@@ -382,7 +421,7 @@ class Shape{
 			ctx.fill(st.cache_path);
 			//ctx.stroke(st.cache_path);
 			
-			/*if(k==16){
+			/*if(k==28){
 				console.log(st);
 				return false;
 			}*/
@@ -479,11 +518,14 @@ class Shape{
 				}
 				reverse.push(t);
 			}else{
-				t.controlDeltaX*=-1;
-				t.controlDeltaY*=-1;
+				let tx = t.controlDeltaX*=-1;
+				let ty = t.controlDeltaY*=-1;
 				
-				t.anchorDeltaX*=-1;
-				t.anchorDeltaY*=-1;
+				t.controlDeltaX = t.anchorDeltaX*-1;
+				t.controlDeltaY = t.anchorDeltaY*-1;
+
+				t.anchorDeltaX=tx;
+				t.anchorDeltaY=ty;
 				
 				reverse.push(t);
 			}
@@ -543,7 +585,188 @@ class Shape{
 
 	}
 
-}
 
+	get_start_end_coord(o){
+		let x = 0;
+		let y = 0;
+		
+		let first=true;
+		for( let i=0; i< o.path.length ; i++){
+			let e = o.path[i];
+			if(e.typeFlag==0){
+				if(e.stateMoveTo){
+					x = e.moveDeltaX;
+					y = e.moveDeltaY;
+					if(first){
+						first=false;
+						o.start.x=x;
+						o.start.y=y;
+					}
+				}
+			}else if(e.straightFlag){
+				if(e.generalLineFlag){
+					x+=e.deltaX;
+					y+=e.deltaY;
+				}else{
+					if(e.vertLineFlag){
+						y+=e.deltaY;
+					}else{
+						x+=e.deltaX;
+					}
+				}
+			}else{
+				x+=e.controlDeltaX;
+				y+=e.controlDeltaY;
+
+				x+=e.anchorDeltaX;
+				y+=e.anchorDeltaY;
+			}
+			//console.log(i,x,y);
+		}
+		
+		o.end.x=x;
+		o.end.y=y;
+	}
+
+	normalize_path(path){
+		if(path.length==0)
+			return path;
+
+
+
+		let lines = [];
+
+		let t=-1;
+
+		for(let i=0;i<path.length;i++){
+			let e = path[i];
+			if(e.typeFlag==0){
+				if(e.stateMoveTo){
+					t++;
+					if(lines[t]===undefined)
+						lines[t] = [];
+				}
+			}
+			lines[t].push(e);
+		}
+
+		for(let k=0;k<lines.length;k++){
+			let e = lines[k];
+			let o = {};
+			o.path = e;
+			o.start = {x:0, y:0};
+			o.end = {x:0, y:0};
+
+			this.get_start_end_coord(o);
+
+			lines[k] = o;
+		}
+
+
+
+		for(let i=0;i<lines.length;i++){
+			let e1 = lines[i];
+			for(let j=0;j<lines.length;j++){
+				if(i==j) continue;
+				//console.log(i,j);
+				let e2 = lines[j];
+				if((e1.start.x == e2.start.x) && (e1.start.y == e2.start.y)){
+					e2.path = this.reverse_path(e2.path);
+					update_path_end(e2);
+				}
+
+				if((e1.start.x == e2.end.x) && (e1.start.y == e2.end.y) && (j>i)){
+					lines[i] = null;
+					lines[j] = null;
+					lines[i] = e2;
+					lines[j] = e1;
+				}
+			}
+		}
+
+		let result = [];
+
+		for(let i=0;i<lines.length;i++){
+			lines[i].path.forEach( function(element, index) {
+				result.push(element);
+			});
+		}
+
+		//check for unnecessary moveto
+		let r = result;
+		result = [];
+
+		let x = 0;
+		let y = 0;
+		
+		let first=true;
+		for( let i=0; i< r.length ; i++){
+			let e = r[i];
+			if(e.typeFlag==0){
+				if(e.stateMoveTo){
+					if( (x==e.moveDeltaX) && (y==e.moveDeltaY) )
+						continue;
+					x = e.moveDeltaX;
+					y = e.moveDeltaY;
+				}
+			}else if(e.straightFlag){
+				if(e.generalLineFlag){
+					x+=e.deltaX;
+					y+=e.deltaY;
+				}else{
+					if(e.vertLineFlag){
+						y+=e.deltaY;
+					}else{
+						x+=e.deltaX;
+					}
+				}
+			}else{
+				x+=e.controlDeltaX;
+				y+=e.controlDeltaY;
+
+				x+=e.anchorDeltaX;
+				y+=e.anchorDeltaY;
+			}
+			//console.log(i,x,y);
+			result.push(e);
+		}
+
+		//result = this.reverse_path(result);
+
+		return result;
+	}
+
+	set_line_style(ctx, style){
+		let color = style.color;
+		if('a' in color){
+			ctx.strokeStyle = 'rgba('+color.r+','+color.g+','+color.b+','+color.a+')';			
+		}else{
+			ctx.strokeStyle = 'rgb('+color.r+','+color.g+','+color.b+')';
+		}
+		ctx.lineWidth = style.width/20;
+	}
+
+	draw_lines(lines){
+		//return true;
+		for(let k=0;k<lines.length;k++){
+			let st = lines[k];
+			if(st.style === null)
+				continue;
+
+			//this.ctx.fillStyle="white";
+			//this.ctx.fillRect(-400,-400,1300,1000);
+
+			this.set_line_style(this.ctx, st.style);
+			this.ctx.beginPath();
+			this.fill_path(this.ctx, st.path);
+			this.ctx.stroke();
+
+			//console.error('TODO: Draw Lines');
+			//console.log(st);
+			//return false;
+		}
+		return true;
+	}
+}
 
 

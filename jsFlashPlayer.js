@@ -19,11 +19,11 @@ window.wrappedJSObject.navigator.mimeTypes[mimetype.type]=cloneInto(mimetype,win
 
 //init
 var init_try=0;
-console.log('initpako',pako);
+//console.log('initpako',pako);
 var mypako=pako;
 //TODO: make it more relyable
 setTimeout(init,1000, mypako);
-console.log("ok");
+//console.log("ok");
 
 //webNavigation.onDOMContentLoaded.addListener(init);
 //body.addEventListener('load', init);
@@ -47,7 +47,8 @@ function init(pako_){
         url = get_swf_real_path(url);
         let width = el.getAttribute('width');
         let height = el.getAttribute('height');
-        let canvas = create_canvas(el,'100%','100%');
+        //let canvas = create_canvas(el,'100%','100%');
+        let canvas = create_canvas(el,'100%');
 
         flash = new FlashCore(url,canvas);
     }
@@ -69,6 +70,7 @@ function init(pako_){
             align = '';
         }
         el.style = 'display:block;'+align+'width:'+width+'; height:'+height;
+        //let canvas = create_canvas(el,'100%','100%');
         let canvas = create_canvas(el,'100%','100%');
 
         flash = new FlashCore(url,canvas);
