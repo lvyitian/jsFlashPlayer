@@ -121,7 +121,8 @@ class FlashParser{
     }
 
     read_FB(shift,bitsize){
-        let temp = this.read_UB(shift, bitsize);
+        let temp = this.read_SB(shift, bitsize);
+        //console.log(temp);
         temp.value = (temp.value>>16)+(temp.value&0xFFFF)/0x10000;
         return temp;
     }
@@ -165,8 +166,8 @@ class FlashParser{
         let matrix = {
             has_scale: false,
             has_rotate: false,
-            scaleX: 20,
-            scaleY: 20,
+            scaleX: 1,
+            scaleY: 1,
             translateX: 0,
             translateY: 0,
             rotateSkew0:0,
@@ -219,12 +220,18 @@ class FlashParser{
             matrix.rotateSkew1,    (matrix.scaleY>=20) ? matrix.scaleY/20 : matrix.scaleY,
             matrix.translateX/20,  matrix.translateY/20
         ]);
-
+        //console.log(matrix);
         /*matrix.matrix = new DOMMatrix([
             matrix.scaleX,      matrix.rotateSkew0,
             matrix.rotateSkew1,    matrix.scaleY,
-            matrix.translateX/20,  matrix.translateY/20
+            matrix.translateX/20, matrix.translateY/20
         ]);*/
+
+        //console.log(matrix);
+        //console.log(Math.atan2(matrix.matrix.a, matrix.matrix.b*-1)*(180/Math.PI));
+        //matrix.matrix = matrix.matrix.scale(1/20,1/20,1,0,0,0);
+
+        //matrix.matrix.scale
 
         let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 

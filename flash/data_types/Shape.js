@@ -43,11 +43,16 @@ class Shape{
 		}
 	}
 
+	cc20(coord){
+		//return Math.floor(coord/20);
+		return coord/20;
+	}
+
 	fill_path(ctx, path, state={x:this.base_x, y:this.base_y}){
 
 		/*this.base_x=1000;
 		this.base_y=1000;*/
-
+		var cc20 = this.cc20;
 
 
 		let x = state.x;
@@ -68,7 +73,7 @@ class Shape{
 					/*console.log(x/20);
 					console.log(y/20);*/
 					//ctx.closePath();
-					ctx.moveTo(x/20, y/20);
+					ctx.moveTo(cc20(x), cc20(y));
 					//ctx.lineTo(x/20, y/20);
 				}
 			}else if(e.straightFlag){
@@ -82,7 +87,7 @@ class Shape{
 						x+=this.cc(e.deltaX);
 					}
 				}
-				ctx.lineTo(x/20, y/20);
+				ctx.lineTo(cc20(x), cc20(y));
 				//console.log('lineTo:',this.x/20,this.y/20);
 			}else{
 				
@@ -90,13 +95,13 @@ class Shape{
 				x+=this.cc(e.controlDeltaX);
 				y+=this.cc(e.controlDeltaY);
 
-				let tx = x / 20; 
-				let ty = y / 20;
+				let tx = cc20(x); 
+				let ty = cc20(y);
 				
 				x+=this.cc(e.anchorDeltaX);
 				y+=this.cc(e.anchorDeltaY);
 				
-				ctx.quadraticCurveTo(tx,ty,x/20,y/20);
+				ctx.quadraticCurveTo(tx,ty,cc20(x),cc20(y));
 
 				//return false;
 			}
@@ -323,6 +328,8 @@ class Shape{
 			console.log('id:',this.data.shapeID);
 			return false;
 		}*/
+
+		//return false;
 
 		return true;
 
@@ -672,7 +679,7 @@ class Shape{
 				let e2 = lines[j];
 				if((e1.start.x == e2.start.x) && (e1.start.y == e2.start.y)){
 					e2.path = this.reverse_path(e2.path);
-					update_path_end(e2);
+					this.get_start_end_coord(e2);
 				}
 
 				if((e1.start.x == e2.end.x) && (e1.start.y == e2.end.y) && (j>i)){
