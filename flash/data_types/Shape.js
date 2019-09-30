@@ -59,7 +59,7 @@ class Shape{
 		let y = state.y;
 		
 		for( let i=0; i< path.length ; i++){
-			/*if(i==154){
+			/*if(i==10){
 				console.log(path[i-1]);
 
 				break;
@@ -304,8 +304,14 @@ class Shape{
 
 		for(let i=0; i<fill_shapes.length; i++){
 			let st = fill_shapes[i];
-			st.fill_1 = this.normalize_path(st.fill_1);
-			st.fill_0 = this.normalize_path(st.fill_0);
+			st.path = [];
+			st.path = st.path.concat(st.fill_0,st.fill_1);
+			/*st.fill_1 = this.normalize_path(st.fill_1);
+			st.fill_0 = this.normalize_path(st.fill_0);*/
+			//if(i==47)
+			st.path = this.normalize_path(st.path);
+			if(st.path===false)
+				return false;
 		}
 
 		return true;
@@ -332,7 +338,6 @@ class Shape{
 		//return false;
 
 		return true;
-
 	}
 
 	set_fill_style(fill_style){
@@ -402,8 +407,8 @@ class Shape{
 			}*/
 				//return false;
 
-			/*ctx.fillStyle="#507070";
-			ctx.fillRect(-400,-400,1300,1000);*/
+			//ctx.fillStyle="#507070";
+			//ctx.fillRect(-400,-400,1300,1000);
 
 			if(st.fill_0.length>0 || st.fill_1.length>0)
 				if(!this.set_fill_style(st.style))
@@ -412,23 +417,14 @@ class Shape{
 			if(st.cache_path===null || this.font_size !== undefined){
 				//console.log('do cache!');
 				let c = new Path2D();
-				let state={x:this.base_x,y:this.base_y}
-				if(st.fill_1.length>0){
-					if(!this.is_clockwise(st.fill_1))
-						st.fill_1 = this.reverse_path(st.fill_1);
-					this.fill_path(c,st.fill_1,state);
-				}
-				if(st.fill_0.length>0){
-					if(this.is_clockwise(st.fill_0))
-						st.fill_0 = this.reverse_path(st.fill_0);
-					this.fill_path(c,st.fill_0,state);
-				}
+				if(st.path.length>0)
+					this.fill_path(c,st.path);
 				st.cache_path = c;
 			}
 			ctx.fill(st.cache_path);
 			//ctx.stroke(st.cache_path);
-			
-			/*if(k==28){
+			//console.log(k);
+			/*if(k==47){
 				console.log(st);
 				return false;
 			}*/
@@ -589,7 +585,6 @@ class Shape{
 			val+=(e2.x-e1.x)*(e2.y+e1.y);
 		}
 		return (val<0);
-
 	}
 
 
@@ -635,27 +630,107 @@ class Shape{
 		o.end.y=y;
 	}
 
+	convert_to_absolute_coord_poly(path){
+		let x = 0;
+		let y = 0;
+		
+		let besie = function(t,p1,p2,p3){
+			return Math.pow(1-t,2)*p1+2*(1-t)*t*p2+t*t*p3;
+		}
+
+		let poly = [];
+
+		for( let i=0; i< path.length ; i++){
+			let e = path[i];
+			if(e.typeFlag==0){
+				if(e.stateMoveTo){
+					x = e.moveDeltaX;
+					y = e.moveDeltaY;
+				}
+			}else if(e.straightFlag){
+				if(e.generalLineFlag){
+					x+=e.deltaX;
+					y+=e.deltaY;
+				}else{
+					if(e.vertLineFlag){
+						y+=e.deltaY;
+					}else{
+						x+=e.deltaX;
+					}
+				}
+			}else{
+				let px1 = x;
+				let py1 = y;
+				x+=e.controlDeltaX;
+				y+=e.controlDeltaY;
+				let px2 = x;
+				let py2 = y;
+				x+=e.anchorDeltaX;
+				y+=e.anchorDeltaY;
+				let px3 = x;
+				let py3 = y;
+				let t=0;
+				let pt = 1.0/11.0;
+				for(let ii=0;ii<10;ii++){
+					//console.log(t);
+					let nx = besie(t, px1, px2, px3);
+					let ny = besie(t, py1, py2, py3);
+					poly.push({x:nx,y:ny});
+					t+=pt;
+				}
+			}
+
+			poly.push({x:x,y:y});
+		}
+		
+		return poly;
+	}
+
+	debug_draw_poly(poly){
+		let first = true;
+		let cc20 = this.cc20;
+		for( let i=0; i< poly.length ; i++){
+			let p = poly[i];
+			if(first){
+				this.ctx.moveTo(cc20(p.x),cc20(p.y));
+				first=false;
+			}
+			else
+				this.ctx.lineTo(cc20(p.x),cc20(p.y));
+
+		}
+	}
+
 	normalize_path(path){
 		if(path.length==0)
 			return path;
 
 
-
-		let lines = [];
-
-		let t=-1;
-
-		for(let i=0;i<path.length;i++){
-			let e = path[i];
-			if(e.typeFlag==0){
-				if(e.stateMoveTo){
-					t++;
-					if(lines[t]===undefined)
+		let split_by_moveto = function(path){
+			let lines = [];
+			let t=-1;
+			for(let i=0;i<path.length;i++){
+				let e = path[i];
+				if(e.typeFlag==0){
+					if(e.stateMoveTo){
+						t++;
+						/*if(t>0)
+						if(lines[t-1].length==1){
+							t--;
+							lines[t]=[];
+						}*/
+						if(lines[t]===undefined)
 						lines[t] = [];
+					}	
 				}
+				
+				lines[t].push(e);
 			}
-			lines[t].push(e);
+			return lines
 		}
+
+		let lines = split_by_moveto(path);
+		//console.log(path);
 
 		for(let k=0;k<lines.length;k++){
 			let e = lines[k];
@@ -670,29 +745,31 @@ class Shape{
 		}
 
 
+		//
 
 		for(let i=0;i<lines.length;i++){
 			let e1 = lines[i];
 			for(let j=0;j<lines.length;j++){
 				if(i==j) continue;
-				//console.log(i,j);
+
 				let e2 = lines[j];
 				if((e1.start.x == e2.start.x) && (e1.start.y == e2.start.y)){
 					e2.path = this.reverse_path(e2.path);
 					this.get_start_end_coord(e2);
 				}
 
-				if((e1.start.x == e2.end.x) && (e1.start.y == e2.end.y) && (j>i)){
-					lines[i] = null;
-					lines[j] = null;
-					lines[i] = e2;
-					lines[j] = e1;
+				if((e1.start.x == e2.end.x) && (e1.start.y == e2.end.y)){
+					e1.path = e2.path.concat(e1.path);
+					e2.path=[];
+					//console.log('connect',j,'to',i);
+					this.get_start_end_coord(e1);
+					this.get_start_end_coord(e2);
 				}
 			}
 		}
 
+		//join all lines into one array
 		let result = [];
-
 		for(let i=0;i<lines.length;i++){
 			lines[i].path.forEach( function(element, index) {
 				result.push(element);
@@ -700,7 +777,7 @@ class Shape{
 		}
 
 		//check for unnecessary moveto
-		let r = result;
+		/*let r = result;
 		result = [];
 
 		let x = 0;
@@ -734,12 +811,98 @@ class Shape{
 				x+=e.anchorDeltaX;
 				y+=e.anchorDeltaY;
 			}
-			//console.log(i,x,y);
 			result.push(e);
 		}
 
-		//result = this.reverse_path(result);
+		console.log(result);
+		return false;*/
+		
+		//calculate normals
+		/*ines = split_by_moveto(result);
+		console.log(lines);
+		return false;*/
+		for(let i=0;i<lines.length;i++){
+			let path = lines[i].path;
+			lines[i]={
+				path: path,
+				poly: this.convert_to_absolute_coord_poly(path),
+				in_list: [],
+				clockwise : this.is_clockwise(path)
+			}
+		}
 
+		//calculate 'in list'
+		for(let i=0;i<lines.length;i++){
+			let e1 = lines[i];
+			for(let j=0;j<lines.length;j++){
+				if(i==j)
+					continue;
+				
+				let e2 = lines[j];
+				if(this.is_poly_inside_poly(e1.poly, e2.poly)){
+					if(! e1.in_list.includes(j)){
+						e2.in_list.push(i);
+					}else{
+						console.warn('shape parts is overlapping!',i,j);
+					}
+				}
+
+			}
+		}
+		let get_recursive_inlist=function(e,lines){
+			let res = e.in_list;
+			for(let i=0;i<e.in_list.length;i++){
+				res = res.concat(get_recursive_inlist(lines[e.in_list[i]], lines));
+			}
+			return res;
+		}
+
+		let opt_inlist = function(e, lines){			
+			let l = e.in_list;
+			for(let i=0;i<l.length;i++){
+				let l2 = get_recursive_inlist(lines[l[i]],lines);
+				let l3 = [];
+				for(let j=0;j<l.length;j++){
+					if(!(l2.includes(l[j]))){
+						l3.push(l[j]);
+					}
+				}
+				l=l3;
+			}
+			e.in_list=l;
+			return l;
+		}
+		for(let i=0;i<lines.length;i++){
+			let e = lines[i];
+			if(e.in_list.length>0){
+				opt_inlist(e,lines);
+			}
+		}
+
+		//calculate normals
+		let reverse_recursive=function(e,lines){
+			for(let i=0;i<e.in_list.length;i++){
+				let t = lines[e.in_list[i]];
+				if(t.clockwise == e.clockwise){
+					t.clockwise = !t.clockwise;
+					t.path = this.reverse_path(t.path);
+				}
+				reverse_recursive(t,lines);
+			}
+		}.bind(this);
+
+		for(let i=0;i<lines.length;i++){
+			reverse_recursive(lines[i], lines);
+		}
+
+		
+		//joining lines into one array
+		result = [];
+		for(let i=0;i<lines.length;i++){
+			result = result.concat(lines[i].path);	
+		}
+
+		
 		return result;
 	}
 
@@ -773,6 +936,38 @@ class Shape{
 			//return false;
 		}
 		return true;
+	}
+
+	is_point_in_polygon(point, poly){
+		let x = point.x;
+		let y = point.y;
+		let result = false;
+		let j = poly.length - 1;
+		for(let i=0;i<poly.length;i++){
+			if (
+				(
+					((poly[i].y<=y) && (y<poly[j].y)) || 
+					((poly[j].y<=y) && (y<poly[i].y))
+				) && 
+				(
+					x > (poly[j].x - poly[i].x) * (y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x)
+				) 
+			{
+	        	result = !result
+	        }
+	        j = i;
+		}
+		return result;
+	}
+
+	is_poly_inside_poly(poly, in_poly){
+		for(let i=0;i<poly.length;i++){
+			let point = poly[i];
+			if(this.is_point_in_polygon(point, in_poly)){
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

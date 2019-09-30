@@ -4,6 +4,9 @@ class DefineShape2 extends DefineShape{
 		let obj = {};
 
 		obj.shapeID = this.read_UI16();
+		if(this.core.dictionary.has(obj.shapeID)){
+			return true;
+		}
 		obj.shapeBounds = this.read_RECT();
 
 		this.character_id = obj.shapeID;
