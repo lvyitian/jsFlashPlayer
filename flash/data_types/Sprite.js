@@ -42,6 +42,9 @@ class Sprite{
 				case 26:
 	                r = (new PlaceObject2(this,tag_obj)).no_error;
         		break;
+        		case 28:
+        			r = (new RemoveObject2(this,tag_obj)).no_error; 
+        		break;
 				case 45:
 					r = (new SoundStreamHead2(this,tag_obj)).no_error;
 				break;

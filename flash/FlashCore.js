@@ -416,12 +416,16 @@ class FlashCore{
                 this.data.cur+=tag.length;
                 return (new DefineBitsLossless(this,tag_obj)).no_error;
             break;
+            case 21:
+                this.data.cur+=tag.length;
+                return (new DefineBitsJPEG2(this,tag_obj)).no_error;
+            break;
             case 22:
                 this.data.cur+=tag.length;
                 return (new DefineShape2(this,tag_obj)).no_error;
             break;
             case 24: //protect
-                console.log('tag Protect');
+                this.debug('tag Protect');
                 this.data.cur+=tag.length;
             break;
         	case 26:
