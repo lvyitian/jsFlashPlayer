@@ -65,18 +65,7 @@ class Dictionary{
 
 				var d1 = new Date();
 
-				//workaround a bug
-				let obj = {
-					canvas_id : this.core.canvas.id,
-					bitmap  : imdat,
-					width	: el.width,
-					height	: el.height
-				}
-				window.wrappedJSObject.__flashplayer_draw_data=cloneInto(obj,window);
-				let script = document.createElement('script');
-				script.innerHTML='__flashplayer_draw_bitmap_on_canvas();';
-				document.head.appendChild(script);
-    			script.remove();
+				this.core.bug_draw_image_data_to_canvas(imdat,el.width,el.height);
 
     			/*var d2 = new Date();
 		        console.log("drawing on canvas time:",(d2-d1));

@@ -8,14 +8,25 @@ let plugin = {
     description : 'Shockwave Flash 28.0 r0',
     version : 'Shockwave Flash 28.0 r0'
 }
-window.wrappedJSObject.navigator.plugins[plugin.name]=cloneInto(plugin,window);
-let mimetype = {
-    type : mime,
-    suffixes : 'swf',
-    enabledPlugin : window.wrappedJSObject.navigator.plugins[plugin.name]
-}
-window.wrappedJSObject.navigator.mimeTypes[mimetype.type]=cloneInto(mimetype,window);
 
+if(typeof(window.wrappedJSObject) == 'undefined'){
+    console.log("Hello Chrome!");
+    //chrome.tabs.executeScript({
+        //code: 'navigator.plugins[\''+plugin.name+"'] = JSON.parse('"+JSON.stringify(plugin)+"');"
+    //});
+    let script = document.createElement('script');
+    script.innerHTML='navigator.plugins[\''+plugin.name+"'] = JSON.parse('"+JSON.stringify(plugin)+"'); //alert('injected!')";
+    document.getElementsByTagName("html")[0].appendChild(script);
+    script.remove();
+}else{
+    window.wrappedJSObject.navigator.plugins[plugin.name]=cloneInto(plugin,window);
+    let mimetype = {
+        type : mime,
+        suffixes : 'swf',
+        enabledPlugin : window.wrappedJSObject.navigator.plugins[plugin.name]
+    }
+    window.wrappedJSObject.navigator.mimeTypes[mimetype.type]=cloneInto(mimetype,window);
+}
 
 //init
 var init_try=0;

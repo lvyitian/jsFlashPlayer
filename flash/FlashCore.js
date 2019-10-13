@@ -459,6 +459,11 @@ class FlashCore{
                 this.data.cur+=tag.length;
                 return (new DefineFont2(this,tag_obj)).no_error;
             break;
+            case 56:
+                this.data.cur+=tag.length;
+                this.debug('skip_tag exportAssets');
+                return true;
+            break;
             case 60:
                 this.data.cur+=tag.length;
                 return (new DefineVideoStream(this,tag_obj)).no_error;
@@ -682,8 +687,38 @@ class FlashCore{
         debug.update('Loading '+precent+'% ('+loaded+'/'+total+')');
     }
 
+    create_image_from_array(image_array, width, height){
+        let canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        let ctx = canvas.getContext('2d');
+        let imd = ctx.createImageData(width,height);
+        imd.data.set(image_array);
+        ctx.putImageData(imd,0,0);
+        let src = canvas.toDataURL();
+        let img = new Image();
+        img.src = src;
+        return img;
+    }
+
+    draw_image_data_to_canvas(imdat, width, height){
+        let canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        let ctx = canvas.getContext('2d');
+        let imd = ctx.createImageData(width,height);
+        imd.data.set(imdat);
+        ctx.putImageData(imd,0,0);
+        
+        this.ctx.drawImage(canvas,0,0);
+    }
+
     //workaround firefox bugs
     bug_create_image_from_array(image_array, width, height){
+        if(typeof(cloneInto) == "undefined"){
+            return this.create_image_from_array(image_array, width, height);
+        }
+
         let obj = {
             bitmap  : image_array,
             width   : width,
@@ -698,6 +733,23 @@ class FlashCore{
         let img = new Image();
         img.src = src;
         return img;
+    }
+    bug_draw_image_data_to_canvas(imdat, width, height){
+        if(typeof(cloneInto) == "undefined"){
+            return this.draw_image_data_to_canvas(imdat, width, height);
+        }
+        //workaround a bug
+        let obj = {
+            canvas_id : this.canvas.id,
+            bitmap  : imdat,
+            width   : width,
+            height  : height
+        }
+        window.wrappedJSObject.__flashplayer_draw_data=cloneInto(obj,window);
+        let script = document.createElement('script');
+        script.innerHTML='__flashplayer_draw_bitmap_on_canvas();';
+        document.head.appendChild(script);
+        script.remove();
     }
 
 }

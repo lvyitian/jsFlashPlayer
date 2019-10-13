@@ -82,6 +82,11 @@ var Module = {
     },
 
     locateFile : function(arg){
-        return browser.extension.getURL("/helpers/ffmpeg_wrapper/"+arg);
+
+        if(typeof(browser)!="undefined"){
+            return browser.extension.getURL("/helpers/ffmpeg_wrapper/"+arg);
+        }else{
+            return chrome.extension.getURL("/helpers/ffmpeg_wrapper/"+arg);
+        }
     }
 }
