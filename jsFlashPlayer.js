@@ -40,8 +40,6 @@ setTimeout(init,1000, mypako);
 //body.addEventListener('load', init);
 //document.body.onload=init;
 
-
-
 function init(pako_){
     console.log('init');
     let l_pako = pako_;

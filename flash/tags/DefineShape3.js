@@ -41,3 +41,5 @@ class DefineShape3 extends DefineShape{
 		return true;
 	}
 }
+
+tag_list[32] = DefineShape3;

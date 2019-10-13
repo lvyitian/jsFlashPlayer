@@ -389,3 +389,5 @@ class DefineShape extends genericTag{
 	}
 
 }
+
+tag_list[2] = DefineShape;

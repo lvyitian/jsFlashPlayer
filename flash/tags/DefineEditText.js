@@ -68,3 +68,5 @@ class DefineEditText extends genericTag{
 		return true;
 	}
 }
+
+tag_list[37] = DefineEditText;

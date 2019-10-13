@@ -59,3 +59,5 @@ class DefineFont extends DefineShape{
 		return true;
 	}
 }
+
+tag_list[10] = DefineFont;

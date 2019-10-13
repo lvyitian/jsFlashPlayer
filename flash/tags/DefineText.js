@@ -98,3 +98,5 @@ class DefineText extends genericTag{
 	}
 
 }
+
+tag_list[11] = DefineText;

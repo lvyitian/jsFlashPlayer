@@ -119,3 +119,4 @@ class DefineBitsJPEG2 extends genericTag{
 		return false;
 	}
 }
+tag_list[21] = DefineBitsJPEG2;

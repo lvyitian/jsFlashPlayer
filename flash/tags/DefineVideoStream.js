@@ -25,3 +25,5 @@ class DefineVideoStream extends genericTag{
 		return true;
 	}
 }
+
+tag_list[60] = DefineVideoStream;

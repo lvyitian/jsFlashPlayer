@@ -40,3 +40,5 @@ class SoundStreamHead extends genericTag{
 		return true;
 	}
 }
+
+tag_list[18] = SoundStreamHead;

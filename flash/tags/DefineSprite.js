@@ -33,3 +33,5 @@ class DefineSprite extends genericTag{
 
 	
 }
+
+tag_list[39] = DefineSprite;

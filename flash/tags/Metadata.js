@@ -3,3 +3,5 @@ class Metadata extends genericTag{
 		return true;
 	}
 }
+
+tag_list[77] = Metadata;

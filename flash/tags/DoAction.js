@@ -21,3 +21,5 @@ class DoAction extends genericTag{
 		return true;
 	}
 }
+
+tag_list[12] = DoAction;

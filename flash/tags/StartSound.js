@@ -47,3 +47,5 @@ class StartSound extends genericTag{
 		return true;
 	}
 }
+
+tag_list[15] = StartSound;

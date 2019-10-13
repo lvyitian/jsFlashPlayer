@@ -28,3 +28,5 @@ class VideoFrame extends genericTag{
         return true;
 	}
 }
+
+tag_list[61] = VideoFrame;

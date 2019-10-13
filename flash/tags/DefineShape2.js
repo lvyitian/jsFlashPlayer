@@ -46,3 +46,5 @@ class DefineShape2 extends DefineShape{
 		return true;
 	}
 }
+
+tag_list[22] = DefineShape2;

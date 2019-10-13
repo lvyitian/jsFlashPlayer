@@ -118,3 +118,5 @@ class DefineBitsLossless2 extends genericTag{
 
 	}
 }
+
+tag_list[36] = DefineBitsLossless2;

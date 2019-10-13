@@ -75,7 +75,6 @@ class DisplayList{
 			let el = this.list[i];
 			if(!el) continue;
 
-
 			switch (el.type) {
 				case this.TYPE_PlaceObject2:
 					if(el.hasClipActions){

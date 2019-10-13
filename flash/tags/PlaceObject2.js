@@ -1,7 +1,6 @@
 class PlaceObject2 extends genericTag{
 	read(){
         let flags = this.read_UI8();
-        
         let obj = {
             type : this.header.code,
             typeName : 'PlaceObject2',
@@ -92,3 +91,4 @@ class PlaceObject2 extends genericTag{
 		return true;
 	}
 }
+tag_list[26] = PlaceObject2;

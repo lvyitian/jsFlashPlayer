@@ -71,6 +71,12 @@
         "flash/tags/DoAction.js",
         "flash/tags/DefineVideoStream.js",
         "flash/tags/DefineBitsJPEG2.js",
+        "flash/tags/SetBackgroundColor.js",
+        "flash/tags/ExportAssets.js",
+        "flash/tags/ShowFrame.js",
+        "flash/tags/End.js",
+        "flash/tags/FileAttributes.js",
+        "flash/tags/SoundStreamBlock.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

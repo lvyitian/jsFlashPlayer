@@ -12,3 +12,5 @@ class DoABC extends genericTag{
 		return false;		
 	}
 }
+
+tag_list[82] = DoABC;

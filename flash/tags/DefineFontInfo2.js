@@ -38,3 +38,5 @@ class DefineFontInfo2 extends genericTag{
 		return true;
 	}
 }
+
+tag_list[13] = DefineFontInfo;

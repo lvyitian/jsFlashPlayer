@@ -127,3 +127,5 @@ class DefineBitsLossless extends genericTag{
 		return width;
 	}
 }
+
+tag_list[20] = DefineBitsLossless;

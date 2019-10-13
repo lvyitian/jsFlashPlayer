@@ -146,72 +146,7 @@ class FlashCore{
         return true;
     }
 
-    read_tag_info(){
-        let temp = this.data.read_UI16();
-        let tag_code = (temp >> 6) & 0b1111111111;
-        let tag_length = temp & 0b111111;
-
-        if(tag_length==63){
-            tag_length = this.data.read_UI32();
-        }
-
-        //console.log('tag_code: '+tag_code);
-        //console.log('tag_length: '+tag_length);
-        return {code:tag_code, length:tag_length};
-    }
-
-    process_SoundStreamHead2(){
-		this.debug('tag SoundStreamHead2');
-		let shift=4;
-		let temp = this.data.read_UI8();
-
-		let playbackSoundRate = (temp >> 2) & 0b11;
-		let playbackSoundSize = (temp >> 1) & 1;
-		let playbackSoundType = temp & 1;
-
-		/*this.debug('playbackSoundRate:',playbackSoundRate);
-		this.debug('playbackSoundSize:',playbackSoundSize);
-		this.debug('playbackSoundType:',playbackSoundType);*/
-
-		temp = this.data.read_UI8();
-		let streamSoundCompression = (temp>>4)&0b1111;
-		let streamSoundRate = (temp>>2)&0b11;
-		let streamSoundSize = (temp>>1)&1;
-		let streamSoundType = temp&1;
-
-		/*this.debug('streamSoundCompression:',streamSoundCompression);
-		this.debug('streamSoundRate:',streamSoundRate);
-		this.debug('streamSoundSize:',streamSoundSize);
-		this.debug('streamSoundType:',streamSoundType);*/
-
-		let streamSoundSampleCount = this.data.read_UI16();
-		//this.debug('streamSoundSampleCount:',streamSoundSampleCount);'
-		
-		let latencySeek = 0;
-
-		if(streamSoundCompression==2){ //mp3
-			latencySeek = this.data.read_UI16();
-			//this.debug('latencySeek:',latencySeek);
-		}
-
-		this.sound_stream = new SoundStream(
-			playbackSoundRate,
-			playbackSoundSize,
-			playbackSoundType,
-			streamSoundCompression,
-			streamSoundRate,
-			streamSoundSize,
-			streamSoundType,
-			streamSoundSampleCount,
-			latencySeek,
-            this
-			);
-
-		//this.debug(this.sound_stream);
-    }
-
     process_ShowFrame(){
-        this.debug('tag ShowFrame');
         this.do_frame_finish=true;
         debug.stop();
 
@@ -234,283 +169,26 @@ class FlashCore{
         this.timeline.add_frame(this.data.cur,this.current_frame);
         return ret;
     }
-
-    process_FileAttributes(){
-        this.debug('tag FileAttributes');
-        let obj = {};
-        let t = this.data.read_UI8();
-
-        obj.hardwareAcceleration = ((t & 0b01000000) > 0);
-        obj.useGPU =        ((t & 0b00100000) > 0);
-        obj.hasMetadata =   ((t & 0b00010000) > 0);
-        obj.actionScript3 = ((t & 0b00001000) > 0);
-        obj.useNetwork =    ((t & 0b00000001) > 0);
-
-        this.file_attributes = obj;
-
-        this.data.cur+=3;
-        this.action_script3 = obj.actionScript3;
-        return true;
-    }
-
-    process_SetBackgroundColor(){
-        this.debug('tag SetBackgroundColor');
-        let r = this.data.read_UI8();
-        let g = this.data.read_UI8();
-        let b = this.data.read_UI8();
-        this.display_list.set_background_color(r,g,b);
-        return true;
-    }
-
-    count_mp3_frames(mp3_data){
-
-        let frames_count=0;
-        let cur=0;
-
-        while(cur<mp3_data.length){
-
-            let obj={};
-
-            let header = mp3_data[cur]<<24; cur++;
-            header |= mp3_data[cur]<<16; cur++;
-            header |= mp3_data[cur]<<8; cur++;
-            header |= mp3_data[cur]; cur++;
-
-            if(((header>>21)&0x7ff) != 0x7ff){
-                return frames_count;
-            }
-
-            frames_count++;
-
-            obj.mpeg_version = (header>>19) & 0b11;
-            obj.layer = (header>>17) & 0b11;
-            obj.protection = (header>>16) & 0b1;
-            obj.bitrate = (header>>12) & 0b1111;
-            obj.samplingRate = (header>>10) & 0b11;
-            obj.paddingBit = (header>>9) & 0b1;
-
-            obj.channelMode = (header>>6) & 0b11;
-            obj.modeExtension = (header>>4) & 0b11;
-            obj.copyright = (header>>3) & 0b1;
-            obj.original = (header>>2) & 0b1;
-            obj.emphasis = header & 0b11;
-
-            let bitrate_table_mpeg1 = [0,32,40,48,56,64,80,96,112,128,160,192,224,256,320,-1];
-            let bitrate_table_mpeg2 = [0,8,16,24,32,40,48,56,64,80,96,112,128,144,160,-1];
-
-            obj.bitrate_value = (obj.mpeg_version == 3) ? bitrate_table_mpeg1[obj.bitrate]*1000 : bitrate_table_mpeg2[obj.bitrate]*1000;
-
-            let sample_rate_table_mpeg1   = [44100,48000,32000];
-            let sample_rate_table_mpeg2   = [22050,24000,16000];
-            let sample_rate_table_mpeg2_5 = [11025,12000,8000];
-
-            obj.sample_rate_value = (obj.mpeg_version == 3) ? 
-                sample_rate_table_mpeg1[obj.samplingRate] : 
-                (
-                    (obj.mpeg_version == 2) ? 
-                    sample_rate_table_mpeg2[obj.samplingRate] : 
-                    sample_rate_table_mpeg2_5[obj.samplingRate]
-                );
-
-            obj.data_size = Math.floor((((obj.mpeg_version == 3) ? 144 : 72 ) * obj.bitrate_value) / obj.sample_rate_value + obj.paddingBit-4);
-
-
-            cur+=obj.data_size;
-        }
-        return frames_count;
-    }
-
-    process_SoundStreamBlock(length){
-        this.debug('tag SoundStreamBlock');
-        
-        let sstream = this.sound_stream;
-        //this.debug(sstream);
-        switch (sstream.streamSoundCompression) {
-            case 2:{
-                
-                let obj={};
-                let data = (new Uint8Array(this.raw_data.buffer,this.data.cur+4,length-4)).slice(0);
-
-
-                let frames_count = this.count_mp3_frames(data);
-                
-                sstream.append_cbuffer(data,frames_count);
-
-                return true;
-
-                }break;
-            default:
-                alert("TODO: SoundStreamBlock compression "+sstream.streamSoundCompression);
-                return false;
-                break;
-        }
-
-        return false;
-    }
+    
 
     process_tag(){
+        let tag = this.data.read_tag_data();
+        let tag_processor = tag_list[tag.code];
 
-        this.last_tag_addr = this.data.cur;
-        let tag = this.read_tag_info();
-        let tag_data = new Uint8Array(this.raw_data.buffer,this.data.cur,tag.length);
-        let tag_obj = {
-            header: tag,
-            data: tag_data
-        };
-
-        //console.log(tag_obj);
-
-        switch(tag.code){
-            case 0: //END OF FILE
-                this.debug('EndOfFile');
-
-                //return false;
-                return this.reset();
-            break;
-            case 1:
-                return this.process_ShowFrame();
-            break;
-            case 2: //DefineShape
-                this.data.cur+=tag.length;
-                return (new DefineShape(this,tag_obj)).no_error;
-            case 9:
-                return this.process_SetBackgroundColor();
-            break;
-            case 10:
-                this.data.cur+=tag.length;
-                return (new DefineFont(this,tag_obj)).no_error;
-            break;
-            case 11:
-                this.data.cur+=tag.length;
-                return (new DefineText(this,tag_obj)).no_error;
-            break;
-            case 12:
-                this.data.cur+=tag.length;
-                return (new DoAction(this,tag_obj)).no_error;
-            break;
-            case 13:
-            	this.data.cur+=tag.length;
-                return (new DefineFontInfo(this,tag_obj)).no_error;
-            break;
-            case 14: //DefineSound
-                this.data.cur+=tag.length;
-                return (new DefineSound(this,tag_obj)).no_error;
-            break;
-            case 15: //StartSound
-                this.data.cur+=tag.length;
-                return (new StartSound(this,tag_obj)).no_error;
-            break;
-            case 18:
-                this.data.cur+=tag.length;
-                return (new SoundStreamHead(this,tag_obj)).no_error;
-            break;
-            case 19:{
-                let next=this.data.cur+tag.length;
-                let t = this.process_SoundStreamBlock(tag.length);
-                if(!t)
-                    return false;
-                this.data.cur=next;
-                break;
-            }
-            case 20:
-                this.data.cur+=tag.length;
-                return (new DefineBitsLossless(this,tag_obj)).no_error;
-            break;
-            case 21:
-                this.data.cur+=tag.length;
-                return (new DefineBitsJPEG2(this,tag_obj)).no_error;
-            break;
-            case 22:
-                this.data.cur+=tag.length;
-                return (new DefineShape2(this,tag_obj)).no_error;
-            break;
-            case 24: //protect
-                this.debug('tag Protect');
-                this.data.cur+=tag.length;
-            break;
-        	case 26:
-                this.data.cur+=tag.length;
-                return (new PlaceObject2(this,tag_obj)).no_error;
-        	break;
-            case 28:
-                this.data.cur+=tag.length;
-                return (new RemoveObject2(this,tag_obj)).no_error;
-            break;
-            case 32:
-                this.data.cur+=tag.length;
-                return (new DefineShape3(this,tag_obj)).no_error;
-            break;
-            case 36:
-                this.data.cur+=tag.length;
-                return (new DefineBitsLossless2(this,tag_obj)).no_error;
-            break;
-        	case 37:
-        		this.data.cur+=tag.length;
-                return (new DefineEditText(this,tag_obj)).no_error;
-        	break;
-            case 39:
-                this.data.cur+=tag.length;
-                return (new DefineSprite(this,tag_obj)).no_error;
-            break;
-            case 45:
-            	this.process_SoundStreamHead2();
-            break;
-            case 48:
-                this.data.cur+=tag.length;
-                return (new DefineFont2(this,tag_obj)).no_error;
-            break;
-            case 56:
-                this.data.cur+=tag.length;
-                this.debug('skip_tag exportAssets');
+        if(typeof(tag_processor) == "undefined"){
+            if(this.skip_tags.indexOf(tag.code)>=0){
                 return true;
-            break;
-            case 60:
-                this.data.cur+=tag.length;
-                return (new DefineVideoStream(this,tag_obj)).no_error;
-            break;
-            case 61:
-                this.data.cur+=tag.length;
-                return (new VideoFrame(this,tag_obj)).no_error;
-            break;
-            case 62:
-                this.data.cur+=tag.length;
-                return (new DefineFontInfo2(this,tag_obj)).no_error;
-            break;
-            case 77:
-                this.data.cur+=tag.length;
-                return (new Metadata(this,tag_obj)).no_error;
-            break;
-            case 69:
-                return this.process_FileAttributes();
-            break;
-            case 82:{
-                let t = new DoABC(this,tag_obj);
-                this.data.cur+=tag.length;
-                return t.no_error;
-            }break;
-
-            case 86:{
-                let t = new DefineSceneAndFrameLabelData(this,tag_obj);
-                this.data.cur+=tag.length;
-                return t.no_error;
             }
-            break;
-            default:
-                if(this.skip_tags.indexOf(tag.code)>=0){
-                    this.data.cur+=tag.length;
-                    return true;
-                }
-                this.debug("unimplemented tag: #"+tag.code);
-                let skip = confirm('Skip unimplemented tag #'+tag.code+' ?');
-                this.data.cur+=tag.length;
-                if(skip){
-                    this.skip_tags.push(tag.code);
-		            return true;
-                }
-                return false;
-            break;
+            this.debug("unimplemented tag: #"+tag.code);
+            let skip = confirm('Skip unimplemented tag #'+tag.code+' ?');
+            if(skip){
+                this.skip_tags.push(tag.code);
+                return true;
+            }
+            return false;
         }
-        return true;
+        
+        return (new tag_processor(this,tag)).no_error;
     }
 
     process(){
@@ -663,12 +341,6 @@ class FlashCore{
         document.body.appendChild(link);
         link.click();
         this.blob = new Uint8Array(0);
-    }
-
-    repeat_current_tag(){
-        this.data.cur = this.last_tag_addr;
-        requestAnimationFrame(this.draw.bind(this));
-        this.debug('--------repeat-current-tag---------')
     }
 
     continue_processing(){

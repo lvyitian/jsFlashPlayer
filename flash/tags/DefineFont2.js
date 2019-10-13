@@ -136,4 +136,5 @@ class DefineFont2 extends DefineShape{
 		
 	}
 }
-	
+
+tag_list[48] = DefineFont2;

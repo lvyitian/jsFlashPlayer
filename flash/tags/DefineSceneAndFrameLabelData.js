@@ -25,3 +25,5 @@ class DefineSceneAndFrameLabelData extends genericTag{
 		return true;
 	}
 }
+
+tag_list[86] = DefineSceneAndFrameLabelData;

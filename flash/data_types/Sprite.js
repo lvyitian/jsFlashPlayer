@@ -19,13 +19,7 @@ class Sprite{
 		let tag;
 		do{
 			tag = tags[this.cur_tag];
-			let tag_obj = {
-				header : {
-					code : tag.code,
-					length : tag.length
-				},
-				data : tag.data
-			};
+			let tag_obj = tag;
 			//console.log(tag);
 			let r = true;
 			switch (tag.code) {
