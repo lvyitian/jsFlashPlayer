@@ -16,7 +16,9 @@
     }
   },
 
-  "web_accessible_resources": ["helpers/ffmpeg_wrapper/ffmpeg.wasm"],
+  "web_accessible_resources": [
+    "helpers/ffmpeg_wrapper/ffmpeg.wasm"
+  ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -24,12 +26,12 @@
       "match_about_blank": true,
       "all_frames": true,
       "js": [
+        "helpers/ffmpeg_wrapper/ffmpeg_wrapper.js",
+        "helpers/ffmpeg_wrapper/ffmpeg.js",
         "helpers/pako/pako_inflate.min.js",
         "helpers/lzma/lzma-d-min.js",
         "helpers/query.js",
         "helpers/debug.js",
-        "helpers/ffmpeg_wrapper/ffmpeg_wrapper.js",
-        "helpers/ffmpeg_wrapper/ffmpeg.js",
         "flash/interface/FlashParser.js",
         "flash/AVM2.js",
         "flash/AVM.js",
@@ -77,6 +79,7 @@
         "flash/tags/End.js",
         "flash/tags/FileAttributes.js",
         "flash/tags/SoundStreamBlock.js",
+        "flash/tags/Protect.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

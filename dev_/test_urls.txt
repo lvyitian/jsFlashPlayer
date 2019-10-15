@@ -1,0 +1,174 @@
+---------------- almost ---------------
+
+https://z0r.de/1198		(preloader) [haruhi]
+https://z0r.de/125		(preloader)
+https://z0r.de/35		(preloader) [win xp]
+https://z0r.de/126		(preloader)
+https://z0r.de/90		(gradient fill)
+https://z0r.de/5720		(gradient fill)
+https://z0r.de/117		(Clip Actions in PlaceObject2)
+https://z0r.de/281		(as2 _root)
+https://z0r.de/2692		(video codec 4)
+https://z0r.de/463		(video codec 4)
+https://z0r.de/135		(tag #8)
+https://z0r.de/293		(tag #8)
+https://z0r.de/5128		(tag #8)
+https://z0r.de/41		(tag #8)
+https://z0r.de/194		(reading color transform from PlaceObject2)		
+https://z0r.de/200		(reading color transform from PlaceObject2)
+https://z0r.de/613		(reading color transform from PlaceObject2)
+https://z0r.de/5561		(TODO: useOutlines)
+https://z0r.de/2440		(tag #25)
+https://z0r.de/3067		(tag #34)
+https://z0r.de/202		(tag #56)
+https://z0r.de/285		(tag #75)
+https://z0r.de/189		(tag #75)
+https://z0r.de/1434		(tag #75)
+https://z0r.de/6666		(tag #83)
+https://z0r.de/6112		(tag #83)
+https://z0r.de/6867		(as2 action 0x9f)
+https://z0r.de/7870		(sound codec 1)(as2 action 0x9f)
+https://z0r.de/5856		(TextEdit useOutlines) [timebomb.swf]
+https://z0r.de/6715		(video artefact) (squerrel)
+https://z0r.de/7321		(video artefact)
+https://z0r.de/3933		(video artefact)
+https://z0r.de/4554		(audio decoder fails)
+https://z0r.de/3664		(video) (audio decoder fails)
+
+----------------- ok -----------------
+https://z0r.de/5727
+https://z0r.de/7816
+https://z0r.de/259		
+https://z0r.de/196
+https://z0r.de/6296
+https://z0r.de/5709
+https://z0r.de/137		(dont hurt me) (shapes)
+https://z0r.de/85
+https://z0r.de/100
+https://z0r.de/56
+https://z0r.de/652
+https://z0r.de/2623		(ikamusume)
+https://z0r.de/1296
+https://z0r.de/6756
+https://z0r.de/2701
+https://z0r.de/5618
+https://z0r.de/4321
+https://z0r.de/5848
+https://z0r.de/2931
+https://z0r.de/2869
+https://z0r.de/5367
+https://z0r.de/1663
+https://z0r.de/5639		(duck)
+https://z0r.de/6865
+https://z0r.de/4856
+https://z0r.de/7020
+https://z0r.de/2541
+https://z0r.de/520
+https://z0r.de/3164
+https://z0r.de/6425
+https://z0r.de/255
+https://z0r.de/185
+https://z0r.de/7342
+https://z0r.de/5476
+https://z0r.de/1201
+https://z0r.de/4562
+https://z0r.de/5146
+https://z0r.de/611
+https://z0r.de/806
+https://z0r.de/300
+https://z0r.de/284
+https://z0r.de/203
+https://z0r.de/73		(as2, bitlossless, sound)
+https://z0r.de/38		(bitlossless, sound)
+https://z0r.de/1311		(as2, text, bitLossless, sound)  (guru guru mawaru)
+https://z0r.de/7190		(video, sound) (tails)
+https://z0r.de/3401		(video)	(portal gun)
+https://z0r.de/7639		(video) (JPEG)
+https://z0r.de/3924		(video)
+https://z0r.de/4781		(video)
+https://z0r.de/134		(video)
+https://z0r.de/163		(images, sound)
+https://z0r.de/294		(video)
+https://z0r.de/401		(text, bitLossless, sound) (lurk more) 
+https://z0r.de/1544		(video)	(lucky star)
+https://z0r.de/2355		(video)
+https://z0r.de/7160		(video)
+https://z0r.de/3506		(video)
+https://z0r.de/5413		(video)
+https://z0r.de/7828		(video)
+https://z0r.de/4966		(video)
+https://z0r.de/2276		(video)
+https://z0r.de/5299		(video)
+https://z0r.de/4785		(video)
+https://z0r.de/2427		(video)
+https://z0r.de/2038		(video)
+https://z0r.de/4354		(video)
+https://z0r.de/4918		(video)
+
+https://z0r.de/2540		(images+sound)
+https://z0r.de/1698		(images+sound)
+https://z0r.de/3919		(video)
+https://z0r.de/3930		(video)
+https://z0r.de/4584		(video)
+https://z0r.de/2426
+https://z0r.de/3578
+https://z0r.de/1418		(potemayo)
+https://z0r.de/1280
+https://z0r.de/196
+
+---------------- fail --------------
+
+https://z0r.de/29       (reading color transform from PlaceObject2)
+https://z0r.de/1976		(reading color transform from PlaceObject2)	
+https://z0r.de/3920		(reading color transform from PlaceObject2)	
+https://z0r.de/5		(reading color transform from PlaceObject2)
+https://z0r.de/7101		(parse error(!!!))
+https://z0r.de/1959		(parse error(!!!))
+https://z0r.de/6489		(gradient fill)
+https://z0r.de/3360		(gradient fill)
+https://z0r.de/17		(as2 action 0x8c)
+https://z0r.de/2586		(video codec 4)
+https://z0r.de/5787		(video codec 4)
+https://z0r.de/5549		(video codec 4)
+https://z0r.de/352		(tag #8)
+https://z0r.de/6196		(tag #8)
+https://z0r.de/314		(tag #35)
+https://z0r.de/6452		(tag #25)
+https://z0r.de/286		(tag #34)
+https://z0r.de/6262		(tag #35)
+https://z0r.de/5597		(tag #35)
+https://z0r.de/3967		(tag #43)
+https://z0r.de/2911		(tag #56)
+https://z0r.de/6302		(tag #65)
+https://z0r.de/6732		(tag #75)
+https://z0r.de/6165		(tag #75)
+https://z0r.de/290		(tag #75)
+https://z0r.de/2920		(tag #75)
+https://z0r.de/6404		(tag #75)
+https://z0r.de/4689		(tag #75)
+https://z0r.de/6197		(tag #75)
+https://z0r.de/6305		(tag #65)
+https://z0r.de/182		(tag #83)
+https://z0r.de/6142		(tag #83)
+https://z0r.de/6219		(tag #83)
+https://z0r.de/36		(tag #83)
+https://z0r.de/6342		(tag #83)
+https://z0r.de/6227		(tag #83)
+https://z0r.de/6940		(tag #83)
+https://z0r.de/6533		(tag #83)
+https://z0r.de/6284		(tag #83)
+https://z0r.de/6606		(tag #83)
+https://z0r.de/6433		(tag #83)
+https://z0r.de/6080		(tag #83)
+https://z0r.de/6318		(tag #83)
+https://z0r.de/5606		(tag #83)
+https://z0r.de/6669		(tag #83)
+https://z0r.de/6742		(tag #83)
+https://z0r.de/1784		(as3 opcode 0x60)
+https://z0r.de/2189		(StartSound outPoint)
+https://z0r.de/7373		(as3 trait 8)
+https://z0r.de/3052		(sound codec 3)
+https://z0r.de/7769		(as2 _root)
+https://z0r.de/4819		(font kerning table)
+
+https://dagobah.net/flash/timebomb.swf

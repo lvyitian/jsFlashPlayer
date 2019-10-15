@@ -53,7 +53,9 @@ class FlashCore{
             me.process();
          },me.download_progress);
 
-        
+        /*setTimeout(function(){
+            me.save_blob(me.blob);
+        },10000); */  
     }
 
     setPako(p){

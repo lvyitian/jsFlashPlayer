@@ -58,17 +58,45 @@ var Libav = {
         /*var d2 = new Date();
         console.log("image fill time:",(d2-d1));*/
         return decoded;
+    },
+
+    decode_mp3_chunk(chunk){
+        if(this._decode_mp3_chunk == undefined){
+            console.log('"decode_mp3_chunk" is not loaded!');
+            return false;
+        }
+
+        let hchunk = this._arrayToHeap(chunk);
+        let out_array_length_ptr=Module._malloc(4);
+        let out_array_ptr=Module._malloc(4);
+
+        this._decode_mp3_chunk(hchunk, chunk.length, out_array_ptr, out_array_length_ptr);
+
+        let decoded_length = Module.getValue(out_array_length_ptr, 'i32');
+        let decoded_offset = Module.getValue(out_array_ptr,'*');
+        
+        let decoded = new Float32Array(Module.HEAPF32.buffer,decoded_offset,decoded_length);
+        //let decoded = new Uint8ClampedArray(Module.HEAP8.buffer,decoded_offset,decoded_length);
+        //console.log(Module);
+
+        Module._free(out_array_ptr);
+        Module._free(out_array_length_ptr);
+        Module._free(decoded_offset);
+
+        return decoded;
     }
 }
-
 
 var Module = {
     
     noInitialRun: true,
     onRuntimeInitialized : function(){
+        console.log('Initialise');
+
         ccall("main");
 
         Libav._decode_frame = Module.cwrap('decode_frame','number',['number','number','number','number']);
+        Libav._decode_mp3_chunk = Module.cwrap('decode_mp3_chunk','number',['number','number','number','number']);
         /*var array = new Uint8Array(5);
         
         for(var i=0;i<5;i++){
@@ -78,7 +106,6 @@ var Module = {
         var heapBytes = this._arrayToHeap(array);
         var ret = decode_frame(heapBytes.byteOffset,array.length);
         console.log(ret);*/
-
     },
 
     locateFile : function(arg){
@@ -90,3 +117,12 @@ var Module = {
         }
     }
 }
+///*
+/*
+let t = ['libavcodec.wasm'];
+for (let i=0;i<t.length; i++){
+    t[i] = Module.locateFile(t[i]);
+}
+
+Module.dynamicLibraries = t;
+*/

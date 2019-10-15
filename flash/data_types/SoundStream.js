@@ -1,5 +1,86 @@
 "use strict";
 
+class SoundBuffer {
+    constructor(ctx, sampleRate, channel_count, bufferSize = 6, debug = false) {
+        this.ctx = ctx;
+        this.sampleRate = sampleRate;
+        this.bufferSize = bufferSize;
+        this.debug = debug;
+        this.chunks = [];
+        this.isPlaying = false;
+        this.startTime = 0;
+        this.lastChunkOffset = 0;
+       	this.channel_count = channel_count;
+
+       	if(this.sampleRate<3000)
+       		this.sampleRate=3000;
+    }
+    createChunk(chunk) {
+    	//console.log(chunk);
+    	var audioBuffer;
+    	if(this.channel_count==1)
+        	audioBuffer = this.ctx.createBuffer(this.channel_count, chunk[0].length, this.sampleRate);
+        else
+        	audioBuffer = this.ctx.createBuffer(this.channel_count, chunk[0].length, this.sampleRate);
+        //var audioBuffer = this.ctx.createBuffer(2, chunk.length, 44000); 
+        
+        for(let i=0;i<this.channel_count;i++){
+        	audioBuffer.getChannelData(i).set(chunk[i]);
+        }
+
+        audioBuffer.getChannelData(0).set(chunk[0]);
+
+        var source = this.ctx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(this.ctx.destination);
+        source.onended = (e) => {
+            this.chunks.splice(this.chunks.indexOf(source), 1);
+            if (this.chunks.length == 0) {
+                this.isPlaying = false;
+                this.startTime = 0;
+                this.lastChunkOffset = 0;
+            }
+        };
+        return source;
+    }
+    log(data) {
+        if (this.debug) {
+            console.log(new Date().toUTCString() + " : " + data);
+        }
+    }
+    addChunk(data) {
+        if (this.isPlaying && (this.chunks.length > this.bufferSize)) {
+            this.log("chunk discarded");
+            return; // throw away
+        }
+        else if (this.isPlaying && (this.chunks.length <= this.bufferSize)) { // schedule & add right now
+            this.log("chunk accepted");
+            let chunk = this.createChunk(data);
+            chunk.start(this.startTime + this.lastChunkOffset);
+            this.lastChunkOffset += chunk.buffer.duration;
+            this.chunks.push(chunk);
+        }
+        else if ((this.chunks.length < (this.bufferSize / 2)) && !this.isPlaying) { // add & don't schedule
+            this.log("chunk queued");
+            let chunk = this.createChunk(data);
+            this.chunks.push(chunk);
+        }
+        else { // add & schedule entire buffer
+            this.log("queued chunks scheduled");
+            this.isPlaying = true;
+            let chunk = this.createChunk(data);
+            this.chunks.push(chunk);
+            this.startTime = this.ctx.currentTime;
+            this.lastChunkOffset = 0;
+            for (let i = 0; i < this.chunks.length; i++) {
+                let chunk = this.chunks[i];
+                chunk.start(this.startTime + this.lastChunkOffset);
+                this.lastChunkOffset += chunk.buffer.duration;
+            }
+        }
+    }
+}
+
 
 class SoundStream{
 	constructor(
@@ -30,12 +111,14 @@ class SoundStream{
 		this.frames_buffered = 0;
 		this.decoded_buffer = [];
 
-		this.sound_rate_values=[5500,1100,22000,44000];
+		this.sound_rate_values=[5500,11025,22050,44100];
 
 		this.state = 0;
 
 		this.STATE_IDLE=0;
 		this.STATE_PLAYING=1;
+
+		this.sb = new SoundBuffer(this.core.audio_ctx, this.get_sample_rate(streamSoundRate), streamSoundType+1);
 	}
 
 	get_sample_rate(){
@@ -49,7 +132,7 @@ class SoundStream{
 
 	append_cbuffer(data,frames_count){
 		//console.log("appending, ",data.length);
-        let t = new Uint8Array(this.buffer.length+data.length);
+        /*let t = new Uint8Array(this.buffer.length+data.length);
         t.set(this.buffer);
         t.set(data, this.buffer.length);
         this.buffer=t;
@@ -75,11 +158,31 @@ class SoundStream{
             });
             this.buffer = new Uint8Array(0);
             this.frames_buffered = 0;
-        }
+        }*/
+
+        /*let t = new Uint8Array(this.buffer.length+data.length);
+        t.set(this.buffer);
+        t.set(data, this.buffer.length);
+        this.buffer=t;
+
+        this.frames_buffered+=frames_count;
+        if(this.frames_buffered>=30){*/
+	        /*let sb = this.sb;
+	        this.core.audio_ctx.decodeAudioData(data.slice(0).buffer,function(decoded){
+	        	//console.log(decoded);
+	        	sb.addChunk(decoded);
+	        });
+	        this.buffer = new Uint8Array(0);
+            this.frames_buffered = 0;*/
+	    //}
+		let sb = this.sb;
+	    sb.addChunk(data);
+        
+
 	}
 
 	play(){
-		
+		/*
 		if(this.decoded_buffer.length==0){
 			this.state = this.STATE_IDLE;
 			return;
@@ -95,7 +198,7 @@ class SoundStream{
             let chunk = this.decoded_buffer.shift();
             chunk.start(startTime + lastChunkOffset);
             //chunk.start();
-            lastChunkOffset += chunk.buffer.duration;
-        }
+            //lastChunkOffset += chunk.buffer.duration;
+        }*/
 	}
 }

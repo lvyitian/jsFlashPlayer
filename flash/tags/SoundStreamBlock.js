@@ -1,14 +1,15 @@
 class SoundStreamBlock extends genericTag{
 	
 
-	count_mp3_frames(mp3_data){
+	get_mp3_frames(mp3_data){
 
         let frames_count=0;
         let cur=0;
-
+        let scur=0;
+    	let frames = [];
         while(cur<mp3_data.length){
-
             let obj={};
+            scur = cur;
 
             let header = mp3_data[cur]<<24; cur++;
             header |= mp3_data[cur]<<16; cur++;
@@ -16,7 +17,9 @@ class SoundStreamBlock extends genericTag{
             header |= mp3_data[cur]; cur++;
 
             if(((header>>21)&0x7ff) != 0x7ff){
-                return frames_count;
+
+                throw ("ASDDSasdddddddddddddds");
+                return frames;
             }
 
             frames_count++;
@@ -53,10 +56,11 @@ class SoundStreamBlock extends genericTag{
 
             obj.data_size = Math.floor((((obj.mpeg_version == 3) ? 144 : 72 ) * obj.bitrate_value) / obj.sample_rate_value + obj.paddingBit-4);
 
-
+        	let frame = new Uint8Array(mp3_data.buffer, scur+mp3_data.byteOffset,(cur-scur)+obj.data_size);        
             cur+=obj.data_size;
+            frames.push(frame);
         }
-        return frames_count;
+        return frames;
     }
 
     read(){
@@ -73,10 +77,58 @@ class SoundStreamBlock extends genericTag{
            			//(new Uint8Array(this.raw_data.buffer,this.cur+4,length-4)).slice(0);
 
 
-                let frames_count = this.count_mp3_frames(data);
+                //let frames_count = this.count_mp3_frames(data);
                 //console.log(frames_count);
-                sstream.append_cbuffer(data,frames_count);
+                //sstream.append_cbuffer(data,frames_count);
+            	let frames = this.get_mp3_frames(data);
 
+                if(frames.length==0){
+                    //console.log(data);
+                    return true;
+                }
+
+                //this.core.append_blob(data);
+                //return true;
+
+
+            	for(let i=0;i<frames.length;i++){
+            		let frame = frames[i];
+            		let decoded = Libav.decode_mp3_chunk(frame);
+
+                    if(decoded.length==0){
+                        console.log("ffmpeg decoder fails!");
+                        return false;
+                    }
+
+
+                	if(sstream.get_channels_count()==1)
+                		sstream.append_cbuffer([decoded],0);
+                	else{
+                        let chan = [];
+                        chan.push(new Float32Array(decoded.length/2));
+                        chan.push(new Float32Array(decoded.length/2));
+                		let k1=0;
+                        let k2=0;
+                		for(let i=0;i<decoded.length;i++){
+                			if(i%2 == 0){
+                			    chan[0][k1] = decoded[i];
+                                k1++;
+                            }
+                            else{
+                                chan[1][k2] = decoded[i];
+                                k2++;
+                            }
+                		}
+                        sstream.append_cbuffer(chan,0);
+                	}
+                }
+                //sstream.append_cbuffer(chan,0);
+
+
+            	//console.log(decoded);
+            	//this.core.append_blob(decoded);
+                
+                //return false;
 
                 }break;
             default:
