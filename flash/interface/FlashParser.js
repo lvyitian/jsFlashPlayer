@@ -310,7 +310,9 @@ class FlashParser{
 		
 		return result;
     }
-    read_sub_array(length){
+    read_sub_array(length = -1){
+        if(length<0)
+            length = this.raw_data.length-this.cur;
         let t = new Uint8Array(this.raw_data.buffer,this.cur+this.raw_data.byteOffset,length);
         this.cur+=length;
         return t;

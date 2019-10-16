@@ -188,12 +188,14 @@ class AVM{
 	//--------------------------------------------------------------------- avm native functions ----------------------------------------------------
 
 	native_getBytesLoaded(state){
-		state.push_int(this.core.file_length);
+		let val = this.core.preloader.get_position()+this.core.reset_address;
+		console.log('getBytesLoaded:',val);
+		state.push_int(val);
 	}
 
 	native_getBytesTotal(state){
-		//all file already in memory
-		state.push_int(this.core.file_length);
+		console.log('getBytesTotal:',this.core.data.raw_data.length);
+		state.push_int(this.core.data.raw_data.length);
 	}
 
 	native_Math_floor(state, args){
@@ -404,8 +406,8 @@ class AVM{
 		if(t){
 			let offset = a.data.read_SI16();
 			state.pc+=offset;
-			console.log('TODO: Test this!');
-			return false;
+			//console.log('TODO: Test this!');
+			//return false;
 		}
 		return true;
 	}

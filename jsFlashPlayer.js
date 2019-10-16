@@ -176,7 +176,7 @@ function inject_walkaround_scipts(){
     script.remove();
 
 
-
+    
     let t = SoundBuffer.toString();
     t = t.replace("class SoundBuffer", "class __flash_player__SoundBuffer");
 
@@ -184,6 +184,7 @@ function inject_walkaround_scipts(){
     script.innerHTML=t;
     document.head.appendChild(script);
     script.remove();
+    
 
 }
 

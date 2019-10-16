@@ -28,6 +28,7 @@ class FlashCore{
         this.display_list = new DisplayList(canvas,this.dictionary);
         this.avm2 = new AVM2();
         this.avm = new AVM(this);
+        this.preloader = null;
 
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
@@ -43,6 +44,7 @@ class FlashCore{
         this.pako=null;
 
         this.do_frame_finish=false;
+
 
         this.is_firefox=(typeof(document.wrappedJSObject)!=='undefined');
         
@@ -176,6 +178,15 @@ class FlashCore{
     
 
     process_tag(){
+        if(this.preloader.is_error)
+            return false;
+        //checking if preloader already loaded this part
+        if(this.preloader.get_position()<this.data.cur-this.reset_address){
+            //console.log('preloader block -- pcur:'+this.preloader.get_position()+" cur:"+this.data.cur);
+            this.continue_processing();
+            return false;
+        }
+
         let tag = this.data.read_tag_data();
         let tag_processor = tag_list[tag.code];
 
@@ -200,6 +211,14 @@ class FlashCore{
             return;
         }
 
+        let cur = this.data.cur;
+        let data = this.data.read_sub_array();
+        this.data.cur=cur;
+        data = new FlashParser(data);
+
+        this.preloader = new Preloader(this, data);
+        //return;
+
         this.draw();
         
     }
@@ -213,10 +232,6 @@ class FlashCore{
     }
 
     draw(){
-        /*if(this.do_stop===true)
-            return false;*/
-        //console.log('draw');
-
         let interval_time = 1000 / this.frame_rate;
 
         let curtime = Date.now();
@@ -225,22 +240,17 @@ class FlashCore{
         this.redraw_interval_id = requestAnimationFrame(this.draw.bind(this));
 
         if(diff<interval_time) return;
-        this.last_redraw_time += interval_time;
+        //this.last_redraw_time += interval_time;
 
-        if(diff>1000)
+        //if(diff>1000)
             this.last_redraw_time = Date.now();
         this.do_frame_finish=false;
-        //console.log('frame:',this.current_frame);
+        
         do{
             let ret = this.process_tag();
 
             if(ret === false){
-                //console.log('stop');
-                //this.do_stop=true;
                 cancelAnimationFrame(this.redraw_interval_id);
-                /*let ctx = this.canvas.getContext('2d');
-                debug.start(ctx);*/
-                //console.log('stopped by error');
                 return false;
             }
         }while(!this.do_frame_finish);
@@ -403,7 +413,7 @@ class FlashCore{
         window.wrappedJSObject.__flashplayer_temp_data=cloneInto(obj,window);
     
         this.bug_inject_script('__flashplayer_generate_image_from_array();');
-        
+
         let src = window.wrappedJSObject.__flashplayer_temp_data.image;
         let img = new Image();
         img.src = src;

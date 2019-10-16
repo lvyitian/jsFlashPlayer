@@ -80,6 +80,7 @@
         "flash/tags/FileAttributes.js",
         "flash/tags/SoundStreamBlock.js",
         "flash/tags/Protect.js",
+        "flash/Preloader.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
       ]

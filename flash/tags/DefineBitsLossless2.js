@@ -85,10 +85,10 @@ class DefineBitsLossless2 extends genericTag{
 
 		this.core.dictionary.add(o.characterID, o);
 		if(!o.image.complete){
-			console.log('image not loaded!');
+			//console.log('image not loaded!');
 			let core = this.core;
 			o.image.onload = function(){
-				console.log('image loaded!');
+				//console.log('image loaded!');
 				core.continue_processing();
 			}
 			return false;
