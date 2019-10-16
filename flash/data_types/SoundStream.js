@@ -107,9 +107,7 @@ class SoundStream{
 		this.streamSoundSampleCount = streamSoundSampleCount;
 		this.latencySeek = latencySeek;
 
-		this.buffer = new Uint8Array(0);
-		this.frames_buffered = 0;
-		this.decoded_buffer = [];
+		this.buffer = [];
 
 		this.sound_rate_values=[5500,11025,22050,44100];
 
@@ -119,10 +117,12 @@ class SoundStream{
 		this.STATE_PLAYING=1;
 
 		if(!this.core.is_firefox){
-			this.sb = new SoundBuffer(this.core.audio_ctx, this.get_sample_rate(streamSoundRate), streamSoundType+1);
+			this.sb = new SoundBuffer(this.core.audio_ctx, this.get_sample_rate(), streamSoundType+1);
 		}else{
-			this.core.bug_inject_script("var __flashplayer_sound_buffer = new __flash_player__SoundBuffer((new window.AudioContext()),"+this.get_sample_rate(streamSoundRate)+","+(streamSoundType+1)+")");
+			this.core.bug_inject_script("var __flashplayer_sound_buffer = new __flash_player__SoundBuffer((new window.AudioContext()),"+this.get_sample_rate()+","+(streamSoundType+1)+")");
 		}
+
+		this.reset_buffer();
 	}
 
 	get_sample_rate(){
@@ -134,16 +134,39 @@ class SoundStream{
 		return this.streamSoundType +1;
 	}
 
-	append_cbuffer(data,frames_count){
+	reset_buffer(){
+		this.buffer = [];
+		for(let i=0;i<this.get_channels_count();i++){
+			this.buffer.push(new Float32Array(0));
+		}
+	}
+
+	append_cbuffer(data){
 
 		if(this.core.is_firefox){
 
-			//workaround a bug
-	        let obj = {
-	            sound_data : data 
-	        }
-	        window.wrappedJSObject.__flashplayer_temp_data=cloneInto(obj,window);
-	       	this.core.bug_inject_script("__flashplayer_sound_buffer.addChunk(__flashplayer_temp_data.sound_data)");
+			let chan = this.get_channels_count();
+			for(let i=0;i<chan;i++){
+				let t = new Float32Array(this.buffer[i].length+data[i].length);
+				t.set(this.buffer[i]);
+				t.set(data[i],this.buffer[i].length);
+				this.buffer[i] = t;
+			}
+
+			
+
+			let length = this.buffer[0].length/this.get_sample_rate();
+			//console.log('sample_length:'+length);
+			if(length > 0.15){
+				//walkaround a bug
+		        let obj = {
+		            sound_data : this.buffer
+		        }
+		        window.wrappedJSObject.__flashplayer_temp_data=cloneInto(obj,window);
+		       	this.core.bug_inject_script("__flashplayer_sound_buffer.addChunk(__flashplayer_temp_data.sound_data)");
+
+		       	this.reset_buffer();
+	       	}
 	        
 		}else{
 			let sb = this.sb;
