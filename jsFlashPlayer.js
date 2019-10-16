@@ -131,6 +131,19 @@ function create_canvas(element, width, height){
     	debug.toggle();
 	};
 
+    inject_walkaround_scipts();
+    
+    //
+
+    return canvas;
+}
+
+function inject_walkaround_scipts(){
+
+    if(typeof(window.wrappedJSObject) === 'undefined')
+        return;
+    
+
     //workaround a bug "Permission denied for set function of imagedata"
     let script = document.createElement('script');
     script.innerHTML='\
@@ -161,9 +174,17 @@ function create_canvas(element, width, height){
     ';
     document.head.appendChild(script);
     script.remove();
-    //
 
-    return canvas;
+
+
+    let t = SoundBuffer.toString();
+    t = t.replace("class SoundBuffer", "class __flash_player__SoundBuffer");
+
+    script = document.createElement('script');
+    script.innerHTML=t;
+    document.head.appendChild(script);
+    script.remove();
+
 }
 
 (function(){

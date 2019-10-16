@@ -28,7 +28,7 @@ class SoundBuffer {
         	audioBuffer.getChannelData(i).set(chunk[i]);
         }
 
-        audioBuffer.getChannelData(0).set(chunk[0]);
+        //audioBuffer.getChannelData(0).set(chunk[0]);
 
         var source = this.ctx.createBufferSource();
         source.buffer = audioBuffer;
@@ -118,7 +118,11 @@ class SoundStream{
 		this.STATE_IDLE=0;
 		this.STATE_PLAYING=1;
 
-		this.sb = new SoundBuffer(this.core.audio_ctx, this.get_sample_rate(streamSoundRate), streamSoundType+1);
+		if(!this.core.is_firefox){
+			this.sb = new SoundBuffer(this.core.audio_ctx, this.get_sample_rate(streamSoundRate), streamSoundType+1);
+		}else{
+			this.core.bug_inject_script("var __flashplayer_sound_buffer = new __flash_player__SoundBuffer((new window.AudioContext()),"+this.get_sample_rate(streamSoundRate)+","+(streamSoundType+1)+")");
+		}
 	}
 
 	get_sample_rate(){
@@ -131,74 +135,23 @@ class SoundStream{
 	}
 
 	append_cbuffer(data,frames_count){
-		//console.log("appending, ",data.length);
-        /*let t = new Uint8Array(this.buffer.length+data.length);
-        t.set(this.buffer);
-        t.set(data, this.buffer.length);
-        this.buffer=t;
 
-        this.frames_buffered+=frames_count;
-        if(this.frames_buffered>=15){
-        	let me = this;
-            //sstream.frame_num++;
-            this.core.audio_ctx.decodeAudioData(this.buffer.buffer,function(decoded){
-                //console.log('decoded',decoded);
-                //me.decoded_buffer.push(decoded);
+		if(this.core.is_firefox){
 
-				let source = me.core.audio_ctx.createBufferSource();
-
-		        source.buffer = decoded;
-		        source.connect(me.core.audio_ctx.destination);
-		        me.decoded_buffer.push(source);
-
-            },function(e){
-                console.log(e);
-                me.core.stop();
-                console.log(me);
-            });
-            this.buffer = new Uint8Array(0);
-            this.frames_buffered = 0;
-        }*/
-
-        /*let t = new Uint8Array(this.buffer.length+data.length);
-        t.set(this.buffer);
-        t.set(data, this.buffer.length);
-        this.buffer=t;
-
-        this.frames_buffered+=frames_count;
-        if(this.frames_buffered>=30){*/
-	        /*let sb = this.sb;
-	        this.core.audio_ctx.decodeAudioData(data.slice(0).buffer,function(decoded){
-	        	//console.log(decoded);
-	        	sb.addChunk(decoded);
-	        });
-	        this.buffer = new Uint8Array(0);
-            this.frames_buffered = 0;*/
-	    //}
-		let sb = this.sb;
-	    sb.addChunk(data);
-        
-
+			//workaround a bug
+	        let obj = {
+	            sound_data : data 
+	        }
+	        window.wrappedJSObject.__flashplayer_temp_data=cloneInto(obj,window);
+	       	this.core.bug_inject_script("__flashplayer_sound_buffer.addChunk(__flashplayer_temp_data.sound_data)");
+	        
+		}else{
+			let sb = this.sb;
+		    sb.addChunk(data);
+		}
 	}
 
 	play(){
-		/*
-		if(this.decoded_buffer.length==0){
-			this.state = this.STATE_IDLE;
-			return;
-		}
-
-
-		//this.state = this.STATE_PLAYING;
-		//let source = this.decoded_buffer.shift();
-		let startTime = this.core.audio_ctx.currentTime;
-        let lastChunkOffset = 0;
-
-        while (this.decoded_buffer.length>0) {
-            let chunk = this.decoded_buffer.shift();
-            chunk.start(startTime + lastChunkOffset);
-            //chunk.start();
-            //lastChunkOffset += chunk.buffer.duration;
-        }*/
+		//TODO: remove me
 	}
 }

@@ -32,13 +32,11 @@ https://z0r.de/5856		(TextEdit useOutlines) [timebomb.swf]
 https://z0r.de/6715		(video artefact) (squerrel)
 https://z0r.de/7321		(video artefact)
 https://z0r.de/3933		(video artefact)
-https://z0r.de/4554		(audio decoder fails)
-https://z0r.de/3664		(video) (audio decoder fails)
 
 ----------------- ok -----------------
 https://z0r.de/5727
 https://z0r.de/7816
-https://z0r.de/259		
+https://z0r.de/259
 https://z0r.de/196
 https://z0r.de/6296
 https://z0r.de/5709
@@ -104,7 +102,8 @@ https://z0r.de/2427		(video)
 https://z0r.de/2038		(video)
 https://z0r.de/4354		(video)
 https://z0r.de/4918		(video)
-
+https://z0r.de/4554		
+https://z0r.de/3664		(video) 
 https://z0r.de/2540		(images+sound)
 https://z0r.de/1698		(images+sound)
 https://z0r.de/3919		(video)

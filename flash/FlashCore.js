@@ -43,6 +43,8 @@ class FlashCore{
         this.pako=null;
 
         this.do_frame_finish=false;
+
+        this.is_firefox=(typeof(document.wrappedJSObject)!=='undefined');
         
         
         let me = this;
@@ -399,10 +401,9 @@ class FlashCore{
             height  : height
         }
         window.wrappedJSObject.__flashplayer_temp_data=cloneInto(obj,window);
-        let script = document.createElement('script');
-        script.innerHTML='__flashplayer_generate_image_from_array();';
-        document.head.appendChild(script);
-        script.remove();
+    
+        this.bug_inject_script('__flashplayer_generate_image_from_array();');
+        
         let src = window.wrappedJSObject.__flashplayer_temp_data.image;
         let img = new Image();
         img.src = src;
@@ -420,8 +421,12 @@ class FlashCore{
             height  : height
         }
         window.wrappedJSObject.__flashplayer_draw_data=cloneInto(obj,window);
+
+        this.bug_inject_script('__flashplayer_draw_bitmap_on_canvas();');
+    }
+    bug_inject_script(script_text){
         let script = document.createElement('script');
-        script.innerHTML='__flashplayer_draw_bitmap_on_canvas();';
+        script.innerHTML=script_text;
         document.head.appendChild(script);
         script.remove();
     }
