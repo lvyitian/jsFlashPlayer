@@ -35,6 +35,8 @@ class AVM{
 		this.global_const['Math'] = {type:this.VARTYPE_OBJ, val: this.make_math_obj()};
 
 		this.global_vars = {};
+
+		this.caller_obj = null;
 	}
 
 	make_math_obj(){
@@ -45,8 +47,9 @@ class AVM{
 		return o;
 	}
 
-	execute(actions){
+	execute(actions, caller_obj){
 		//this.debug('execute');
+		this.caller_obj = caller_obj;
 		this.error=false;
 
 		for(let i = 0; i<actions.length; i++){
@@ -70,7 +73,7 @@ class AVM{
 		let state = {
 			code : act,
 			pc : 0,
-			target: this.core,
+			target: this.caller_obj,
 			const: [],
 			stack: [],
 

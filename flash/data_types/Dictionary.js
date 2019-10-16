@@ -27,75 +27,33 @@ class Dictionary{
 		return characterID in this.dict;
 	}
 
-	draw(ctx,characterID,ratio,matrix){
+	draw(ctx,characterID,ratio,matrix,options){
 		let el = this.dict[characterID];
 		if(!el){
 			console.log("Character #"+characterID+' not found!');
 			console.log(el);
 			return false;
 		}
-		//console.log(el);
-		switch (el.type) {
-			case this.TypeVideoStream:
 
-				if(el.codecID!=2){
-					alert("TODO: Draw VideoStream codecID:"+el.codecID);
-					return false;
-				}
-
-				if(ratio==undefined){
-					console.log((new Error()).stack);
-					return false;
-				}
-				let imdat = false;
-				if(el.frames[ratio]==undefined){
-					if(el.last_frame)
-						imdat = el.last_frame;
-				}else{
-					imdat = Libav.decode_frame(el.frames[ratio],el.width,el.height);
-				}
-				if(imdat===false){
-					console.log('len:',el.frames.length);
-					console.log('ratio:',ratio);
-					console.log('frame:',el.frames);
-					return false;
-				}
-
-				el.last_frame = imdat;
-
-				var d1 = new Date();
-
-				this.core.bug_draw_image_data_to_canvas(imdat,el.width,el.height);
-
-    			/*var d2 = new Date();
-		        console.log("drawing on canvas time:",(d2-d1));
-		        var d2 = d1;*/
-		        
-				//return false;
-				/*let imd = ctx.createImageData(el.width,el.height);
-				imd.data.set(imdat);
-				console.log(imd);
-				ctx.putImageData(el.img_data,0,0);*/
-
-			break;
-
-			/*case this.TypeShape:
-				return el.draw();
-			break;*/
-			default:
-
-				if('draw' in el){
-					//console.log(matrix);
-					return el.draw(matrix);
-				}
-
-				let m = "TODO: Draw character "+el.type + ' (' + el.constructor.name+') ';
-				//alert(m);
-				console.log(m);
-				console.log(el);
-				return false;
+		if(!('set_draw_options' in el)){
+			let m = "TODO: set_draw_options for character "+el.type + ' (' + el.constructor.name+') ';
+			console.log(m);
+			console.log(el);
+			return false;
 		}
 
-		return true;
+		if(!el.set_draw_options(options)){
+			return false;
+		}
+
+		if('draw' in el){
+			el.ctx = ctx;
+			return el.draw(matrix,ratio);
+		}
+
+		let m = "TODO: Draw character "+el.type + ' (' + el.constructor.name+') ';
+		console.log(m);
+		console.log(el);
+		return false;
 	}
 }

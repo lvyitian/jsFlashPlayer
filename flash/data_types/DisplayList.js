@@ -15,6 +15,7 @@ class DisplayList{
 		this.ctx = canvas.getContext('2d');
 
 		this.actions = [];
+		this.actions_this = this.core;
 
 		this.do_abort_frame = false;
 
@@ -36,6 +37,7 @@ class DisplayList{
 
 	set_background_color(r,g,b){
 		this.background_color="rgb("+r+","+g+","+b+")";
+		//this.background_color="rgb("+0+","+255+","+0+")";
 	}
 
 	get_by_depth(depth){
@@ -51,9 +53,12 @@ class DisplayList{
 		this.do_abort_frame=false;
 
 		if(this.actions.length){
-			/*console.log('TODO: execute actions');
-			console.log(this.actions);*/
-			if(!this.core.avm.execute(this.actions)){
+			/*if(this.sprite_mode){
+				console.log('TODO: execute actions');
+				console.log(this.actions);
+				return false;
+			}*/
+			if(!this.core.avm.execute(this.actions, this.actions_this)){
 				console.log('fail to execute actions')
 				return false;
 			}
@@ -77,6 +82,7 @@ class DisplayList{
 
 			switch (el.type) {
 				case this.TYPE_PlaceObject2:
+					let options = {};
 					if(el.hasClipActions){
 						alert("TODO: DisplayList PlaceObject2 hasClipActions");
 						return false;
@@ -86,8 +92,8 @@ class DisplayList{
 						return false;
 					}
 					if(el.hasColorTransform){
-						alert("TODO: DisplayList PlaceObject2 hasColorTransform");
-						return false;
+						options.color_transform = el.color_transform;
+						//console.log(options);
 					}
 					
 					//console.log('element:',el);*/
@@ -115,15 +121,15 @@ class DisplayList{
 						return false
 					}*/
 					//this.ctx.setTransform(1,0,0,1,300,0);
-					//if(this.sprite_mode){
-					/*	console.log(i);
+					/*if(this.sprite_mode){
+						console.log(i);
 						console.log(parent_matrix);
 						console.log(el);
 						console.log(matrix);
-						*/
-					//}
+						
+					}*/
 					
-					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio, matrix)){
+					if(!this.dictionary.draw(this.ctx,el.characterID,el.ratio, matrix, options)){
 						console.log('dictionary draw fails!');
 						console.log(this.list);
 						console.log(this.dictionary);
@@ -143,5 +149,11 @@ class DisplayList{
 		}*/
 
 		return true;
+	}
+	replace_canvas(canvas){
+		this.canvas = canvas;
+		this.ctx = canvas.getContext('2d');
+		//console.warn('canvas replaced!');
+		this.ctx.setTransform(1,0,0,1,0,0);
 	}
 }

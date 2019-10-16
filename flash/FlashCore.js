@@ -240,9 +240,9 @@ class FlashCore{
         this.redraw_interval_id = requestAnimationFrame(this.draw.bind(this));
 
         if(diff<interval_time) return;
-        //this.last_redraw_time += interval_time;
+        this.last_redraw_time += interval_time;
 
-        //if(diff>1000)
+        if(diff>1000)
             this.last_redraw_time = Date.now();
         this.do_frame_finish=false;
         

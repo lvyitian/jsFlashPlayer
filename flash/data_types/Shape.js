@@ -48,6 +48,14 @@ class Shape{
 		return coord/20;
 	}
 
+	set_draw_options(options){
+		if('color_transform' in options){
+			console.log("TODO: color_transform in Shape ",options);
+			return false;
+		}
+		return true;
+	}
+
 	fill_path(ctx, path, state={x:this.base_x, y:this.base_y}){
 
 		/*this.base_x=1000;
@@ -321,6 +329,7 @@ class Shape{
 		this.base_x=x;
 		this.base_y=y;
 		this.font_size=font_size;
+		
 		
 
 		if(!this.draw_fill_shapes(this.fill_shapes))
@@ -714,11 +723,6 @@ class Shape{
 				if(e.typeFlag==0){
 					if(e.stateMoveTo){
 						t++;
-						/*if(t>0)
-						if(lines[t-1].length==1){
-							t--;
-							lines[t]=[];
-						}*/
 						if(lines[t]===undefined)
 						lines[t] = [];
 					}	
@@ -775,52 +779,6 @@ class Shape{
 				result.push(element);
 			});
 		}
-
-		//check for unnecessary moveto
-		/*let r = result;
-		result = [];
-
-		let x = 0;
-		let y = 0;
-		
-		let first=true;
-		for( let i=0; i< r.length ; i++){
-			let e = r[i];
-			if(e.typeFlag==0){
-				if(e.stateMoveTo){
-					if( (x==e.moveDeltaX) && (y==e.moveDeltaY) )
-						continue;
-					x = e.moveDeltaX;
-					y = e.moveDeltaY;
-				}
-			}else if(e.straightFlag){
-				if(e.generalLineFlag){
-					x+=e.deltaX;
-					y+=e.deltaY;
-				}else{
-					if(e.vertLineFlag){
-						y+=e.deltaY;
-					}else{
-						x+=e.deltaX;
-					}
-				}
-			}else{
-				x+=e.controlDeltaX;
-				y+=e.controlDeltaY;
-
-				x+=e.anchorDeltaX;
-				y+=e.anchorDeltaY;
-			}
-			result.push(e);
-		}
-
-		console.log(result);
-		return false;*/
-		
-		//calculate normals
-		/*ines = split_by_moveto(result);
-		console.log(lines);
-		return false;*/
 		for(let i=0;i<lines.length;i++){
 			let path = lines[i].path;
 			lines[i]={

@@ -5,11 +5,16 @@ class Preloader {
 		this.is_error = false;
 
 		this.bug_create_image_from_array = core.bug_create_image_from_array.bind(core);
+		this.bug_draw_image_data_to_canvas = core.bug_draw_image_data_to_canvas.bind(core);
+		this.bug_inject_script = core.bug_inject_script.bind(core);
 		this.dictionary = core.dictionary;
 		this.audio_ctx = core.audio_ctx;
+		this.is_firefox = core.is_firefox;
+		this.debug_mode = core.debug_mode;
 		this.pako = core.pako;
 		this.canvas = core.canvas;
 		this.ctx = core.ctx;
+		this.debug = core.debug;
 
 		let tl = [];
 		for(let i=0;i<tag_list.length;i++){
@@ -53,13 +58,4 @@ class Preloader {
 
 		this.process();
 	}
-
-	debug(...args){
-    	if(this.core.debug_mode){
-    		console.debug('flash preloader:',...args);
-
-            var argss = Array.prototype.slice.call(arguments);
-            debug.log(argss.join(' '));
-    	}
-    }
 }

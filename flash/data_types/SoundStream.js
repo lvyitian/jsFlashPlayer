@@ -144,7 +144,6 @@ class SoundStream{
 	append_cbuffer(data){
 
 		if(this.core.is_firefox){
-
 			let chan = this.get_channels_count();
 			for(let i=0;i<chan;i++){
 				let t = new Float32Array(this.buffer[i].length+data[i].length);
@@ -159,6 +158,7 @@ class SoundStream{
 			//console.log('sample_length:'+length);
 			if(length > 0.15){
 				//walkaround a bug
+
 		        let obj = {
 		            sound_data : this.buffer
 		        }

@@ -35,6 +35,7 @@
         "flash/interface/FlashParser.js",
         "flash/AVM2.js",
         "flash/AVM.js",
+        "flash/data_types/genericDrawable.js",
         "flash/data_types/Rect.js",
         "flash/data_types/SoundStream.js",
         "flash/data_types/Dictionary.js",
@@ -47,6 +48,7 @@
         "flash/data_types/Timeline.js",
         "flash/data_types/TextEdit.js",
         "flash/data_types/VideoStream.js",
+        "flash/data_types/ColorTransform.js",
         "flash/tags/genericTag.js",
         "flash/tags/DefineSceneAndFrameLabelData.js",
         "flash/tags/DoABC.js",
@@ -80,6 +82,7 @@
         "flash/tags/FileAttributes.js",
         "flash/tags/SoundStreamBlock.js",
         "flash/tags/Protect.js",
+        "flash/tags/DefineFontName.js",
         "flash/Preloader.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"

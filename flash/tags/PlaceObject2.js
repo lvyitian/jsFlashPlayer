@@ -57,8 +57,9 @@ class PlaceObject2 extends genericTag{
             if(obj.matrix===false) return false;
         }
         if(obj.hasColorTransform){
-            alert('TODO: Reading ColorTransform from PlaceObject2!');
-            return false;
+            obj.color_transform = this.read_ColorTransform();
+            if(obj.color_transform===false)
+                return false;
         }
         if(obj.hasRatio){
             obj.ratio = this.read_UI16();
@@ -90,5 +91,37 @@ class PlaceObject2 extends genericTag{
         
 		return true;
 	}
+
+    read_ColorTransform(){
+        let obj = {};
+        let t = this.read_UB(0,1);
+        obj.hasAddTerms = t.value;
+        t = this.read_UB(t.shift,1);
+        obj.hasMultTerms = t.value;
+
+        t = this.read_UB(t.shift,4);
+        obj.nbits = t.value;
+        if(obj.hasMultTerms){
+            t = this.read_UB(t.shift, obj.nbits);
+            obj.redMultTerm = t.value;
+            t = this.read_UB(t.shift, obj.nbits);
+            obj.greenMultTerm = t.value;
+            t = this.read_UB(t.shift, obj.nbits);
+            obj.blueMultTerm = t.value;
+            t = this.read_UB(t.shift, obj.nbits);
+            obj.alphaMultTerm = t.value;
+        }
+        if(obj.hasAddTerms){
+            t = this.read_UB(t.shift, obj.nbits);
+            obj.redAddTerm = t.value;
+            t = this.read_UB(t.shift, obj.nbits);
+            obj.greenAddTerm = t.value;
+            t = this.read_UB(t.shift, obj.nbits);
+            obj.blueAddTerm = t.value;
+            t = this.read_UB(t.shift, obj.nbits);
+            obj.alphaAddTerm = t.value;
+        }
+        return new ColorTransform(obj);
+    }
 }
 tag_list[26] = PlaceObject2;

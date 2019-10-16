@@ -1,5 +1,6 @@
-class Text{
+class Text extends genericDrawable{
 	constructor(type, data, core){
+		super();
 		this.data = data;
 		this.type = type;
 
