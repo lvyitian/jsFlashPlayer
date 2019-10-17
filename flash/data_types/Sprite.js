@@ -98,9 +98,9 @@ class Sprite{
 
 	tag_ShowFrame(){
 		this.debug('tag ShowFrame');
-		//console.log(this.matrix);
-		let ret;
-		ret = this.display_list.draw(this.matrix);
+
+		let ret = this.display_list.draw(this.matrix);
+		
 		if(!ret){
 			console.log(this.data.tags);
 			console.log("frame:",this.cur_frame);
@@ -109,6 +109,7 @@ class Sprite{
 		if(this.has_color_transform){
 			if(!this.color_transform.apply(this.display_list.canvas))
 				return false;
+			this.core.ctx.setTransform(1,0,0,1,0,0);
 			this.core.ctx.drawImage(this.display_list.canvas,0,0);
 			//return false;
 		}
