@@ -17,6 +17,7 @@ class Sprite{
 		this.cur_tag=0;
 
 		this.playing = true;
+		this.timeline = data.timeline;		
 
 		this.avm_obj = {}
 	}
@@ -126,10 +127,25 @@ class Sprite{
         this.playing=false;
     }
 
+    play(){
+		this.debug('play');
+        this.playing=true;
+    }
+
+
     goto_frame(frame){
         this.debug('goto_frame: ',frame);
-        this.debug('TODO: goto frame')
-        return false;
+        /*this.debug('TODO: goto frame');
+        console.log(this.timeline);
+        console.log(this.data.tags);*/
+        let addr = this.timeline.get_address(frame);
+        if(addr<0){
+        	this.debug('cannot find frame #'+frame);
+        	return false;
+        }
+        this.cur_frame = frame - 1;
+        this.cur_tag = addr;
+        return true;
     }
 
 	debug(...args){

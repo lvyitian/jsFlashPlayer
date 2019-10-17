@@ -111,15 +111,12 @@ class SoundStream{
 
 		this.sound_rate_values=[5500,11025,22050,44100];
 
-		this.state = 0;
-
-		this.STATE_IDLE=0;
-		this.STATE_PLAYING=1;
+		this.id = (Math.floor(Math.random()*100000000));
 
 		if(!this.core.is_firefox){
 			this.sb = new SoundBuffer(this.core.audio_ctx, this.get_sample_rate(), streamSoundType+1);
 		}else{
-			this.core.bug_inject_script("var __flashplayer_sound_buffer = new __flash_player__SoundBuffer((new window.AudioContext()),"+this.get_sample_rate()+","+(streamSoundType+1)+")");
+			this.core.bug_inject_script("var __flashplayer_sound_buffer_"+this.id+" = new __flash_player__SoundBuffer((new window.AudioContext()),"+this.get_sample_rate()+","+(streamSoundType+1)+")");
 		}
 
 		this.reset_buffer();
@@ -163,7 +160,7 @@ class SoundStream{
 		            sound_data : this.buffer
 		        }
 		        window.wrappedJSObject.__flashplayer_temp_data=cloneInto(obj,window);
-		       	this.core.bug_inject_script("__flashplayer_sound_buffer.addChunk(__flashplayer_temp_data.sound_data)");
+		       	this.core.bug_inject_script("__flashplayer_sound_buffer_"+this.id+".addChunk(__flashplayer_temp_data.sound_data)");
 
 		       	this.reset_buffer();
 	       	}

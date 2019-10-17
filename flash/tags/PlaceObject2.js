@@ -121,6 +121,10 @@ class PlaceObject2 extends genericTag{
             t = this.read_UB(t.shift, obj.nbits);
             obj.alphaAddTerm = t.value;
         }
+        //console.log(t);
+        if(t.shift>0)
+            this.cur++;
+
         return new ColorTransform(obj);
     }
 }
