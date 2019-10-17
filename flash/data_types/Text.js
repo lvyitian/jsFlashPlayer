@@ -8,8 +8,11 @@ class Text extends genericDrawable{
 	}
 
 	draw(parent_matrix){
+		/*if(this.data.characterID == 24){
+			console.log(this.data);
+			//return false;
+		}*/
 		//console.log('matrix',parent_matrix);
-		//console.log(this.data);
 		let matrix = parent_matrix.multiplySelf(this.data.textMatrix.matrix);
 		let ctx = this.core.ctx;
 
@@ -23,6 +26,7 @@ class Text extends genericDrawable{
 		let font;
 		let x = 0;
 		let y = 0;
+		let color;
 
 		for(let i=0;i<this.data.textRecords.length;i++){
 			let rec = this.data.textRecords[i];
@@ -68,18 +72,37 @@ class Text extends genericDrawable{
 				}
 				//console.log(String.fromCharCode(font.font_info.codeTable[glyph.glyphIndex]));
 				if(rec.styleFlagsHasColor){
-					shape.data.shapes.fillStyles[1].color = rec.textColor;
+					color = rec.textColor;
 				}
+				shape.data.shapes.fillStyles[1].color = color;
 				//console.log(rec.textHeight);
 				
 				if(!shape.draw(matrix,x,y,rec.textHeight))
 					return false;
 
 				x+=glyph.glyphAdvance;
+
+				//
+				/*if(this.data.characterID == 24){
+					if(i==2){
+						if(k==0){
+							console.log(rec);
+							return false;
+						}
+					}
+				}*/
 			}
+
+			/*if(this.data.characterID == 24){
+				if(i==2){
+					console.log(rec);
+					return false;
+				}
+			}*/
 			//console.log(rec,font);
 		}
 
+		
 
 		//console.log(this.data);
 		return true;

@@ -389,7 +389,7 @@ class Shape{
 				return false;
 				break;
 		}
-		this.ctx.closePath();
+		//this.ctx.closePath();
 		return true;
 	}
 
@@ -421,9 +421,10 @@ class Shape{
 			//ctx.fillStyle="#507070";
 			//ctx.fillRect(-400,-400,1300,1000);
 
-			if(st.fill_0.length>0 || st.fill_1.length>0)
+			if(st.fill_0.length>0 || st.fill_1.length>0){
 				if(!this.set_fill_style(st.style))
 					return false;
+			}
 			
 			if(st.cache_path===null || this.font_size !== undefined){
 				//console.log('do cache!');
@@ -432,6 +433,7 @@ class Shape{
 					this.fill_path(c,st.path);
 				st.cache_path = c;
 			}
+			//ctx.fillStyle="white";
 			ctx.fill(st.cache_path);
 			//ctx.stroke(st.cache_path);
 			//console.log(k);

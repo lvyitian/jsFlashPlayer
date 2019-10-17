@@ -61,6 +61,9 @@ class Sprite{
 				break;
 				case 1:
 					r = this.tag_ShowFrame();
+					if(this.display_list.do_abort_frame==true){
+						continue;
+					}
 				break;
 				default:
 
@@ -145,6 +148,7 @@ class Sprite{
         }
         this.cur_frame = frame - 1;
         this.cur_tag = addr;
+        //this.display_list.abort_frame();
         return true;
     }
 
