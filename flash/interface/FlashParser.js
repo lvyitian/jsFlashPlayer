@@ -216,8 +216,8 @@ class FlashParser{
             this.cur++;
 
         matrix.matrix = new DOMMatrix([
-            (matrix.scaleX>=20) ? matrix.scaleX/20 : matrix.scaleX,      matrix.rotateSkew0,
-            matrix.rotateSkew1,    (matrix.scaleY>=20) ? matrix.scaleY/20 : matrix.scaleY,
+            matrix.scaleX,      matrix.rotateSkew0,
+            matrix.rotateSkew1,    matrix.scaleY,
             matrix.translateX/20,  matrix.translateY/20
         ]);
         //console.log(matrix);
@@ -243,6 +243,18 @@ class FlashParser{
         matrix.svgMatrix.d = matrix.matrix.d;
         matrix.svgMatrix.e = matrix.matrix.e;
         matrix.svgMatrix.f = matrix.matrix.f;
+
+        matrix.is_for_bg = false;
+
+        matrix.resize_for_background_fill = function(e){
+            if(this.is_for_bg == false){
+                this.matrix.scaleX = this.matrix.scaleX/20;
+                this.matrix.scaleY = this.matrix.scaleY/20;
+                this.svgMatrix.a = this.svgMatrix.a/20;
+                this.svgMatrix.d = this.svgMatrix.d/20;
+                this.is_for_bg=true;
+            }
+        }
         
 
         return matrix;

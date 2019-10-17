@@ -361,6 +361,8 @@ class Shape{
 			case this.FILLTYPE_REPEATING_BITMAP_FILL:
 			case this.FILLTYPE_CLIPPED_BITMAP_FILL:{
 				let matrix = fill_style.bitmapMatrix;
+				matrix.resize_for_background_fill();
+				//console.log("shape_id: "+this.data.shapeID,matrix);
 				let char_id = fill_style.bitmapId;
 				let img = this.core.dictionary.get(char_id);
 				if(img===undefined){

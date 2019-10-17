@@ -66,6 +66,10 @@ class AVM{
 	debug(...args){
 		this.core.debug('avm:',...args);
 	}
+	error(...args){
+		this.core.debug('avm:',...args);
+		console.error(...args);
+	}
 
 
 
@@ -183,7 +187,7 @@ class AVM{
 			return func.val(state, args);
 		}
 
-		this.debug(func,' is not callable!');
+		this.error(func,' is not callable!');
 		return false;
 	}
 
@@ -220,7 +224,7 @@ class AVM{
 
 	action_goto_frame(a, state){
 		a.frame = a.data.read_UI16();
-		console.log('frame', a.frame);
+		//console.log('frame', a.frame);
 		//return false;
 		return state.target.goto_frame(a.frame);
 	}
@@ -264,7 +268,7 @@ class AVM{
 					o.val = a.data.read_UI8();	
 				break;
 				default:
-					console.log('TODO: type',o.type);
+					console.error('TODO: type',o.type);
 					return false;
 					break;
 			}
@@ -284,7 +288,7 @@ class AVM{
 		let f = this.search_function(function_name);
 
 		if(!(typeof f === 'function')){
-			this.debug('Call of undefined function "'+function_name+'"');
+			this.error('Call of undefined function "'+function_name+'"');
 			return false;
 		}
 		f(state,args);
@@ -319,7 +323,7 @@ class AVM{
 		let name = state.pop_value();
 		let v = this.get_variable(name, state);
 		if(v===false){
-			this.debug('Undefined var "'+name+'"');
+			this.error('Undefined var "'+name+'"');
 			return false;
 		}
 		state.stack.push(v);
@@ -329,18 +333,18 @@ class AVM{
 	action_call_method(a,state){
 		let name = state.pop_value();
 		if(!name){
-			this.debug("TODO: call as function? (P.91 of specification)");
+			this.error("TODO: call as function? (P.91 of specification)");
 			return false;
 		}
 
 		let obj = state.pop_object();
 		if(obj===false){
-			this.debug('error, object expected!')
+			this.error('error, object expected!')
 			return false;
 		}
 
 		if(!(name in obj)){
-			this.debug('error, Call undefined method "'+name+'" from ',obj);
+			this.error('error, Call undefined method "'+name+'" from ',obj);
 			return false;
 		}
 
