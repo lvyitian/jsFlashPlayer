@@ -3,6 +3,10 @@ class DefineText extends genericTag{
 		let o = {};
 
 		o.characterID = this.read_UI16();
+
+		if(this.core.dictionary.has(o.characterID))
+			return true;
+
 		o.textBounds = this.read_RECT();
 
 		o.textMatrix = this.read_MATRIX();

@@ -5,6 +5,9 @@ class DefineFont2 extends DefineShape{
 		let o = {};
 		
 		o.fontID = this.read_UI16();
+		if(this.core.dictionary.has(o.fontID)){
+			return true;
+		}
 		
 		let t=this.read_UI8();
 		

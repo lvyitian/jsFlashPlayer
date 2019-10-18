@@ -5,22 +5,36 @@ class ColorTransform{
 	}
 
 	apply(canvas){
-		
-		//console.warn('ColorTransform apply');
-		if(this.params.hasAddTerms){
-			console.log("TODO: AddTerms ColorTransform");
-			return false;
-		}
 
 		let ctx = canvas.getContext('2d');
 		let imdat = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		let p = imdat.data;
-		//console.log(p);
+
+
 		for (let i = 0; i < canvas.width*canvas.height*4; i += 4) {
-			p[i+0] = p[i+0]*this.params.redMultTerm / 256;
-			p[i+1] = p[i+1]*this.params.greenMultTerm / 256;
-			p[i+2] = p[i+2]*this.params.blueMultTerm / 256;
-			p[i+3] = p[i+3]*this.params.alphaMultTerm / 256;
+
+			if(this.params.hasAddTerms && this.params.hasMultTerms){
+				p[i+0] = Math.max(0, Math.min((p[i+0]*this.params.redMultTerm / 256) + this.params.redAddTerm,255));
+				p[i+1] = Math.max(0, Math.min((p[i+1]*this.params.redMultTerm / 256) + this.params.greenAddTerm,255));
+				p[i+2] = Math.max(0, Math.min((p[i+2]*this.params.redMultTerm / 256) + this.params.blueAddTerm,255));
+				p[i+3] = Math.max(0, Math.min((p[i+3]*this.params.redMultTerm / 256) + this.params.alphaAddTerm,255));
+
+			}else if(this.params.hasAddTerms){
+				p[i+0] = Math.max(0, Math.min(p[i+0] + this.params.redAddTerm,255));
+				p[i+1] = Math.max(0, Math.min(p[i+1] + this.params.greenAddTerm,255));
+				p[i+2] = Math.max(0, Math.min(p[i+2] + this.params.blueAddTerm,255));
+				p[i+3] = Math.max(0, Math.min(p[i+3] + this.params.blueAddTerm,255));
+			}else{
+				p[i+0] = p[i+0]*this.params.redMultTerm / 256;
+				p[i+1] = p[i+1]*this.params.greenMultTerm / 256;
+				p[i+2] = p[i+2]*this.params.blueMultTerm / 256;
+				p[i+3] = p[i+3]*this.params.alphaMultTerm / 256;
+			}
+
+		
+		//console.log(p);
+		
+			
 
 			/*p[i+0] = 255;
 			p[i+1] = 255;

@@ -2,7 +2,7 @@
 
 class FlashCore{
     constructor(url,canvas){
-    	this.debug_mode = true;
+    	this.debug_mode = false;
 
         this.debug(url);
         this.raw_data = null;
@@ -325,10 +325,10 @@ class FlashCore{
     debug(...args){
     	if(this.debug_mode){
     		console.debug('flash:',...args);
-
-            var argss = Array.prototype.slice.call(arguments);
-            debug.log(argss.join(' '));
     	}
+        
+        var argss = Array.prototype.slice.call(arguments);
+        debug.log(argss.join(' '));
     }
 
     print_address(){

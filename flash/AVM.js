@@ -6,6 +6,8 @@ class AVM{
 
 		this.VARTYPE_OBJ  = 10;
 		this.VARTYPE_NATIVE_FUNC = 11;
+		this.VARTYPE_FUNC = 12;
+		this.VARTYPE_NATIVE_CLASS_OBJ = 13;
 
 		this.al = [];
 		this.al[0x06] = this.action_play.bind(this);
@@ -13,28 +15,39 @@ class AVM{
 		this.al[0x0c] = this.action_multiply.bind(this);
 		this.al[0x0d] = this.action_divide.bind(this);
 		this.al[0x12] = this.action_not.bind(this);
+		this.al[0x17] = this.action_pop.bind(this);
 		this.al[0x1c] = this.action_get_variable.bind(this);
 		this.al[0x1d] = this.action_set_variable.bind(this);
 		this.al[0x3d] = this.action_call_function.bind(this);
+		this.al[0x40] = this.action_new_object.bind(this);
 		this.al[0x47] = this.action_add2.bind(this);
 		this.al[0x49] = this.action_equals2.bind(this);
 		this.al[0x4f] = this.action_set_member.bind(this);
 		this.al[0x52] = this.action_call_method.bind(this);
 		this.al[0x81] = this.action_goto_frame.bind(this);
+		this.al[0x87] = this.action_store_register.bind(this);
 		this.al[0x88] = this.action_constant_pool.bind(this);
 		this.al[0x8a] = this.action_wait_for_frame.bind(this);
 		this.al[0x96] = this.action_push.bind(this);
 		this.al[0x9d] = this.action_if.bind(this);
+		this.al[0x9b] = this.action_define_function.bind(this);
 		this.al[0x99] = this.action_jump.bind(this);
 
 		this.native_functions = [];
 		this.native_functions['getBytesLoaded'] = this.native_getBytesLoaded.bind(this);
 		this.native_functions['getBytesTotal'] = this.native_getBytesTotal.bind(this);
 
+		this.native_class = [];
+		this.native_class['Sound'] = function() { this.____debug = 'It is a Sound object'};
+
+		this.user_functions = [];
+
 		this.global_const = [];
 		this.global_const['Math'] = {type:this.VARTYPE_OBJ, val: this.make_math_obj()};
 
 		this.global_vars = {};
+
+		this.register = [];
 
 		this.caller_obj = null;
 	}
@@ -66,7 +79,7 @@ class AVM{
 	debug(...args){
 		this.core.debug('avm:',...args);
 	}
-	error(...args){
+	errord(...args){
 		this.core.debug('avm:',...args);
 		console.error(...args);
 	}
@@ -102,7 +115,7 @@ class AVM{
 
 			let f = this.al[a.code];
 			if(!(typeof f === 'function')){
-				this.debug(state.pc ,'code:',a.code,'(0x'+a.code.toString(16)+') is not implemented!');
+				this.errord(state.pc ,'code:',a.code,'(0x'+a.code.toString(16)+') is not implemented!');
 				console.log(act);
 				return false;
 			}
@@ -155,7 +168,7 @@ class AVM{
 
 	state_pop_object(){
 		let o = this.stack.pop();
-		if(o.type != this.avm.VARTYPE_OBJ)
+		if(o.type != this.avm.VARTYPE_OBJ || o.type != this.avm.VARTYPE_NATIVE_CLASS_OBJ)
 			return false;
 		return o.val;
 	}
@@ -187,10 +200,23 @@ class AVM{
 			return func.val(state, args);
 		}
 
-		this.error(func,' is not callable!');
+		this.errord(func,' is not callable!');
 		return false;
 	}
 
+	register_function(data){
+		this.debug('register_function: '+data.functionName);
+		this.user_functions[data.functionName] = data;
+		//console.log(data);
+	}
+
+	create_object(obj){
+		if(typeof(this.native_class[obj.name]) === 'undefined'){
+			this.errord('Creation object of unknown class '+obj.name);
+			return false;
+		}
+		return {type: this.VARTYPE_NATIVE_CLASS_OBJ , val: new this.native_class[obj.name] };
+	}
 
 	//--------------------------------------------------------------------- avm native functions ----------------------------------------------------
 
@@ -257,6 +283,11 @@ class AVM{
 			switch (o.type) {
 				case 0: //string
 					o.val = a.data.read_STRING();
+				case 4: //register number
+					o.val = a.data.read_UI8();
+				break;
+				case 5: //boolean
+					o.val = (a.data.read_UI8() == 1);
 				break;
 				case 6:
 					o.val = a.data.read_DOUBLE();
@@ -288,7 +319,7 @@ class AVM{
 		let f = this.search_function(function_name);
 
 		if(!(typeof f === 'function')){
-			this.error('Call of undefined function "'+function_name+'"');
+			this.errord('Call of undefined function "'+function_name+'"');
 			return false;
 		}
 		f(state,args);
@@ -323,7 +354,7 @@ class AVM{
 		let name = state.pop_value();
 		let v = this.get_variable(name, state);
 		if(v===false){
-			this.error('Undefined var "'+name+'"');
+			this.errord('Undefined var "'+name+'"');
 			return false;
 		}
 		state.stack.push(v);
@@ -333,18 +364,18 @@ class AVM{
 	action_call_method(a,state){
 		let name = state.pop_value();
 		if(!name){
-			this.error("TODO: call as function? (P.91 of specification)");
+			this.errord("TODO: call as function? (P.91 of specification)");
 			return false;
 		}
 
 		let obj = state.pop_object();
 		if(obj===false){
-			this.error('error, object expected!')
+			this.errord('error, object expected!')
 			return false;
 		}
 
 		if(!(name in obj)){
-			this.error('error, Call undefined method "'+name+'" from ',obj);
+			this.errord('error, Call undefined method "'+name+'" from ',obj);
 			return false;
 		}
 
@@ -422,6 +453,52 @@ class AVM{
 	action_jump(a,state){
 		let offset = a.data.read_SI16();
 		state.pc+=offset;
+		return true;
+	}
+
+	action_define_function(a, state){
+		let obj = {};
+
+		obj.functionName = a.data.read_STRING();
+		obj.numParams = a.data.read_UI16();
+		obj.paramNames = [];
+		for(let i=0;i<obj.numParams;i++){
+			obj.paramNames.push(a.data.read_STRING());
+		}
+		obj.codeSize = a.data.read_UI16();
+		obj.funcBody = state.code.read_sub_array(obj.codeSize);
+
+		state.pc+=obj.codeSize;
+
+		this.register_function(obj);
+		return true;
+	}
+
+	action_new_object(a, state){
+		let o = {};
+		o.name = state.pop_value();
+		o.numArgs = state.pop_value();
+		o.args = [];
+		for(let i=0;i<o.numArgs;i++){
+			o.args.push(state.stack.pop());
+		}
+		let t = this.create_object(o);
+		if(t==false)
+			return false
+		state.stack.push(t);
+		return true;
+	}
+
+	action_store_register(a, state){
+		let reg_num = a.data.read_UI8();
+		//console.log(reg_num);
+		this.register[reg_num] = state.stack[state.stack.length-1];
+		//console.log(this.register);
+		return true;
+	}
+
+	action_pop(a, state){
+		state.stack.pop();
 		return true;
 	}
 }

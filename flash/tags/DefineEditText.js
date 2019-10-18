@@ -4,6 +4,9 @@ class DefineEditText extends genericTag{
 		let o = {};
 		
 		o.characterID = this.read_UI16();
+		if(this.core.dictionary.has(o.characterID))
+			return true;
+		
 		o.bounds = this.read_RECT();
 		
 		let t=this.read_UI8();

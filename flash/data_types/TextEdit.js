@@ -1,5 +1,6 @@
-class TextEdit{
+class TextEdit extends genericDrawable{
 	constructor(type, data, core){
+		super();
 		this.data = data;
 		this.type = type;
 

@@ -1,5 +1,6 @@
-class VideoStream{
+class VideoStream extends genericDrawable{
 	constructor(core, data){
+		super();
 		this.type = data.type;
 		this.core = core;
 

@@ -1,5 +1,6 @@
 ---------------- almost ---------------
 
+https://z0r.de/29       (color transform not applying)
 https://z0r.de/90		(gradient fill)
 https://z0r.de/5720		(gradient fill)
 https://z0r.de/117		(Clip Actions in PlaceObject2)
@@ -10,9 +11,9 @@ https://z0r.de/135		(tag #8)
 https://z0r.de/293		(tag #8)
 https://z0r.de/5128		(tag #8)
 https://z0r.de/41		(tag #8)
-https://z0r.de/194		(reading color transform from PlaceObject2)		
-https://z0r.de/200		(reading color transform from PlaceObject2)
-https://z0r.de/613		(reading color transform from PlaceObject2)
+https://z0r.de/194		(color_transform in Shape)		
+https://z0r.de/200		(color_transform in Shape)
+https://z0r.de/613		(color_transform in Shape))
 https://z0r.de/5561		(TODO: useOutlines)
 https://z0r.de/2440		(tag #25)
 https://z0r.de/3067		(tag #34)
@@ -117,7 +118,6 @@ https://z0r.de/196
 
 ---------------- fail --------------
 
-https://z0r.de/29       (reading color transform from PlaceObject2)
 https://z0r.de/1976		(reading color transform from PlaceObject2)	
 https://z0r.de/3920		(reading color transform from PlaceObject2)	
 https://z0r.de/5		(reading color transform from PlaceObject2)

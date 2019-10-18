@@ -11,6 +11,9 @@ class DefineVideoStream extends genericTag{
 			height : this.read_UI16()
 		}
 
+		if(this.core.dictionary.has(object.characterID))
+			return true;
+
 		let temp = this.read_UI8();
 
 		object.videoFlagsDeblocking = (temp>>1)&0b111;
