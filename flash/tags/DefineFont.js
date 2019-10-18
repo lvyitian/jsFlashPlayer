@@ -5,7 +5,7 @@ class DefineFont extends DefineShape{
 
 		o.fontID = this.read_UI16();
 		//o.data = this.read_sub_array(this.raw_data.length - this.cur);
-		if(this.core.dictionary.has(obj.fontID)){
+		if(this.core.dictionary.has(o.fontID)){
 			return true;
 		}
 

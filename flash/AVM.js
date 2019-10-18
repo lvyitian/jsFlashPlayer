@@ -3,6 +3,7 @@ class AVM{
 		this.core = core;
 
 		this.error = false;
+		this.debug_mode=false;
 
 		this.VARTYPE_OBJ  = 10;
 		this.VARTYPE_NATIVE_FUNC = 11;
@@ -77,6 +78,8 @@ class AVM{
 	}
 
 	debug(...args){
+		if(this.debug_mode)
+			console.debug('avm:',...args);
 		this.core.debug('avm:',...args);
 	}
 	errord(...args){
@@ -121,7 +124,7 @@ class AVM{
 			}
 
 			
-			this.debug(state.pc, f.name);
+			this.debug(state.pc, f.name, a);
 			if(!f(a,state))
 				return false;
 
@@ -168,7 +171,7 @@ class AVM{
 
 	state_pop_object(){
 		let o = this.stack.pop();
-		if(o.type != this.avm.VARTYPE_OBJ || o.type != this.avm.VARTYPE_NATIVE_CLASS_OBJ)
+		if(o.type != this.avm.VARTYPE_OBJ && o.type != this.avm.VARTYPE_NATIVE_CLASS_OBJ)
 			return false;
 		return o.val;
 	}
@@ -283,6 +286,7 @@ class AVM{
 			switch (o.type) {
 				case 0: //string
 					o.val = a.data.read_STRING();
+				break;
 				case 4: //register number
 					o.val = a.data.read_UI8();
 				break;
