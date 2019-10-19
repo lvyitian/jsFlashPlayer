@@ -23,6 +23,7 @@ class AVM{
 		this.al[0x40] = this.action_new_object.bind(this);
 		this.al[0x47] = this.action_add2.bind(this);
 		this.al[0x49] = this.action_equals2.bind(this);
+		this.al[0x4e] = this.action_get_member.bind(this);
 		this.al[0x4f] = this.action_set_member.bind(this);
 		this.al[0x52] = this.action_call_method.bind(this);
 		this.al[0x81] = this.action_goto_frame.bind(this);
@@ -47,6 +48,7 @@ class AVM{
 		this.global_const['Math'] = {type:this.VARTYPE_OBJ, val: this.make_math_obj()};
 
 		this.global_vars = {};
+		this.global_vars['_root'] = {type:this.VARTYPE_OBJ, val: this.global_vars};
 
 		this.register = [];
 
@@ -409,6 +411,23 @@ class AVM{
 
 		return true;
 	}
+
+	action_get_member(a,state){
+		let name = state.pop_value();
+		let obj = state.pop_object();
+		if(obj===false){
+			console.log('no object');
+			return false;
+		}
+		if(!(name in obj)){
+			this.errord('object',obj,' does not have member ',name);
+			return false;	
+		}
+
+		state.stack.push(obj[name]);
+		return true;
+	}
+
 
 	action_set_member(a, state){
 		let val = state.stack.pop();

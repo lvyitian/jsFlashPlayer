@@ -19,7 +19,9 @@ class Sprite{
 		this.playing = true;
 		this.timeline = data.timeline;		
 
-		this.avm_obj = {}
+		this.avm_obj = {
+			__degug: 'this is sprite avm object'
+		}
 	}
 
 	set_draw_options(options){
