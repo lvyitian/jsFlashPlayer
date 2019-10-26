@@ -33,7 +33,7 @@ https://z0r.de/3933		(video artefact)
 ----------------- ok -----------------
 https://z0r.de/1198		(preloader) [haruhi]
 https://z0r.de/125		(preloader)
-https://z0r.de/35		(preloader) [win xp]
+https://z0r.de/35		(preloader) [win xp tan]
 https://z0r.de/126		(preloader)
 https://z0r.de/5727
 https://z0r.de/7816
@@ -55,7 +55,7 @@ https://z0r.de/4321
 https://z0r.de/5848
 https://z0r.de/2931
 https://z0r.de/2869
-https://z0r.de/5367
+https://z0r.de/5367		(halflife dance)
 https://z0r.de/1663
 https://z0r.de/5639		(duck)
 https://z0r.de/6865
@@ -102,10 +102,10 @@ https://z0r.de/4785		(video)
 https://z0r.de/2427		(video)
 https://z0r.de/2038		(video)
 https://z0r.de/4354		(video)
-https://z0r.de/4918		(video)
+https://z0r.de/4918		(video)	(world end dancehall)
 https://z0r.de/4554		
 https://z0r.de/3664		(video) 
-https://z0r.de/2540		(images+sound)
+https://z0r.de/2540		(images+sound) (miku)
 https://z0r.de/1698		(images+sound)
 https://z0r.de/3919		(video)
 https://z0r.de/3930		(video)

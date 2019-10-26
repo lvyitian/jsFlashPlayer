@@ -20,7 +20,7 @@ class Sprite{
 		this.timeline = data.timeline;		
 
 		this.avm_obj = {
-			__degug: 'this is sprite avm object'
+			__degug: 'this is a sprite avm object'
 		}
 	}
 
@@ -47,10 +47,17 @@ class Sprite{
 
 	draw(matrix){
 		this.matrix = matrix;
+
+		if(!this.playing){
+			return this.tag_ShowFrame();
+		}
+
+
 		let tags = this.data.tags;
 
 		let tag;
 		let tag_processor;
+
 		do{
 			tag = tags[this.cur_tag];
 			let tag_obj = tag;
@@ -118,9 +125,10 @@ class Sprite{
 		//return false;
 
 		if(!this.playing){
-            if(!this.goto_frame(this.cur_frame)){
-            	return false;
-            }
+            //if(!this.goto_frame(this.cur_frame)){
+            //	return false;
+            //}
+            this.cur_frame--;
         }
 
 

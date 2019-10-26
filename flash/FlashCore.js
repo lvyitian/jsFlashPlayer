@@ -47,6 +47,8 @@ class FlashCore{
 
 
         this.is_firefox=(typeof(document.wrappedJSObject)!=='undefined');
+
+        this.avm_obj = {};
         
         
         let me = this;
@@ -167,8 +169,9 @@ class FlashCore{
         }
 
         if(!this.playing){
-            this.goto_frame(this.current_frame);
-            this.do_frame_finish=true;
+            //this.goto_frame(this.current_frame);
+            //this.do_frame_finish=true;
+            this.current_frame--;
         }
 
         this.current_frame++;
@@ -245,6 +248,15 @@ class FlashCore{
         if(diff>1000)
             this.last_redraw_time = Date.now();
         this.do_frame_finish=false;
+
+        if(!this.playing){
+            let ret = this.process_ShowFrame();
+            if(ret===false){
+                cancelAnimationFrame(this.redraw_interval_id);
+                return false;
+            }
+            return true;
+        }
         
         do{
             let ret = this.process_tag();
