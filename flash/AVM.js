@@ -13,6 +13,7 @@ class AVM{
 		this.al = [];
 		this.al[0x06] = this.action_play.bind(this);
 		this.al[0x07] = this.action_stop.bind(this);
+		this.al[0x0b] = this.action_subtract.bind(this);
 		this.al[0x0c] = this.action_multiply.bind(this);
 		this.al[0x0d] = this.action_divide.bind(this);
 		this.al[0x12] = this.action_not.bind(this);
@@ -23,6 +24,7 @@ class AVM{
 		this.al[0x3d] = this.action_call_function.bind(this);
 		this.al[0x40] = this.action_new_object.bind(this);
 		this.al[0x47] = this.action_add2.bind(this);
+		this.al[0x48] = this.action_less2.bind(this);
 		this.al[0x49] = this.action_equals2.bind(this);
 		this.al[0x4e] = this.action_get_member.bind(this);
 		this.al[0x4f] = this.action_set_member.bind(this);
@@ -48,6 +50,7 @@ class AVM{
 
 		this.global_const = [];
 		this.global_const['Math'] = {type:this.VARTYPE_OBJ, val: this.make_math_obj()};
+		this.global_const['Key'] = {type:this.VARTYPE_OBJ, val: this.make_key_obj()};
 
 		//this.global_vars = {};
 		//this.global_vars['_root'] = {type:this.VARTYPE_OBJ, val: this.global_vars};
@@ -63,6 +66,14 @@ class AVM{
 		o._____debug='It is a Math object';
 
 		o.floor = {type:this.VARTYPE_NATIVE_FUNC, val: this.native_Math_floor};
+		return o;
+	}
+
+	make_key_obj(){
+		let o={};
+		o._____debug='It is a Key object';
+
+		o.isDown = {type:this.VARTYPE_NATIVE_FUNC, val: this.native_Key_isDown.bind(this)};
 		return o;
 	}
 
@@ -341,6 +352,12 @@ class AVM{
 		return true;
 	}
 
+	native_Key_isDown(state, args){
+		let r = this.core.keyboard_controller.isDown(args[0].val);
+		state.push_bool(r);
+		return true;
+	}
+
 
 	//--------------------------------------------------------------------- avm actions ----------------------------------------------------
 
@@ -398,7 +415,7 @@ class AVM{
 					o.val = a.data.read_DOUBLE();
 				break;
 				case 7:
-					o.val = a.data.read_UI32();
+					o.val = a.data.read_SI32();
 				break;
 				case 8:
 					o.val = a.data.read_UI8();	
@@ -632,6 +649,27 @@ class AVM{
 	action_trace(a,state){
 		let data = state.pop_value();
 		console.log("trace:",data);
+		return true;
+	}
+	action_subtract(a_,state){
+		let a = state.pop_number();
+		let b = state.pop_number();
+		let r = b-a;
+
+		//console.log(b,'-',a,'=',r);
+		state.push_double(r);
+		//console.log(state.stack);
+
+		return true;
+	}
+	action_less2(a_,state){
+		let a1 = state.pop_value();
+		let a2 = state.pop_value();
+		let r = (a2<a1);
+
+		//console.log(a2,'<',a1,'=',r);
+		state.push_bool(r);
+
 		return true;
 	}
 }

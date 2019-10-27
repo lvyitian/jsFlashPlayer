@@ -163,6 +163,11 @@ class Sprite{
         return true;
     }
 
+    register_avm_object(name, obj){
+        this.debug('sprite register object "'+name+'"');
+        this.avm_obj[name] = {type:this.core.avm.VARTYPE_OBJ, val: obj};
+    }
+
 	debug(...args){
     	if(this.core.debug_mode){
     		this.core.debug('sprite #'+this.data.spriteID+':',...args);

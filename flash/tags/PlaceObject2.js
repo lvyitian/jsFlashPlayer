@@ -69,7 +69,7 @@ class PlaceObject2 extends genericTag{
 
             let avm_obj = this.core.dictionary.get(obj.characterID);
             if('avm_obj' in avm_obj){
-                this.core.avm.register_object(obj.name, avm_obj.avm_obj);
+                this.core.register_avm_object(obj.name, avm_obj.avm_obj);
             }else{
                 console.log('object dont have avm info!');
                 console.log(avm_obj);

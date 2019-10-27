@@ -34,6 +34,7 @@ class FlashCore{
         this.ctx = canvas.getContext('2d');
         this.audio_ctx = new window.AudioContext();
         this.sceneLabelsInfo = null;
+        this.keyboard_controller = new KeyboardController(this);
 
         this.last_redraw_time = 0;
         this.redraw_interval_id=0;
@@ -332,6 +333,11 @@ class FlashCore{
         }
         addr = this.data.cur;
         return addr
+    }
+
+    register_avm_object(name, obj){
+        this.debug('register object "'+name+'"');
+        this.avm_obj[name] = {type:this.avm.VARTYPE_OBJ, val: obj};
     }
 
     debug(...args){

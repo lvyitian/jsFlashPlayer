@@ -40,6 +40,17 @@ class FlashParser{
         return out>>>0;
     }
 
+    read_SI32(){
+    
+        let out = 0;
+        out  = this.raw_data[this.cur];      this.cur++; 
+        out |= ((this.raw_data[this.cur]&0xff) << 8);  this.cur++;
+        out |= ((this.raw_data[this.cur]&0xff) << 16); this.cur++;
+        out |= ((this.raw_data[this.cur]&0xff) << 24); this.cur++;
+        
+        return out;
+    }
+
 
     read_SB(shift,bitsize){
         let out = 0;
@@ -361,10 +372,13 @@ class FlashParser{
     }
 
     read_DOUBLE(){
-        let buf = this.read_sub_array(8);
-        //console.log(buf);
-        let t = new DataView(buf.buffer,buf.byteOffset,8);
-        return t.getFloat64(0, true);
+        let buf1 = this.read_sub_array(4);
+        let buf2 = this.read_sub_array(4);
+        let buf = new Uint8Array(8);
+        buf.set(buf2, 0);
+        buf.set(buf1, 4);
+        let t= new DataView(buf.buffer,buf.byteOffset,8);
+        return t.getFloat64(0,true);
     }
 
     read_AVM_action(){

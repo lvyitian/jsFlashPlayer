@@ -49,6 +49,7 @@
         "flash/data_types/TextEdit.js",
         "flash/data_types/VideoStream.js",
         "flash/data_types/ColorTransform.js",
+        "flash/data_types/KeyboardController.js",
         "flash/tags/genericTag.js",
         "flash/tags/DefineSceneAndFrameLabelData.js",
         "flash/tags/DoABC.js",
