@@ -3,6 +3,7 @@ class Sprite{
 		this.type = type;
 		this.data = data;
 		this.core = core;
+		this.avm = core.avm;
 		this.audio_ctx = this.core.audio_ctx;
 		this.is_firefox = this.core.is_firefox;
 		this.dictionary = core.dictionary;
@@ -165,7 +166,7 @@ class Sprite{
 
     register_avm_object(name, obj){
         this.debug('sprite register object "'+name+'"');
-        this.avm_obj[name] = {type:this.core.avm.VARTYPE_OBJ, val: obj};
+        this.avm_obj[name] = {type:this.avm.VARTYPE_OBJ, val: obj};
     }
 
 	debug(...args){

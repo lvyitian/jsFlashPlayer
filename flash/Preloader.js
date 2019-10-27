@@ -9,6 +9,7 @@ class Preloader {
 		this.bug_inject_script = core.bug_inject_script.bind(core);
 		this.dictionary = core.dictionary;
 		this.audio_ctx = core.audio_ctx;
+		this.avm = core.avm;
 		this.is_firefox = core.is_firefox;
 		this.debug_mode = core.debug_mode;
 		this.pako = core.pako;

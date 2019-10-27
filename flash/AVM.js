@@ -29,6 +29,7 @@ class AVM{
 		this.al[0x4e] = this.action_get_member.bind(this);
 		this.al[0x4f] = this.action_set_member.bind(this);
 		this.al[0x52] = this.action_call_method.bind(this);
+		this.al[0x67] = this.action_greater.bind(this);
 		this.al[0x81] = this.action_goto_frame.bind(this);
 		this.al[0x87] = this.action_store_register.bind(this);
 		this.al[0x88] = this.action_constant_pool.bind(this);
@@ -179,7 +180,7 @@ class AVM{
 		let f = function(args){
 			let act = new FlashParser(body);
 
-			console.log(act);
+			//console.log(act);
 			if(!this._execute(caller_obj, act, args, constants)){
 				this.error = true;
 				this.core.abort();
@@ -668,6 +669,16 @@ class AVM{
 		let r = (a2<a1);
 
 		//console.log(a2,'<',a1,'=',r);
+		state.push_bool(r);
+
+		return true;
+	}
+	action_greater(a,state){
+		let a1 = state.pop_value();
+		let a2 = state.pop_value();
+		let r = (a2>a1);
+
+		//console.log(a2,'>',a1,'=',r);
 		state.push_bool(r);
 
 		return true;
