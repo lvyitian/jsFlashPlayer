@@ -340,6 +340,10 @@ class FlashCore{
         this.avm_obj[name] = {type:this.avm.VARTYPE_OBJ, val: obj};
     }
 
+    set_frame_label(label){
+        this.timeline.add_label(this.current_frame,label);
+    }
+
     debug(...args){
     	if(this.debug_mode){
     		console.debug('flash:',...args);

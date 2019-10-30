@@ -84,6 +84,11 @@
         "flash/tags/SoundStreamBlock.js",
         "flash/tags/Protect.js",
         "flash/tags/DefineFontName.js",
+        "flash/tags/EnableDebugger2.js",
+        "flash/tags/DebugID.js",
+        "flash/tags/ScriptLimits.js",
+        "flash/tags/ProductInfo.js",
+        "flash/tags/FrameLabel.js",
         "flash/Preloader.js",
         "flash/FlashCore.js",
         "jsFlashPlayer.js"
