@@ -4,6 +4,7 @@ class FlashCore{
     constructor(url,canvas){
     	this.debug_mode = false;
 
+        this.avm_obj = {};
         this.debug(url);
         this.raw_data = null;
         this.zipped = false;
@@ -49,7 +50,6 @@ class FlashCore{
 
         this.is_firefox=(typeof(document.wrappedJSObject)!=='undefined');
 
-        this.avm_obj = {};
         
         
         let me = this;

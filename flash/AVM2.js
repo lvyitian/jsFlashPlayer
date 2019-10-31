@@ -21,7 +21,7 @@ class AVM2{
 		this.major_version = this.read_u16();
 
 		if(this.major_version > 46){
-			this.debug("Warning major_version is"+this.major_version);
+			console.warn("Warning major_version is"+this.major_version);
 		}
 
 		if(!this.read_constat_pool())
@@ -64,7 +64,9 @@ class AVM2{
 
 		let metadata_count = this.read_u30();
 		if(metadata_count>0){
-			alert("TODO: AVM2 read metadata_info!");
+			let m = {};
+			m.name = this.read_u30();
+			console.log(this.constant_pool.string[m.name]);
 			return false;
 		}
 

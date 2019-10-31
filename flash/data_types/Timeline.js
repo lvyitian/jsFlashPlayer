@@ -13,12 +13,10 @@ class Timeline{
 	}
 
 	get_address(frame){
-		let {addr} = this.timeline[frame];
-		if(addr===undefined){
-			return -1;
-		}
-
-		return addr;
+		if(this.timeline[frame] === undefined)
+			return -1
+		let {address} = this.timeline[frame];
+		return address;
 	}
 	add_label(frame, label){
 		this.timeline[frame].label=label;

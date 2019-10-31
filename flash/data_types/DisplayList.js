@@ -59,7 +59,7 @@ class DisplayList{
 				return false;
 			}*/
 			if(!this.core.avm.execute(this.actions, this.actions_this)){
-				console.log('fail to execute actions')
+				console.error('fail to execute actions');
 				return false;
 			}
 			this.actions.length=0;

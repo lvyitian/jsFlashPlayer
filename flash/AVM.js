@@ -39,7 +39,7 @@ class AVM{
 		this.al[0x9b] = this.action_define_function.bind(this);
 		this.al[0x99] = this.action_jump.bind(this);
 
-		this.native_functions = [];
+		this.native_functions = {};
 		this.native_functions['getBytesLoaded'] = this.native_getBytesLoaded.bind(this);
 		this.native_functions['getBytesTotal'] = this.native_getBytesTotal.bind(this);
 		this.native_functions['setInterval'] = this.native_setInterval.bind(this);
@@ -59,7 +59,13 @@ class AVM{
 
 		this.register = [];
 
-		//this.caller_obj = null;
+		
+		let keys = Object.keys(this.native_functions);
+		for(let i=0;i<keys.length;i++){
+			let name = keys[i];
+			let f = this.native_functions[name];
+			this.core.avm_obj[name] = {type:this.VARTYPE_NATIVE_FUNC, val: f};
+		}
 	}
 
 	make_math_obj(){
@@ -67,6 +73,7 @@ class AVM{
 		o._____debug='It is a Math object';
 
 		o.floor = {type:this.VARTYPE_NATIVE_FUNC, val: this.native_Math_floor};
+		o.round = {type:this.VARTYPE_NATIVE_FUNC, val: this.native_Math_round};
 		return o;
 	}
 
@@ -349,6 +356,12 @@ class AVM{
 
 	native_Math_floor(state, args){
 		let r = Math.floor(args[0].val);
+		state.push_int(r);
+		return true;
+	}
+
+	native_Math_round(state, args){
+		let r = Math.round(args[0].val);
 		state.push_int(r);
 		return true;
 	}

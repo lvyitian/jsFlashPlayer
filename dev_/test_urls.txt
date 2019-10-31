@@ -43,18 +43,18 @@ https://z0r.de/6296
 https://z0r.de/5709
 https://z0r.de/137		(dont hurt me) (shapes)
 https://z0r.de/85
-https://z0r.de/100
+https://z0r.de/100		(wandaba style)
 https://z0r.de/56
 https://z0r.de/652
 https://z0r.de/2623		(ikamusume)
 https://z0r.de/1296
-https://z0r.de/6756
-https://z0r.de/2701
-https://z0r.de/5618
+https://z0r.de/6756		(techno chicken nokia)
+https://z0r.de/2701		(mojang)
+https://z0r.de/5618		(sega saturn commercial boomberman)
 https://z0r.de/4321
-https://z0r.de/5848
+https://z0r.de/5848		(sega saturn commercial)
 https://z0r.de/2931
-https://z0r.de/2869
+https://z0r.de/2869		(lucky star)
 https://z0r.de/5367		(halflife dance)
 https://z0r.de/1663
 https://z0r.de/5639		(duck)
@@ -94,8 +94,8 @@ https://z0r.de/2355		(video)
 https://z0r.de/7160		(video)
 https://z0r.de/3506		(video)
 https://z0r.de/5413		(video)
-https://z0r.de/7828		(video)
-https://z0r.de/4966		(video)
+https://z0r.de/7828		(video)	(byon byon nori)
+https://z0r.de/4966		(video) (under where)
 https://z0r.de/2276		(video)
 https://z0r.de/5299		(video)
 https://z0r.de/4785		(video)
@@ -110,11 +110,12 @@ https://z0r.de/1698		(images+sound)
 https://z0r.de/3919		(video)
 https://z0r.de/3930		(video)
 https://z0r.de/4584		(video)
-https://z0r.de/2426
-https://z0r.de/3578
+https://z0r.de/2426		(mp3 stream) (lucky star)
+https://z0r.de/3578		(mp3 stream) (sonic)
 https://z0r.de/1418		(potemayo)
 https://z0r.de/1280
 https://z0r.de/196
+https://z0r.de/2961 	(video) (interstella5555)
 
 ---------------- fail --------------
 
