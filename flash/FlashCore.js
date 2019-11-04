@@ -4,7 +4,9 @@ class FlashCore{
     constructor(url,canvas){
     	this.debug_mode = false;
 
-        this.avm_obj = {};
+        this.avm_obj = {
+            __________this__________ : this
+        };
         this.debug(url);
         this.raw_data = null;
         this.zipped = false;

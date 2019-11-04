@@ -43,6 +43,7 @@ class AVM{
 		this.native_functions['getBytesLoaded'] = this.native_getBytesLoaded.bind(this);
 		this.native_functions['getBytesTotal'] = this.native_getBytesTotal.bind(this);
 		this.native_functions['setInterval'] = this.native_setInterval.bind(this);
+		this.native_functions['gotoAndStop'] = this.native_gotoAndStop.bind(this);
 
 		this.native_class = [];
 		this.native_class['Sound'] = function() { this.____debug = 'It is a Sound object'};
@@ -299,10 +300,10 @@ class AVM{
 		return false;
 	}
 
-	call_function(state, func, args){
+	call_function(state, func, args, obj){
 
 		if(func.type==this.VARTYPE_NATIVE_FUNC){
-			return func.val(state, args);
+			return func.val(state, args, obj);
 		}
 
 		this.errord(func,' is not callable!');
@@ -372,6 +373,18 @@ class AVM{
 		return true;
 	}
 
+	native_gotoAndStop(state, args, obj){
+		if(args.length<1){
+			console.error('gotoAndStop: Not enough arguments!');
+			return false;
+		}
+		let frame = state.convert_to_number(args[0]);
+		let clip = obj.__________this__________;
+		
+		clip.goto_frame(frame);
+		clip.stop();
+		return true;
+	}
 
 	//--------------------------------------------------------------------- avm actions ----------------------------------------------------
 
@@ -523,7 +536,7 @@ class AVM{
 		for(let i=0;i<arg_count;i++)
 			args.push(state.stack.pop());
 		
-		if(!this.call_function(state, obj[name], args))
+		if(!this.call_function(state, obj[name], args, obj))
 			return false;
 		return true;	
 	}
