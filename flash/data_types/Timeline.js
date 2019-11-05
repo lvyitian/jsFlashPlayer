@@ -21,4 +21,12 @@ class Timeline{
 	add_label(frame, label){
 		this.timeline[frame].label=label;
 	}
+	get_frame_by_label(label){
+		for(let i=0;i<this.timeline.length;i++){
+			if(this.timeline[i].label==label){
+				return i;
+			}
+		}
+		return -1;
+	}
 }

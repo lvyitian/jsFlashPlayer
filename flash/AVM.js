@@ -34,6 +34,7 @@ class AVM{
 		this.al[0x87] = this.action_store_register.bind(this);
 		this.al[0x88] = this.action_constant_pool.bind(this);
 		this.al[0x8a] = this.action_wait_for_frame.bind(this);
+		this.al[0x8c] = this.action_goto_label.bind(this);
 		this.al[0x96] = this.action_push.bind(this);
 		this.al[0x9d] = this.action_if.bind(this);
 		this.al[0x9b] = this.action_define_function.bind(this);
@@ -143,7 +144,8 @@ class AVM{
 			push_double: function(val){this.stack.push({type:6,val:val})},
 			push_bool: function(val){this.stack.push({type:5,val:val})},
 
-			vars: caller_obj.avm_obj
+			vars: caller_obj.avm_obj,
+			skip_actions_count: 0
 		};
 		if(!("_root" in state.vars)){
 			state.vars._root = {type:this.VARTYPE_OBJ, val: this.core.avm_obj};
@@ -152,6 +154,11 @@ class AVM{
 			act.cur = state.pc;
 			let a = act.read_AVM_action();
 			state.pc = act.cur;
+
+			if(state.skip_actions_count>0){
+				state.skip_actions_count--;
+				continue;
+			}
 
 			if(a.code==0)
 				return true;
@@ -391,8 +398,13 @@ class AVM{
 	action_wait_for_frame(a, state){
 		a.frame = a.data.read_UI16();
 		a.skip_count = a.data.read_UI8();
-		console.log('frame:',a.frame);
-		/** all data already in RAM so this is always be false*/
+		let loaded = (this.core.timeline.get_address(a.frame)>0);
+		if(!loaded){
+			state.skip_actions_count = a.skip_count;			
+			//console.log(this.core.timeline);
+			//console.log('frame:',a.frame, loaded);
+		}
+
 		return true;
 	}
 
@@ -708,5 +720,10 @@ class AVM{
 		state.push_bool(r);
 
 		return true;
+	}
+	action_goto_label(a,state){
+		let label = a.data.read_STRING();
+		
+		return state.target.goto_label(label);
 	}
 }

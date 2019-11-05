@@ -1,10 +1,10 @@
 ---------------- almost ---------------
 
+https://z0r.de/281		(graphical preloader)
 https://z0r.de/29       (color transform not applying)
 https://z0r.de/90		(gradient fill)
 https://z0r.de/5720		(gradient fill)
 https://z0r.de/117		(Clip Actions in PlaceObject2)
-https://z0r.de/281		(as2 _root)
 https://z0r.de/2692		(video codec 4)
 https://z0r.de/463		(video codec 4)
 https://z0r.de/135		(tag #8)
@@ -17,6 +17,7 @@ https://z0r.de/613		(color_transform in Shape))
 https://z0r.de/5561		(TODO: useOutlines)
 https://z0r.de/2440		(tag #25)
 https://z0r.de/3067		(tag #34)
+https://z0r.de/17		(tag #34)
 https://z0r.de/202		(tag #56)
 https://z0r.de/285		(tag #75)
 https://z0r.de/189		(tag #75)
@@ -29,6 +30,7 @@ https://z0r.de/5856		(TextEdit useOutlines) [timebomb.swf]
 https://z0r.de/6715		(video artefact) (squerrel)
 https://z0r.de/7321		(video artefact)
 https://z0r.de/3933		(video artefact)
+https://z0r.de/2812		(video artefact)
 
 ----------------- ok -----------------
 https://z0r.de/1198		(preloader) [haruhi]
@@ -116,9 +118,14 @@ https://z0r.de/1418		(potemayo)
 https://z0r.de/1280
 https://z0r.de/196
 https://z0r.de/2961 	(video) (interstella5555)
+https://z0r.de/2814
+https://z0r.de/2455		(clannad)
+https://z0r.de/2283		(haruhi)
+https://z0r.de/1911
 
 ---------------- fail --------------
 
+https://z0r.de/5141		(undefined var "this")
 https://z0r.de/1976		(reading color transform from PlaceObject2)	
 https://z0r.de/3920		(reading color transform from PlaceObject2)	
 https://z0r.de/5		(reading color transform from PlaceObject2)
@@ -126,7 +133,7 @@ https://z0r.de/7101		(parse error(!!!))
 https://z0r.de/1959		(parse error(!!!))
 https://z0r.de/6489		(gradient fill)
 https://z0r.de/3360		(gradient fill)
-https://z0r.de/17		(as2 action 0x8c)
+https://z0r.de/2649		(gradient fill)
 https://z0r.de/2586		(video codec 4)
 https://z0r.de/5787		(video codec 4)
 https://z0r.de/5549		(video codec 4)

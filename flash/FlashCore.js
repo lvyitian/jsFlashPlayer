@@ -222,7 +222,7 @@ class FlashCore{
         this.data.cur=cur;
         data = new FlashParser(data);
 
-        this.preloader = new Preloader(this, data);
+        this.preloader = new Preloader(this, data, cur);
         //return;
 
         this.draw();
@@ -309,10 +309,22 @@ class FlashCore{
         }
 
         this.current_frame = frame - 1;
+        
         this.data.cur=addr;
         this.display_list.abort_frame();
         this.do_frame_finish=false;
         return true;
+    }
+
+    goto_label(label){
+        let frame = this.timeline.get_frame_by_label(label);
+        if(frame<0){
+            console.error("goto label fail, frame with label '"+label+"' was not found on a timeline");
+            return false;
+        }
+        //console.log('current_frame:',this.current_frame, 'goto_frame',frame);
+        //return false;
+        return this.goto_frame(frame);
     }
 
     search_frame_address(frame){
@@ -342,8 +354,8 @@ class FlashCore{
         this.avm_obj[name] = {type:this.avm.VARTYPE_OBJ, val: obj};
     }
 
-    set_frame_label(label){
-        this.timeline.add_label(this.current_frame,label);
+    set_frame_label(frame, label){
+        this.timeline.add_label(frame, label);
     }
 
     debug(...args){
