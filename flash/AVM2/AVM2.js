@@ -45,9 +45,10 @@ class AVM2{
 		let method_count;
 		method_count = this.read_u30();
 
+
 		let method = [];
-		let obj = {};
 		for(let i = 0; i < method_count; i++){
+			let obj = {};
 		 	obj.param_count = this.read_u30();
 		 	obj.return_type = this.read_u30();
 		 	obj.param_type = [];
@@ -74,17 +75,18 @@ class AVM2{
 	 		}
 		 	method.push(obj);
 		 } 
+		 console.log('methods:',method);
 
 		this.method = method;
 		method.forEach( function(m, index) {
-			this.log(this.dn(m.name));
+			this.log('method',this.dn(m.name));
 		}.bind(this));
 		console.log(method);
 		
 
 		let metadata_count = this.read_u30();
 		if(metadata_count>0){
-			obj.metadata = [];
+			this.metadata = [];
 			for(let i=0;i<metadata_count;i++){
 				let m = {};
 				m.name = this.read_u30();
@@ -99,17 +101,19 @@ class AVM2{
 					item.value_str = this.constant_pool.string[item.value];
 					m.items.push(item);
 				}
-				obj.metadata.push(m);
+				this.metadata.push(m);
 			}
 		}
+		console.log(this.metadata);
 
 		//instance info
 		let class_count = this.read_u30();
+		console.log('class_count',class_count);
 		let instance = [];
 		for(let i=0;i<class_count;i++){
 			let ins = {};
 			ins.name = this.read_u30();
-			//console.log('name',this.dn(this.constant_pool.multiname[ins.name].name));
+			console.log('instance name:',ins.name,this.dn(this.constant_pool.multiname[ins.name].name));
 			ins.super_name = this.read_u30();
 			ins.flags = this.read_u8();
 			if((ins.flags & this.CONSTANT_ClassProtectedNs)>0)
@@ -166,6 +170,7 @@ class AVM2{
 		for(let i=0;i<method_body_count;i++){
 			let bi = {};
 			bi.method = this.read_u30();
+
 			bi.max_stack = this.read_u30();
 			bi.local_count = this.read_u30();
 			bi.init_scope_depth = this.read_u30();
@@ -182,13 +187,14 @@ class AVM2{
 				ei.target = this.read_u30();
 				ei.exc_type = this.read_u30();
 				ei.var_name = this.read_u30();
+				bi.exception.push(ei);
 			}
 			bi.trait = this.read_trait_info();
 			if(bi.trait===false){
-				console.error('error reading method body info');
+				console.error('error reading method body info',bi);
 				return false;
 			}
-
+			this.log("method_body:",i,bi);
 			this.method_body.push(bi);
 		}
 
