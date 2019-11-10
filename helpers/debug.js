@@ -4,9 +4,12 @@ var debug={
 	ctx:null,
 	tab:'',
 	interval:null,
+	font_height:-1,
 	log : function(message){
+		if(this.font_height<0)
+			this.font_height=parseInt(this.ctx.font);
 		this.con.push(message);
-		if(this.con.length > 15) this.con.shift();
+		if(this.con.length > this.ctx.canvas.height*this.font_height) this.con.shift();
 		//alert(message);
 	},
 	update:function(message){

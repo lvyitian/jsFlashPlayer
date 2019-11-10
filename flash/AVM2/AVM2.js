@@ -11,6 +11,21 @@ class AVM2{
 		this.constat_pool = null;
 
 		this.objects = [{}];
+
+		this.CONSTANT_ClassProtectedNs = 0x08;
+		this.ATTR_Metadata = 0x4;
+	}
+
+	decode_name(name){
+		return this.constant_pool.string[name];
+	}
+
+	dn(name){
+		return this.decode_name(name);
+	}
+
+	log(...data){
+		console.log(...data);
 	}
 
 	run_abc(abc_file){
@@ -61,13 +76,31 @@ class AVM2{
 		 } 
 
 		this.method = method;
+		method.forEach( function(m, index) {
+			this.log(this.dn(m.name));
+		}.bind(this));
+		console.log(method);
+		
 
 		let metadata_count = this.read_u30();
 		if(metadata_count>0){
-			let m = {};
-			m.name = this.read_u30();
-			console.log(this.constant_pool.string[m.name]);
-			return false;
+			obj.metadata = [];
+			for(let i=0;i<metadata_count;i++){
+				let m = {};
+				m.name = this.read_u30();
+				m.name_str = this.constant_pool.string[m.name];
+				m.count = this.read_u30();
+				m.items = [];
+				for(let k=0;k<m.count;k++){
+					let item = {};
+					item.key = this.read_u30();
+					item.value = this.read_u30();
+					item.key_str = this.constant_pool.string[item.key];
+					item.value_str = this.constant_pool.string[item.value];
+					m.items.push(item);
+				}
+				obj.metadata.push(m);
+			}
 		}
 
 		//instance info
@@ -76,9 +109,11 @@ class AVM2{
 		for(let i=0;i<class_count;i++){
 			let ins = {};
 			ins.name = this.read_u30();
+			//console.log('name',this.dn(this.constant_pool.multiname[ins.name].name));
 			ins.super_name = this.read_u30();
 			ins.flags = this.read_u8();
-			ins.protectedNs = this.read_u30();
+			if((ins.flags & this.CONSTANT_ClassProtectedNs)>0)
+				ins.protectedNs = this.read_u30();
 			ins.interface_count = this.read_u30();
 			ins.interface = [];
 			for(let k=0;k<ins.interface_count;k++){
@@ -86,8 +121,13 @@ class AVM2{
 			}
 			ins.iinit = this.read_u30();
 			ins.trait = this.read_trait_info();
-			if(ins.trait===false)
+			if(ins.trait===false){
+				console.error('AVM2: error reading instance info!',ins);
+				console.log(obj);
+				this.log('name',this.dn(this.constant_pool.multiname[ins.name].name));
+				this.log('super_name',this.dn(this.constant_pool.multiname[ins.super_name].name));
 				return false;
+			}
 			instance.push(ins);
 		}
 		this.instance = instance;
@@ -98,8 +138,10 @@ class AVM2{
 			let cl = {};
 			cl.cinit = this.read_u30();
 			cl.traits = this.read_trait_info();
-			if(cl.traits===false)
+			if(cl.traits===false){
+				console.error('error reading class info');
 				return false;
+			}
 			classes.push(cl);
 		}
 		this.classes=classes;
@@ -111,6 +153,10 @@ class AVM2{
 			let si = {};
 			si.init = this.read_u30();
 			si.trait = this.read_trait_info();
+			if(si.trait===false){
+				console.error('error reading script info');
+				return false;
+			}
 			script_info.push(si);
 		}
 		this.script_info = script_info;
@@ -138,14 +184,18 @@ class AVM2{
 				ei.var_name = this.read_u30();
 			}
 			bi.trait = this.read_trait_info();
+			if(bi.trait===false){
+				console.error('error reading method body info');
+				return false;
+			}
 
 			this.method_body.push(bi);
 		}
 
-		if(!this.execute_script(this.script_info.length-1))
-			return false;
+		/*if(!this.execute_script(this.script_info.length-1))
+			return false;*/
 
-		return true;
+		return false;
 	}
 
 
@@ -197,7 +247,9 @@ class AVM2{
 		for(let k=0;k<trait_count;k++){
 			let t = {};
 			t.name = this.read_u30();
-			t.kind = this.read_u8();
+			let kind = this.read_u8();
+			t.kind = kind & 0b1111;
+			t.attr = (kind & 0b11110000)>>4;
 			t.data = {};
 			switch (t.kind) {
 				case 1: //trait_method
@@ -211,7 +263,9 @@ class AVM2{
 					t.data.slot_id = this.read_u30();
 					t.data.type_name = this.read_u30();
 					t.data.vindex = this.read_u30();
-					t.data.vkind = this.read_u8();
+					if(t.data.vindex>0){
+						t.data.vkind = this.read_u8();
+					}
 					break;
 				case 4: //trait_class
 					t.data.slot_id = this.read_u30();
@@ -222,10 +276,15 @@ class AVM2{
 					t.data.function = this.read_u30();
 					break;
 				default:
-					alert("TODO: AVM2 instance trait kind "+t.kind);
+					console.error("TODO: AVM2 instance trait kind "+t.kind);
 					return false;
 					break;
 			}
+			if((t.attr & this.ATTR_Metadata) > 0){
+				let metadata_count = this.read_u30();
+				t.metadata = this.read_u30();
+			}
+			this.log(k,'trait:',this.dn(this.constant_pool.multiname[t.name].name),t);
 			trait.push(t);
 		}
 		return trait;
@@ -234,6 +293,7 @@ class AVM2{
 	read_constat_pool(){
 		//cpool info
 		let cpool_info = {};
+		
 		//int
 		cpool_info.int_count = this.read_u30();
 		cpool_info.integer = [0];
@@ -266,6 +326,7 @@ class AVM2{
 			ns.kind = this.read_u8();
 			ns.name = this.read_u30();
 			cpool_info.namespace.push(ns);
+			this.log('namespace:',i+1,'kind:',ns.kind,cpool_info.string[ns.name]);
 		}
 		//ns set
 		cpool_info.ns_set_count = this.read_u30();
@@ -274,8 +335,11 @@ class AVM2{
 			let ns_set = {};
 			ns_set.count = this.read_u30();
 			ns_set.ns = [];
-			for(let k=0;k<ns_set.count;k++)
-				ns_set.ns.push(this.read_u30());
+			for(let k=0;k<ns_set.count;k++){
+				let ns = this.read_u30();
+				ns_set.ns.push(ns);
+				this.log('namespace set:',i+1,k,cpool_info.string[cpool_info.namespace[ns].name]);
+			}
 
 			cpool_info.ns_set.push(ns_set);
 		}
@@ -316,6 +380,7 @@ class AVM2{
 		}
 
 		this.constant_pool = cpool_info;
+		this.log(cpool_info);
 		//
 		return true;
 	}

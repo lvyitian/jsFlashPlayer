@@ -33,6 +33,8 @@ https://z0r.de/3933		(video artefact)
 https://z0r.de/2812		(video artefact)
 
 ----------------- ok -----------------
+https://z0r.de/84
+https://z0r.de/34
 https://z0r.de/1198		(preloader) [haruhi]
 https://z0r.de/125		(preloader)
 https://z0r.de/35		(preloader) [win xp tan]

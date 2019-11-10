@@ -8,6 +8,7 @@ class FlashCore{
             __________this__________ : this
         };
         this.debug(url);
+        console.log(url);
         this.raw_data = null;
         this.zipped = false;
         this.lzma_zipped = false;
