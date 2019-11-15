@@ -45,7 +45,6 @@ class AVM2{
 		let method_count;
 		method_count = this.read_u30();
 
-
 		let method = [];
 		for(let i = 0; i < method_count; i++){
 			let obj = {};
@@ -74,12 +73,12 @@ class AVM2{
 	 			}
 	 		}
 		 	method.push(obj);
-		 } 
+		 }
 		 console.log('methods:',method);
 
 		this.method = method;
 		method.forEach( function(m, index) {
-			this.log('method',this.dn(m.name));
+			this.log('method',index,this.dn(m.name));
 		}.bind(this));
 		console.log(method);
 		
@@ -136,6 +135,7 @@ class AVM2{
 		}
 		this.instance = instance;
 
+		this.log("reading class info");
 		//class info
 		let classes = [];
 		for(let i=0;i<class_count;i++){
@@ -149,7 +149,8 @@ class AVM2{
 			classes.push(cl);
 		}
 		this.classes=classes;
-		
+
+        this.log("reading script info");
 		//script info
 		let script_info_count = this.read_u30();
 		let script_info = [];
@@ -163,22 +164,29 @@ class AVM2{
 			}
 			script_info.push(si);
 		}
+		this.log("script info:",script_info);
 		this.script_info = script_info;
 
+        this.log("reading method body");
 		let method_body_count = this.read_u30();
+		this.log('body count:', method_body_count);
 		this.method_body = [];
 		for(let i=0;i<method_body_count;i++){
 			let bi = {};
 			bi.method = this.read_u30();
+
+			this.log('method #',bi.method);
 
 			bi.max_stack = this.read_u30();
 			bi.local_count = this.read_u30();
 			bi.init_scope_depth = this.read_u30();
 			bi.max_scope_depth = this.read_u30();
 			bi.code_length = this.read_u30();
+			this.log('code length:',bi.code_length);
 			bi.code = new Uint8Array(this.raw_data.buffer,this.cur+this.raw_data.byteOffset,bi.code_length);
 			this.cur+=bi.code_length;
 			bi.exception_count = this.read_u30();
+			this.log('exception_count:',bi.exception_count);
 			bi.exception = [];
 			for(let k=0;k<bi.exception_count;k++){
 				let ei={};
@@ -187,6 +195,7 @@ class AVM2{
 				ei.target = this.read_u30();
 				ei.exc_type = this.read_u30();
 				ei.var_name = this.read_u30();
+				this.log("exception",k,this.dn(ei.exc_type));
 				bi.exception.push(ei);
 			}
 			bi.trait = this.read_trait_info();
@@ -201,7 +210,7 @@ class AVM2{
 		/*if(!this.execute_script(this.script_info.length-1))
 			return false;*/
 
-		return false;
+		return true;
 	}
 
 
@@ -288,7 +297,9 @@ class AVM2{
 			}
 			if((t.attr & this.ATTR_Metadata) > 0){
 				let metadata_count = this.read_u30();
-				t.metadata = this.read_u30();
+				for(let i=0;i<metadata_count;i++)
+				    t.metadata = this.read_u30();
+				//console.log('metadata:',t.metadata);
 			}
 			this.log(k,'trait:',this.dn(this.constant_pool.multiname[t.name].name),t);
 			trait.push(t);
