@@ -2,7 +2,7 @@
 
 class FlashCore{
     constructor(url,canvas){
-    	this.debug_mode = false;
+    	this.debug_mode = true;
 
         this.avm_obj = {
             __________this__________ : this
@@ -30,7 +30,7 @@ class FlashCore{
 
         this.dictionary = new Dictionary(this);
         this.display_list = new DisplayList(canvas,this.dictionary);
-        this.avm2 = new AVM2();
+        this.avm2 = new AVM2(this);
         this.avm = new AVM(this);
         this.preloader = null;
 
