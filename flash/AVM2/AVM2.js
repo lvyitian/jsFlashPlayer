@@ -1,8 +1,9 @@
 class AVM2{
 
     constructor(core){
-        this.abc_files = [];
         this.core = core;
+        this.abc_files = [];
+        this.classes = new AVM2ClassTree();
     }
 
     add_abc(abc_data){
@@ -19,6 +20,10 @@ class AVM2{
         }
 
         this.abc_files.push(abc_file);
+
+        let c = new AVM2Class(abc_file);
+        if(!this.classes.registerClass(c))
+            return false;
 
         return true;
     }

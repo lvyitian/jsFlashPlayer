@@ -8,7 +8,7 @@ class ABC_File{
 		this.minor_version = 0;
 		this.major_version = 0;
 
-		this.constat_pool = null;
+		this.constant_pool = null;
 
 		this.objects = [{}];
 
