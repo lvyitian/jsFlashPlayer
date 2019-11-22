@@ -10,12 +10,14 @@ class AVM2Instance {
          */
         this.type=999;
         this.classObj = classObj;
+        this.className = classObj.getClassName();
+        this.namespace = classObj.getClassNamespace();
 
-        console.log('instance of ',classObj.getClassName());
+        console.log('create instance of ',this.className);
     }
 
     draw(){
-        console.log('draw');
+        console.log(this.className+' draw');
         return true;
     }
 }
