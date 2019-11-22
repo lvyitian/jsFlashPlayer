@@ -3,8 +3,14 @@
 var tag_list = [];
 
 class genericTag  extends FlashParser{
+    /**
+	 *
+     * @param core : FlashCore
+     * @param tag
+     */
 	constructor(core,tag){
         super();
+
 		this.core = core;
 		this.header = tag;
 		this.raw_data = tag.data;

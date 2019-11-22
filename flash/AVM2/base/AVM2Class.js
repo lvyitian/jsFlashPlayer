@@ -57,4 +57,5 @@ class AVM2Class{
         let multiname = this.getClassMultiname();
         return this.getStr(multiname.name);
     }
+
 }

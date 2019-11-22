@@ -22,6 +22,11 @@ class DisplayList{
 		//constants
 		this.TYPE_PlaceObject2 = 26;
 	}
+
+	clear(){
+		this.list = [];
+	}
+
 	add(depth, object){
 		this.list[depth] = object;
 	}
@@ -136,6 +141,12 @@ class DisplayList{
 						return false;
 					}
 					break;
+
+				//draw AVM2Instance
+				case 999:
+					if(!el.draw())
+						return false;
+				break;
 				default:
 					alert("TODO: Draw DisplayList type:"+el.type);
 					return false;

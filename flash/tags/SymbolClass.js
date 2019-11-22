@@ -11,14 +11,17 @@ class SymbolClass extends genericTag{
             s.name = this.read_STRING();
             o.symbols.push(s);
 
-            // if tag is zero create class and assign it to main timeline
+            // if tag is zero create AVM2 class and assign it to main timeline
             if(s.tag===0){
+                this.core.display_list.clear();
                 this.core.stop();
+                let instance = this.core.avm2.createInstance(s.name);
+                this.core.display_list.add(0,instance);
             }
         }
 
-        console.log(o);
-        return false;
+        //console.log(o);
+        return true;
     }
 }
 tag_list[76] = SymbolClass;

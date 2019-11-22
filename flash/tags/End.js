@@ -1,6 +1,6 @@
 class End extends genericTag{
 	read(){
-		//return this.core.reset();
+		return this.core.reset();
 	}
 }
 

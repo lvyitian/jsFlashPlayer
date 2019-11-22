@@ -28,6 +28,22 @@ class AVM2{
         return true;
     }
 
+    createInstance(name){
+        this.log("construct '"+name+"'");
+
+        let t = name.lastIndexOf('.');
+        let ns = name.substr(0,t);
+        let className = name.substr(t+1);
+
+        let cl = this.classes.getClass(ns,className);
+        if(cl===false)
+            throw new Error("AVM2 Class '"+name+"' not found!");
+
+        let instance = new AVM2Instance(cl);
+
+        return instance;
+    }
+
     log(...message){
         this.core.debug("avm2:",...message)
         console.log("avm2:",...message);
