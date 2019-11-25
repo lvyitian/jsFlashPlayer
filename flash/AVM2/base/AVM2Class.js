@@ -2,12 +2,21 @@ class AVM2Class{
     /**
      * @param abcFile : ABC_File
      */
-    constructor(abcFile){
-        this.constant_pool = abcFile.constant_pool;
-        this.class_info = abcFile.classes;
-        this.instance_info = abcFile.instance;
-        this.method_info = abcFile.method;
-        this.method_body = abcFile.method;
+    constructor(abcFile=null){
+
+        this.constant_pool = [];
+        this.class_info = [];
+        this.instance_info = [];
+        this.method_info = [];
+        this.method_body = [];
+
+        if(abcFile!=null) {
+            this.constant_pool = abcFile.constant_pool;
+            this.class_info = abcFile.classes;
+            this.instance_info = abcFile.instance;
+            this.method_info = abcFile.method;
+            this.method_body = abcFile.method;
+        }
 
         this.CONSTANT_QName = 0x07;
 
@@ -58,4 +67,31 @@ class AVM2Class{
         return this.getStr(multiname.name);
     }
 
+    hasSuperClass(){
+        let instance = this.getInstanceInfo();
+        let multiname = this.getMultiname(instance.super_name);
+        if(multiname)
+            return true;
+        return false;
+    }
+
+    getSuperClassInfo(){
+        let instance = this.getInstanceInfo();
+        let multiname = this.getMultiname(instance.super_name);
+        let o={};
+        let ns = this.getNS(multiname.ns);
+        if(ns.kind!==this.CONSTANT_PackageNamespace)
+            throw new Error("namespace kind is not QName");
+        o.ns = this.getStr(ns.name);
+        o.name = this.getStr(multiname.name);
+        return o;
+    }
+
+    /**
+     *
+     * @param instance : AVM2Instance
+     */
+    constructInstance(instance){
+
+    }
 }

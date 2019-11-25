@@ -39,7 +39,7 @@ class AVM2{
         if(cl===false)
             throw new Error("AVM2 Class '"+name+"' not found!");
 
-        let instance = new AVM2Instance(cl);
+        let instance = new AVM2Instance(this,cl);
 
         return instance;
     }

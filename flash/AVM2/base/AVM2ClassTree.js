@@ -1,6 +1,16 @@
+/**
+ *
+ * @type {AVM2ClassTree,null}
+ */
+var AVM2_native_class_tree = null;
+
 class AVM2ClassTree{
     constructor(){
         this.classTree = [];
+
+        if(AVM2_native_class_tree!=null){
+            this.classTree = AVM2_native_class_tree.getClassTree().slice(0);
+        }
     }
 
     /**
@@ -31,4 +41,10 @@ class AVM2ClassTree{
         }
         return false;
     }
+
+    getClassTree(){
+        return this.classTree;
+    }
 }
+
+AVM2_native_class_tree = new AVM2ClassTree();
