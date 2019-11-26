@@ -18,6 +18,10 @@ class AVM2_flash_display_Sprite extends AVM2Class{
     getSuperClassInfo(){
         return false;
     }
+
+    constructInstance(instanceObj){
+
+    }
 }
 
 AVM2_native_class_tree.registerClass(new AVM2_flash_display_Sprite());

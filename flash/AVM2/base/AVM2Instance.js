@@ -26,8 +26,12 @@ class AVM2Instance {
             this.super = new AVM2Instance(this.avm2,this.superClass);
         }
 
+        this.traits = [];
+        this.methods = [];
+
+        avm2.log('create instance of ',this.className);
         classObj.constructInstance(this);
-        console.log('create instance of ',this.className);
+
     }
 
     draw(){

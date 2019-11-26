@@ -4,6 +4,7 @@ class AVM2{
         this.core = core;
         this.abc_files = [];
         this.classes = new AVM2ClassTree();
+        this.executor = new AVM2Executor(this);
     }
 
     add_abc(abc_data){
