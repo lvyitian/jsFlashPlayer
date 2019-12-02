@@ -1,8 +1,9 @@
-class AVM2Class{
+class AVM2Class extends AVM2InstanceInterface{
     /**
      * @param abcFile : ABC_File
      */
     constructor(abcFile=null){
+        super();
 
         this.constant_pool = [];
         this.class_info = [];
@@ -22,6 +23,23 @@ class AVM2Class{
 
         this.CONSTANT_Namespace = 0x08;
         this.CONSTANT_PackageNamespace = 0x16;
+
+        this.avm2=null;
+    }
+
+    classInit(avm2){
+        if(this.avm2!=null)
+            return;
+        this.avm2 = avm2;
+        if(this.class_info.length>1){
+            console.error(this.class_info);
+            throw new Error("Class info array has more than one entry!");
+        }
+
+        let id = this.class_info[0].cinit
+        let init_method = this.getMethodInfo(id);
+
+        avm2.executor.execute(this, init_method)
     }
 
     getMultiname(id){
@@ -95,6 +113,15 @@ class AVM2Class{
         return multiname;
     }
 
+    getMethodInfo(id){
+        let mi = this.method_info[id];
+        let method = {};
+        method.info = mi;
+        method.body = this.method_body[id];
+        method.name = this.getStr(method.info.name);
+        return method;
+    }
+
     /**
      *
      * @param instance : AVM2Instance
@@ -109,12 +136,7 @@ class AVM2Class{
             instanceObj.traits.push(trait);
         }
         for(let i=0; i<this.method_info.length; i++){
-            let mi = this.method_info[i];
-            let method = {};
-            method.info = mi;
-            method.body = this.method_body[i];
-            method.name = this.getStr(method.info.name);
-            //console.log(method);
+            let method = this.getMethodInfo(i)
             instanceObj.methods.push(method);
         }
 

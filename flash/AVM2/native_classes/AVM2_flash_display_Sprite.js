@@ -1,26 +1,6 @@
-class AVM2_flash_display_Sprite extends AVM2Class{
-
+class AVM2_flash_display_Sprite extends AVM2NativeClass{
     constructor(){
         super();
-    }
-
-    getClassNamespace(){
-        return 'flash.display';
-    }
-    getClassName(){
-        return 'Sprite';
-    }
-
-    hasSuperClass(){
-        return false;
-    }
-
-    getSuperClassInfo(){
-        return false;
-    }
-
-    constructInstance(instanceObj){
-
     }
 }
 

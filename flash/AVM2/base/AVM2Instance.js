@@ -1,10 +1,11 @@
-class AVM2Instance {
+class AVM2Instance extends AVM2InstanceInterface{
     /**
      *
      * @param avm2 : AVM2
      * @param classObj : AVM2Class
      */
     constructor(avm2,classObj){
+        super();
         /**
          * type for display list
          * @type {number}
@@ -30,6 +31,7 @@ class AVM2Instance {
         this.methods = [];
 
         avm2.log('create instance of ',this.className);
+        classObj.classInit(avm2);
         classObj.constructInstance(this);
 
     }

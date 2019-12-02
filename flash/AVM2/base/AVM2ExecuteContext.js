@@ -1,7 +1,7 @@
 class AVM2ExecuteContext{
     /**
      *
-     * @param instance : AVM2Instance
+     * @param instance : AVM2InstanceInterface
      * @param method
      * @param executor : AVM2Executor
      */
