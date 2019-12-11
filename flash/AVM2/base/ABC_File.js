@@ -453,9 +453,25 @@ class ABC_File{
         return out>>>0;
 	}
 
+    read_sub_array(length = -1){
+        if(length<0)
+            length = this.raw_data.length-this.cur;
+        let t = new Uint8Array(this.raw_data.buffer,this.cur+this.raw_data.byteOffset,length);
+        this.cur+=length;
+        return t;
+    }
+
     read_d64(){
-		alert('TODO: read d64');
+		throw new Error('TODO: read d64');
 		return 0;
+
+        /*let buf1 = this.read_sub_array(4);
+        let buf2 = this.read_sub_array(4);
+        let buf = new Uint8Array(8);
+        buf.set(buf2, 0);
+        buf.set(buf1, 4);
+        let t= new DataView(buf.buffer,buf.byteOffset,8);
+        return t.getFloat64(0,true);*/
 	}
 
     read_u16(){
