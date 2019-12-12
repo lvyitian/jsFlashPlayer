@@ -1,0 +1,84 @@
+<html>
+<head>
+    <title>SpritePlayerTest</title>
+    <meta charset="UTF-8"/>
+    <script src="SmartSpriteCore.js"></script>
+    <script src="SpritePlayer.js"></script>
+
+    <style type="text/css">
+
+        table{
+            width: 100%;
+        }
+
+        body{
+            background-color: #BEDADE;
+        }
+    </style>
+    <script>
+
+        var spriteData = "Q1dTDz8TAAB4nKWWeVhTZxbGv8iiCLIUFLUiMQiIClkIy41cDEhwUKOsVaZugQRICUmahE0fbATc\n" +
+            "teJSQBGLPIgwgygPOrg3qSPtWFRWlU2hILhXFNFRkLkXk5t81alM5w94+A7nPff+znvOvTcFGK0B\n" +
+            "wKIAgOkkEGBlCQD4xtrSCAAfGT+GFRoQSE5JEInlLOyEUuIUCimLSk1OTnZLdneTyGKpdARBqDQG\n" +
+            "lcFwxTJc5aliBS/FVSx3oPiSRyoECOTRMqFUIZSIyfiZFyVJVKAUiqZsSoKUKCuWu/H4kiiBW7Qk\n" +
+            "gZrCk1LpbjQqXgdLYi2QCXgKiSxcIhH5+uFZ5EARTx5HDpZJYgRyOVaeJyIvCPMku5KjEoUiPpnp\n" +
+            "Tfeh/l6pV0sQgP34Mmh0xJXOcKXTw2nuLJoni+E9B/+Dpqd9n/leyhUoeHyegvcxsReL4akvhnI1\n" +
+            "cglfGJM6KrEuk+xD/V0nR9dbfjTRWmmiTDTiFz+aKhAJEgRihRxrL32kvfxoVoxElsBT+PKkUpEw\n" +
+            "mocXpKa4yuMk0fHJvCSBawzeah+qLvHP3hJGxuX+seEJCVRttlwRKoj542x5eKpUQA0VyCWJsmgB\n" +
+            "lu6gGRguF7sXmTBJwA+USRJG7kXKk8kFeD5K0Qrw5JGrsIRiuYInjhYEBfhiajehkM9iBHpz6AyG\n" +
+            "v58f3Z/jR6f70Rj+HAYjMIDB5HjRvJg+1A+k2mp8SXQi3mRNNf7/UE1Pqq0mkQljhdh8B/z5qh8p\n" +
+            "QR4ZNLhPut59eCl3+qcu9YFUWy3ow+aOtlqQfnPfh5b9P+34ryU+OtJUzUPQlwwWjBkeHp5vEjEG\n" +
+            "ABIwsAN2wD6lJWHf4h0NwTY/5S3fl+cZ9Bu3/oK1oV/M8bvswfFPDZenf9m+lTYvOWOO7bm6TbO2\n" +
+            "kt0CDF1mze6qtuKE2DrMjpsoKDZ7Heh9WC4/tjR+uDb09dANpKq37oGCdWv1hvQXy6pp6ypJ8fZV\n" +
+            "Hc9f0EVDbwxOeF5SP3xrcujMO+DmOwS6TszvfNk9r23lsNlC6q6OO+e5g0NG19F1pluobelhVfaX\n" +
+            "L+2LdZ6TfFjds/uutKeTNe38Otske5Zvi5yfmvDv6tn9ya523mnDRo/XnB2jrr+TkV96de7uwlmS\n" +
+            "q9cp30W6DjK5aSGxw/OuOn0mXOEYFLqptORFjHnvaXvZrfrgSbubV37L+Ixz76sWFXkC084upNJ6\n" +
+            "S1u9j4N0yf4M8+nb4w7OsD4i5p2MbhnacEKSZ148jlMuDXOfwj3j9ThpS5r7s7nXv4qYYVsR79Lm\n" +
+            "eERd27aCP+9Hl/M7nV6KYtf2nUojbQ57yRYsb6vt958061F62JvIdyfYmzvLi1PiJy8SR2x33l5l\n" +
+            "bPOOUyNx9O1rcy4PkYgYBSUGe3v3Lj/Xeul7s5mtzAy157GeB63XTh8tuXK454u9XoUd5w5xW9Om\n" +
+            "Aq6qvvVVTuJs0xS+dFrhRr9O741l+eaOWcYO5M5M1GxZI6CRLoLky2EvXkmDFGh/U6a7OmpVzi9d\n" +
+            "e7Io5bkHLY4vjM96xGls+jpj8EH6/j03/N3sZhb58DeglWvLSmo3Th98dkY1ISHGlingHZIuNV19\n" +
+            "Mrz73mDi650VhbOezVuloHC/fdV1zPfOjUIDysLNY3N7mx+T3hldO6hc/QOgYO/eMWAF+IuSRAGk\n" +
+            "BSTQzAbYixgAS+uf9yChzo4X7lUpwbAJ/o42wIZws7ExCRMANnb+AUzGfhsC2nhQQAKiinpgaXOV\n" +
+            "VBfmf+1zpg2muYX91wiYge24xgBMe2fdo8L0BpgE0+8yNiKBKy3VT6JRK6TrpDZQ1dL6BHWIbHqm\n" +
+            "DeQs+uUoyhReJSSp4y5kogEHVERg1dTyXWhYaRUhWaA8okJ5ZyuIwFyf7Omo+EA5TRuwXbTjKLrO\n" +
+            "r0ypDRiWpIejmXXH2ZqA+r76vmrA20ml0gZqrtXUDEQ4NbBx9PnmFgDfSSMgF0uSo3giEZ2hITYe\n" +
+            "DbHlxnopRDzjwSlLiJjByyVDxP6kDQUQcfCR2JMQ8erIsGCION7FTwURJz1wJ0PE6VbOSoiYmZkG\n" +
+            "YOKZSRCxsY6YriEeOxpi875LlhCxvctOFUTsVrEmGCJG1R4w8ZIpFh0QceT9p2SIONaytgAilm+t\n" +
+            "gj3+JrcQJnb1X6iEiSnTIeKxOmKahnjcJ4gbBx6uR41S27O0geNRNytQsz3/Im5/W/A/S1DrkDPa\n" +
+            "ebsSd+7UKnSKuoTIWFx0tB61b84jPGaYHTBGHUuzarWBzx/vGkDnuGwlapgEZ5agtNR07Zir+3n9\n" +
+            "a/sbHYcIwPYZ7eT+Ls4gRNz/xIkEEY8jiGmIhthkNB4bTrkO7/F4UlkB5LHF2Z0dkMcTeRIl5PHU\n" +
+            "zvAsyGNykA/sseMBp2DI49l11mzIY5rLmFp9j/tvOzQAmNihEiI20RF7Y8QNWHC8HvFT+aUPiG+Q\n" +
+            "e7OQ9i1OxKULH9YlIu03bxEZ61deLMcCWQTgClkZgrQXhxIZLFr+ZKTdaRoRIGdnLUbaHJ8QEtOi\n" +
+            "TfVIs+MVbFV2jtz+wNmBM72ROUu157sJd0W94TlHtee6xDpFb0jOI+0Zx+0NXmGkTzteR+uF0TZh\n" +
+            "QdNP0OL+Iu3Gb9n6/mKBjdAOI20DltBzGmm7Ugw9p5E2QYBK31+ktf8R0PcXaeUfUOr7i7QUhUD+\n" +
+            "Is1FFkotH+5v70oLAPMuvabPa6rj9cR4G7GgmR5vR+XPH91gpPwnP+LC+AYjh6rfEBn4BiM7ki5C\n" +
+            "G4ys99xOBPANRuJvriVo8A1GVlXPJxqAbzASYuxMFMU3GOH02BB24xvc/fw2RXvGF7i76bahPm63\n" +
+            "enmfPq6ZDtdDY++ET+CO2Hs6+60Ssrc0W8qG7M2PeMaG7M36bp0Ksjcj0QpA9ibZVCohe+PCo6CX\n" +
+            "EvLXcDKA7F3c8JCtb2/3yxtWMO/Ss/q8E3S8TA2v+Wh4c5O58Dh/nWOthHiX/OMePM4uxWrocYWM\n" +
+            "qy6FeL0fxuRBvN7Xs3MgXu/TxfnQOHt//8XfoHH+lT51QJ+3s+9Lrj6vuY7XXcNrMRregwstYN5E\n" +
+            "41zY35BiV5iX2lQD81rcS2FDvH0vqSqIt6n/BYB4LwT8qIJ4iwLyYV6k3grmDWnW57XQ8eIfWXX4\n" +
+            "1+loePM2X1ZBvMnZRjBvBCdCBfEy+adg3olMinYXR3g9fhNnaM84rkdV2TntGaf1yPi7l/aMw3qE\n" +
+            "bHuuz9qY7lCjz9rw65H9+qyWOlY62IYTWoJJ6rcn8Rz8axr8B5UHgp0=";
+
+        function onLoaded(data) {
+
+            console.log("loaded!");
+        }
+
+        var player = new SpritePlayer();
+
+        player.loadFromBase64(spriteData, onLoaded);
+
+    </script>
+</head>
+<body>
+<table>
+    <tr>
+        <td>
+            <canvas width="800" height="600" id="canvas"></canvas>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

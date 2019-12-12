@@ -52,8 +52,11 @@ class Preloader {
 	        	continue
 	        }
 
-	        if(typeof(tag_processor) == "undefined")
-	            continue;
+	        if(typeof(tag_processor) == "undefined") {
+	        	let skip_tag = tag_list[tag.code];
+	        	this.debug("skip",skip_tag);
+                continue;
+            }
 	        
 	        let ret = (new tag_processor(this,tag)).no_error;
 	        if(!ret){
