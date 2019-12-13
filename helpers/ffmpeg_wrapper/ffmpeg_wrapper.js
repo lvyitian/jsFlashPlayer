@@ -91,7 +91,7 @@ var Module = {
     
     noInitialRun: true,
     onRuntimeInitialized : function(){
-        console.log('Initialise');
+        //console.log('Initialise');
 
         ccall("main");
 

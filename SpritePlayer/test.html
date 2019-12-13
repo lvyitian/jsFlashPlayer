@@ -2,22 +2,23 @@
 <head>
     <title>SpritePlayerTest</title>
     <meta charset="UTF-8"/>
-    <script src="SmartSpriteCore.js"></script>
+    <script src="build/SmartSpriteCore.js"></script>
     <script src="SpritePlayer.js"></script>
 
     <style type="text/css">
 
-        table{
+        table {
             width: 100%;
         }
 
-        body{
+        body {
             background-color: #BEDADE;
         }
     </style>
     <script>
 
-        var spriteData = "Q1dTDz8TAAB4nKWWeVhTZxbGv8iiCLIUFLUiMQiIClkIy41cDEhwUKOsVaZugQRICUmahE0fbATc\n" +
+        var spriteData =
+            "Q1dTDz8TAAB4nKWWeVhTZxbGv8iiCLIUFLUiMQiIClkIy41cDEhwUKOsVaZugQRICUmahE0fbATc\n" +
             "teJSQBGLPIgwgygPOrg3qSPtWFRWlU2hILhXFNFRkLkXk5t81alM5w94+A7nPff+znvOvTcFGK0B\n" +
             "wKIAgOkkEGBlCQD4xtrSCAAfGT+GFRoQSE5JEInlLOyEUuIUCimLSk1OTnZLdneTyGKpdARBqDQG\n" +
             "lcFwxTJc5aliBS/FVSx3oPiSRyoECOTRMqFUIZSIyfiZFyVJVKAUiqZsSoKUKCuWu/H4kiiBW7Qk\n" +
@@ -61,18 +62,50 @@
             "1+loePM2X1ZBvMnZRjBvBCdCBfEy+adg3olMinYXR3g9fhNnaM84rkdV2TntGaf1yPi7l/aMw3qE\n" +
             "bHuuz9qY7lCjz9rw65H9+qyWOlY62IYTWoJJ6rcn8Rz8axr8B5UHgp0=";
 
-        function onLoaded(data) {
-
-            console.log("loaded!");
-        }
 
         var player = new SpritePlayer();
+        var redrawInterval = null;
+        var canvas = null;
+        var ctx = null;
+        var last_tick = -1;
 
-        player.loadFromBase64(spriteData, onLoaded);
+        function init()
+        {
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+
+            player.loadFromBase64(spriteData, onLoaded);
+        }
+
+        function onLoaded()
+        {
+            console.log(player.getAssetList());
+
+            player.debug_mode=true;
+            player.stop('snowball01');
+            player.gotoFrame('snowball01',2);
+
+            draw();
+        }
+
+        function draw()
+        {
+            redrawInterval = requestAnimationFrame(draw);
+            if(Date.now() - last_tick < 1000/player.getFramerate())
+                return;
+
+            last_tick = Date.now();
+
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            console.log(player.getCurrentFrame('snowball01'));
+            if(!player.draw(ctx, 'snowball01',0,0))
+                cancelAnimationFrame(redrawInterval);
+
+        }
 
     </script>
 </head>
-<body>
+<body onload="init()">
 <table>
     <tr>
         <td>

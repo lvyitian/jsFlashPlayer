@@ -1,6 +1,6 @@
 <?php
 
-define('OUTFILE',"SmartSpriteCore.js");
+define('OUTFILE',"build/SmartSpriteCore.js");
 
 $data = [];
 

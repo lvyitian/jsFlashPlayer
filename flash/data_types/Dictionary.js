@@ -30,7 +30,7 @@ class Dictionary{
 	draw(ctx,characterID,ratio,matrix,options){
 		let el = this.dict[characterID];
 		if(!el){
-			console.log("Character #"+characterID+' not found!');
+			console.error("Character #"+characterID+' not found!');
 			console.log(el);
 			return false;
 		}
@@ -55,5 +55,14 @@ class Dictionary{
 		console.log(m);
 		console.log(el);
 		return false;
+	}
+
+	replace_core(new_core){
+	    this.core = new_core;
+		let ell = Object.keys(this.dict);
+		for(let i=0;i<ell.length;i++){
+		    let e = this.dict[ell[i]];
+            e.core = new_core;
+        }
 	}
 }

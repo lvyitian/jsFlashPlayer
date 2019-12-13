@@ -1,5 +1,5 @@
 class Preloader {
-	constructor(core, data, start_address){
+	constructor(core, data, start_address, onComplete = null){
 		this.core = core;
 		this.data = data;
 		this.is_error = false;
@@ -19,6 +19,13 @@ class Preloader {
 		this.debug = core.debug;
 		this.set_frame_label = core.set_frame_label.bind(core);
 		this.current_frame=0;
+
+		this.exportAssets = null;
+		if(typeof(core.exportAssets) === "object"){
+			this.exportAssets = core.exportAssets;
+		}
+
+		this.onComplete = onComplete;
 
 		let tl = [];
 		for(let i=0;i<tag_list.length;i++){
@@ -61,7 +68,7 @@ class Preloader {
 
 	        if(typeof(tag_processor) == "undefined") {
 	        	let skip_tag = tag_list[tag.code];
-	        	this.debug("skip",skip_tag);
+	        	this.debug("skip",skip_tag.name);
                 continue;
             }
 	        
@@ -73,7 +80,10 @@ class Preloader {
     		}
         }
 
-        console.log('preloader done');
+        this.debug('preloader done');
+		if(typeof(this.onComplete) === 'function'){
+			this.onComplete(this.core);
+		}
 	}
 
 	continue_processing(){

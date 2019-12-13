@@ -9,12 +9,13 @@ class ExportAssets extends genericTag{
 			let e = {};
 			e.charId = this.read_UI16();
 			e.name = this.read_STRING();
+			this.core.exportAssets.add(e.name,e.charId);
 			o.list.push(e);
 		}
 
 
-		console.log(o);
-		return false;
+		//console.log(o);
+		return true;
 	}
 }
 

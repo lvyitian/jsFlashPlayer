@@ -3,24 +3,36 @@ class SpritePlayer{
     constructor(){
         this.data = null;
         this.raw_data = null;
-        this.debug_mode = true;
+        this.debug_mode = false;
         this.pako = pako;
         this.timeline = new Timeline(this);
-        this.dictionary = new Dictionary();
+        this.dictionary = new Dictionary(this);
+        this.avm_obj = {};
+        this.avm = new AVM(this);
         this.canvas = document.createElement('canvas');
         this.preloader = null;
+        this.exportAssets = new ExportAssetManager(this);
+
+        this.canvas = null;
+        this.ctx = null;
     }
 
     /**
      *
      * @param data : string
      */
-    loadFromBase64(data){
+    loadFromBase64(data, onComplete){
         this.raw_data = this._base64ToArrayBuffer(data);
         this.data = new FlashParser(this.raw_data);
         this.read_header();
+        this.onLoad_callback = onComplete;
 
-        this.preloader = new Preloader(this,this.data,this.reset_address);
+        this.preloader = new Preloader(this,this.data,this.reset_address, this.onLoad.bind(this));
+    }
+
+    onLoad(){
+        this.dictionary.replace_core(this);
+        this.onLoad_callback();
     }
 
     read_header(){
@@ -154,5 +166,61 @@ class SpritePlayer{
         document.head.appendChild(script);
         script.remove();
     }
+
+    getElementByName(name){
+        let char_id = this.exportAssets.getByName(name);
+        return this.dictionary.get(char_id);
+    }
+
+    //public
+    getAssetList(){
+        return this.exportAssets.getList();
+    }
+
+    getFramerate(){
+        return this.frame_rate;
+    }
+
+    draw(ctx, name, x, y){
+        this.canvas = ctx.canvas;
+        this.ctx = ctx;
+        let e = this.getElementByName(name);
+        let matrix = new DOMMatrix();
+        matrix.translateSelf(x,y);
+        e.replace_canvas(canvas);
+        return e.draw(matrix);
+    }
+
+    getCurrentFrame(name)
+    {
+        let e = this.getElementByName(name);
+        if (e.constructor.name !== 'Sprite')
+            return 0;
+        return e.cur_frame;
+    }
+
+    stop(name)
+    {
+        let e = this.getElementByName(name);
+        if (e.constructor.name !== 'Sprite')
+            return;
+        e.stop();
+    }
+    play(name)
+    {
+        let e = this.getElementByName(name);
+        if (e.constructor.name !== 'Sprite')
+            return;
+        e.play();
+    }
+
+    gotoFrame(name, frame)
+    {
+        let e = this.getElementByName(name);
+        if (e.constructor.name !== 'Sprite')
+            return;
+        e.goto_frame(frame);
+    }
+
 }
 

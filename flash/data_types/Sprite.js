@@ -18,7 +18,8 @@ class Sprite{
 		this.cur_tag=0;
 
 		this.playing = true;
-		this.timeline = data.timeline;		
+		this.timeline = data.timeline;
+		this.frame_ready = false;
 
 		this.avm_obj = {
 			__degug: 'this is a sprite avm object'
@@ -47,9 +48,10 @@ class Sprite{
 	}
 
 	draw(matrix){
-		this.matrix = matrix;
 
-		if(!this.playing){
+        this.matrix = matrix;
+
+		if(!this.playing && this.frame_ready){
 			return this.tag_ShowFrame();
 		}
 
@@ -70,8 +72,9 @@ class Sprite{
 					this.cur_frame=0;
 				break;
 				case 1:
+					this.frame_ready = true;
 					r = this.tag_ShowFrame();
-					if(this.display_list.do_abort_frame==true){
+					if(this.display_list.do_abort_frame===true){
 						continue;
 					}
 				break;
@@ -109,7 +112,7 @@ class Sprite{
 	tag_ShowFrame(){
 		this.debug('tag ShowFrame');
 
-		let ret = this.display_list.draw(this.matrix);
+		let ret = this.display_list.draw(this.matrix, this.core.ctx);
 		
 		if(!ret){
 			console.log(this.data.tags);
@@ -160,6 +163,7 @@ class Sprite{
         }
         this.cur_frame = frame - 1;
         this.cur_tag = addr;
+        this.frame_ready = false;
         //this.display_list.abort_frame();
         return true;
     }
@@ -168,6 +172,11 @@ class Sprite{
         this.debug('sprite register object "'+name+'"');
         this.avm_obj[name] = {type:this.avm.VARTYPE_OBJ, val: obj};
     }
+
+    replace_canvas(canvas){
+		this.debug('replace canvas');
+		this.display_list.replace_canvas(canvas);
+	}
 
 	debug(...args){
     	if(this.core.debug_mode){

@@ -12,7 +12,7 @@ class DisplayList{
 
 		this.background_color = 'white';
 
-		this.ctx = canvas.getContext('2d');
+		this.ctx = this.core.ctx;
 
 		this.actions = [];
 		this.actions_this = this.core;
@@ -53,9 +53,13 @@ class DisplayList{
 		this.do_abort_frame=true;
 	}
 
-	draw(parent_matrix=null){
-
+	draw(parent_matrix=null, ctx = null){
 		this.do_abort_frame=false;
+
+		if(ctx!=null) {
+            this.ctx = ctx;
+            this.canvas = ctx.canvas;
+        }
 
 		if(this.actions.length){
 			/*if(this.sprite_mode){
@@ -138,6 +142,7 @@ class DisplayList{
 						console.log('dictionary draw fails!');
 						console.log(this.list);
 						console.log(this.dictionary);
+						console.log(el);
 						return false;
 					}
 					break;
