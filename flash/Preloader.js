@@ -25,7 +25,10 @@ class Preloader {
 			let tag = tag_list[i];
 			if(!tag) continue;
 			let name = tag.name;
-			if(name.startsWith('Define'))
+			if(
+					name.startsWith('Define') ||
+					name === 'ExportAssets'
+			)
 				tl[i] = tag;
 		}
 		this.tag_list = tl;
@@ -51,6 +54,10 @@ class Preloader {
 	        	this.core.timeline.add_frame(this.data.cur+this.start_address, this.current_frame);
 	        	continue
 	        }
+
+	        if(tag.code==0){
+	        	break;
+			}
 
 	        if(typeof(tag_processor) == "undefined") {
 	        	let skip_tag = tag_list[tag.code];
