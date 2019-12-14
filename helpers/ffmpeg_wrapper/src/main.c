@@ -2,13 +2,11 @@
 
 #include <libavcodec/avcodec.h>
 #include <libswresample/swresample.h>
+#include <libswscale/swscale.h>
+#include <libavutil/imgutils.h>
 
 #define BYTE unsigned char
 
-AVCodec *codec;
-AVCodecParameters *codecParams;
-AVCodecContext *pCodecContext;
-//int frame_number=0;
 
 BYTE* convert_YCrCb_to_RGB24(AVFrame* pFrame){
 	int Yh = pFrame->height;
@@ -64,6 +62,69 @@ BYTE* convert_YCrCb_to_RGB24(AVFrame* pFrame){
     return buffer;
 }
 
+BYTE* convert_YCrCb_to_RGBA(AVFrame* pFrame){
+	int Yh = pFrame->height;
+    int Yw = pFrame->width;
+    BYTE* buffer = (BYTE*)malloc(Yw*Yh*4);
+
+    int Ch = Yh/2;
+    int Cw = Yw/2;
+
+    int Yls = pFrame->linesize[0];
+    int Cls = pFrame->linesize[1];
+    int asize = pFrame->linesize[2];
+
+    //printf("asize: %d \n",asize );
+
+    //printf("Yw:%d Yh:%d\n",Yw,Yh);
+
+    for(int i=0;i<Yh;i++){
+        for(int j=0;j<Yw;j++){
+            int Y = pFrame->data[0][i*Yls+j];
+            int Cb = pFrame->data[1][(i/2)*Cls+(j/2)];
+            int Cr = pFrame->data[2][(i/2)*Cls+(j/2)];
+
+            /*int r = (int) (Y + 1.40200 * (Cr - 0x80));
+            int g = (int) (Y - 0.34414 * (Cb - 0x80) - 0.71414 * (Cr - 0x80));
+            int b = (int) (Y + 1.77200 * (Cb - 0x80));*/
+
+            int r = (255/219)*(Y-16)+(255/112)*0.701*(Cr-128);
+            int g = (255/219)*(Y-16)-(255/112)*0.886*(0.114/0.587)*(Cb-128)-(255/112)*0.701*(0.229/0.587)*(Cr-128);
+            int b = (255/219)*(Y-16)+(255/112)*0.866*(Cb-128);
+            int a = pFrame->data[3][(i*2)*asize+(j)];
+
+            /*r=abs(r);
+            g=abs(g);
+            b=abs(b);*/
+            if(r<0) r=0;
+            if(g<0) g=0;
+            if(b<0) b=0;
+
+            /*BYTE r = Cr;
+            BYTE g = Y;
+            BYTE b = Cb;*/
+
+            buffer[i*(Yw*4)+(j*4)+0]=r;
+            buffer[i*(Yw*4)+(j*4)+1]=g;
+            buffer[i*(Yw*4)+(j*4)+2]=b;
+            buffer[i*(Yw*4)+(j*4)+3]=a;
+            //printf("%02x ",r);
+        }
+    }
+
+    /*for(int i=0;i<10;i++){
+        printf("%d ",buffer[i]);
+    }
+    printf("\n");*/
+
+    return buffer;
+}
+
+//--------------------------------------------- flv -------------------------------------------------------
+AVCodec *codec;
+AVCodecParameters *codecParams;
+AVCodecContext *pCodecContext;
+
 int decode_frame(BYTE* packet,int length, int* output, int* out_length){
     //printf("decode_frame called!\n");
 
@@ -106,6 +167,83 @@ int decode_frame(BYTE* packet,int length, int* output, int* out_length){
 
     return 0;
 }
+
+//--------------------------------------------- vp6 -------------------------------------------------------
+AVCodec *codec_vp6;
+AVCodecParameters *codec_vp6Params;
+AVCodecContext *pCodecContext_vp6;
+
+void reset_vp6_context(){
+    if(pCodecContext_vp6!=NULL){
+        printf("reset vp6\n");
+        avcodec_free_context(&pCodecContext_vp6);
+        pCodecContext_vp6 = NULL;
+    }
+}
+
+int decode_frame_vp6(BYTE* packet,int length, int* output, int* out_length){
+    //printf("decode_frame_vp6 called!\n");
+
+    AVPacket *pPacket = av_packet_alloc();
+    AVFrame *pFrame = av_frame_alloc();
+
+    if(codec_vp6Params==NULL)
+        codec_vp6Params = avcodec_parameters_alloc();
+
+    if(codec_vp6==NULL){
+        codec_vp6 = avcodec_find_decoder(AV_CODEC_ID_VP6A);
+        printf("vp6 codec: %s\n",codec_vp6->name);
+    }
+
+    if(pCodecContext_vp6==NULL){
+        pCodecContext_vp6 = avcodec_alloc_context3(codec_vp6);
+        avcodec_parameters_to_context(pCodecContext_vp6, codec_vp6Params);
+        avcodec_open2(pCodecContext_vp6, codec_vp6, NULL);
+    }
+
+    pPacket->size=length;
+
+    pPacket->data = packet;
+
+    avcodec_send_packet(pCodecContext_vp6, pPacket);
+    avcodec_receive_frame(pCodecContext_vp6, pFrame);
+
+    BYTE* t = convert_YCrCb_to_RGBA(pFrame);
+
+    //printf("format: %d\n",pFrame->format);
+
+    /*struct SwsContext * ctx = sws_getContext(pFrame->width, pFrame->height,
+                                          pFrame->format,
+                                          pFrame->width, pFrame->height,
+                                          AV_PIX_FMT_RGBA,
+                                          0, 0, 0, 0);
+
+    AVFrame *frame = av_frame_alloc();
+    int num_bytes = av_image_get_buffer_size(AV_PIX_FMT_RGBA, pFrame->width, pFrame->height,32);
+    av_image_alloc(frame->data,frame->linesize,pFrame->width, pFrame->height,AV_PIX_FMT_RGBA,32);
+    //uint8_t* frame2_buffer = (uint8_t *)av_malloc(num_bytes*sizeof(uint8_t));
+    //avpicture_fill((AVPicture*)frame, frame2_buffer, AV_PIX_FMT_RGBA, pFrame->width, pFrame->height);
+
+    //frame->data[0] = frame2_buffer;
+
+    sws_scale(ctx, pFrame->data, pFrame->linesize, 0, pFrame->height, frame->data, frame->linesize);
+*/
+    
+    *output = (int)t;
+    //*output = (int)pFrame->data;
+    *out_length = pFrame->width*pFrame->height*4;
+
+
+
+    free(pPacket->data);
+
+    av_packet_free(&pPacket);
+    av_frame_free(&pFrame);
+
+    return 0;
+}
+
+//--------------------------------------------- mp3 -------------------------------------------------------
 
 AVCodec *mp3codec = NULL;
 AVCodecContext *mp3_context = NULL;
@@ -229,6 +367,10 @@ int main()
     codec=NULL;
     codecParams=NULL;
     pCodecContext=NULL;
+
+    codec_vp6=NULL;
+    codec_vp6Params=NULL;
+    pCodecContext_vp6=NULL;
     printf("ffmpeg init\n");
     return 0;
 }

@@ -153,12 +153,26 @@ class SpritePlayer{
         return img;
     }
 
+    draw_image_data_to_canvas(imdat, width, height){
+        let canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height+100;
+        let ctx = canvas.getContext('2d');
+        let imd = ctx.getImageData(0,0,width,height+100);
+        imd.data.set(imdat);
+        //console.log(imd);
+        ctx.putImageData(imd,0,0);
+
+        this.ctx.drawImage(canvas,0,0);
+    }
+
     //TODO: remove this function
     bug_create_image_from_array(image_array, width, height){
         return this.create_image_from_array(image_array, width, height);
     }
+    //TODO: remove this function
     bug_draw_image_data_to_canvas(imdat, width, height){
-        return true;
+        return this.draw_image_data_to_canvas(imdat, width, height);
     }
     bug_inject_script(script_text){
         let script = document.createElement('script');

@@ -60,6 +60,40 @@ var Libav = {
         return decoded;
     },
 
+    decode_frame_vp6 : function(encoded_frame_array,width, height){
+        //var d1 = new Date();
+        if(!encoded_frame_array){
+            console.log('no encoded_frame_array!');
+            console.log((new Error).stack);
+            return false;
+        }
+
+        if(this._decode_frame == undefined){
+            console.log('"decode_frame" is not loaded!');
+            return false;
+        }
+
+        let frame = this._arrayToHeap(encoded_frame_array);
+        let out_array_length_ptr=Module._malloc(4);
+        let out_array_ptr=Module._malloc(4);
+        this._decode_frame_vp6(frame, encoded_frame_array.length, out_array_ptr, out_array_length_ptr);
+
+        let decoded_length = Module.getValue(out_array_length_ptr, 'i32');
+        let decoded_offset = Module.getValue(out_array_ptr,'*');
+
+        let decoded = new Uint8ClampedArray(Module.HEAP8.buffer,decoded_offset,decoded_length);
+
+        Module._free(out_array_ptr);
+        Module._free(out_array_length_ptr);
+        Module._free(decoded_offset);
+
+        return decoded;
+    },
+
+    reset_vp6_context : function () {
+        this._decode_frame_vp6();
+    },
+
     decode_mp3_chunk(chunk){
         if(this._decode_mp3_chunk == undefined){
             console.log('"decode_mp3_chunk" is not loaded!');
@@ -96,6 +130,8 @@ var Module = {
         ccall("main");
 
         Libav._decode_frame = Module.cwrap('decode_frame','number',['number','number','number','number']);
+        Libav._decode_frame_vp6 = Module.cwrap('decode_frame_vp6','number',['number','number','number','number']);
+        Libav._reset_vp6_context = Module.cwrap('reset_vp6_context','void',[]);
         Libav._decode_mp3_chunk = Module.cwrap('decode_mp3_chunk','number',['number','number','number','number']);
         /*var array = new Uint8Array(5);
         

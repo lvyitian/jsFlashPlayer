@@ -19,8 +19,20 @@ class VideoFrame extends genericTag{
         //frame.videoData = this.raw_data.slice(this.data.cur,end_address);
         frame.videoData = this.read_sub_array(this.raw_data.length-this.cur);
 
-        if(stream.frames==undefined)
+        if(stream.frames===undefined)
             stream.frames = [];
+        /*if(frame.frameNum>0){
+            let prev_frame = frame.frameNum-1;
+            if(stream.frames[prev_frame] === undefined){
+                while(stream.frames[prev_frame]===undefined){
+                    prev_frame--;
+                }
+                let frame = stream.frames[prev_frame];
+                for(let i=prev_frame+1;i<frame.frameNum-1;i++){
+                    stream.frames[i] = frame;
+                }
+            }
+        }*/
         stream.frames[frame.frameNum] = frame.videoData;
 
         //this.save_blob(frame.videoData);
