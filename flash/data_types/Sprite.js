@@ -21,9 +21,13 @@ class Sprite{
 		this.timeline = data.timeline;
 		this.frame_ready = false;
 
+
 		this.avm_obj = {
 			__degug: 'this is a sprite avm object'
 		}
+
+        this.is_initialised = false;
+		this.process_tags();
 	}
 
 	set_draw_options(options){
@@ -47,6 +51,51 @@ class Sprite{
 		return true;
 	}
 
+	process_tags(){
+        let tags = this.data.tags;
+
+        let tag;
+        let tag_processor;
+
+        do{
+            tag = tags[this.cur_tag];
+            let tag_obj = tag;
+            //console.log(tag);
+            let r = true;
+            switch (tag.code) {
+                case 0:
+                    this.cur_tag=0;
+                    this.cur_frame=0;
+                    break;
+                case 1:
+                	if(!this.is_initialised){
+                		this.is_initialised = true;
+                		return true;
+					}
+                    this.frame_ready = true;
+                    r = this.tag_ShowFrame();
+                    if(this.display_list.do_abort_frame===true){
+                        continue;
+                    }
+                    break;
+                default:
+
+
+                    tag_processor = tag_list[tag.code];
+                    if(typeof(tag_processor)=='undefined'){
+                        console.log('sprite: unimplemented tag #'+tag.code);
+                        return false;
+                    }
+                    r = (new tag_processor(this,tag)).no_error;
+                    break;
+            }
+            if(!r) return false;
+            this.cur_tag++;
+        }while(tag.code!=1);
+
+        return true;
+	}
+
 	draw(matrix){
 
         this.matrix = matrix;
@@ -55,43 +104,9 @@ class Sprite{
 			return this.tag_ShowFrame();
 		}
 
+		if(!this.process_tags())
+			return false;
 
-		let tags = this.data.tags;
-
-		let tag;
-		let tag_processor;
-
-		do{
-			tag = tags[this.cur_tag];
-			let tag_obj = tag;
-			//console.log(tag);
-			let r = true;
-			switch (tag.code) {
-				case 0:
-					this.cur_tag=0;
-					this.cur_frame=0;
-				break;
-				case 1:
-					this.frame_ready = true;
-					r = this.tag_ShowFrame();
-					if(this.display_list.do_abort_frame===true){
-						continue;
-					}
-				break;
-				default:
-
-
-					tag_processor = tag_list[tag.code];
-					if(typeof(tag_processor)=='undefined'){
-						console.log('sprite: unimplemented tag #'+tag.code);
-						return false;
-					}
-					r = (new tag_processor(this,tag)).no_error;
-				break;
-			}
-			if(!r) return false;
-			this.cur_tag++;
-		}while(tag.code!=1);
 
 		/*if(this.cur_frame == 4){
 			if(![
