@@ -91,7 +91,7 @@ var Libav = {
     },
 
     reset_vp6_context : function () {
-        this._decode_frame_vp6();
+        this._reset_vp6_context();
     },
 
     decode_mp3_chunk(chunk){

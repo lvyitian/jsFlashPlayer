@@ -12,6 +12,11 @@ class VideoStream extends genericDrawable{
 		this.cached_frames = [];
 
 		this.avm_obj = {};
+
+		if(this.codecID === 5 && this.core.getCacheVideo()){
+		    Libav.reset_vp6_context();
+		    console.log('reset vp6');
+		}
 	}
 
 	draw(matrix, ratio){
@@ -45,8 +50,8 @@ class VideoStream extends genericDrawable{
             return true;
         }else if (this.codecID===5){
 			//vp6 with alpha
-            ratio--;
-            if(ratio<0) ratio=0;
+            /*ratio--;
+            if(ratio<0) ratio=0;*/
             //let enc_frame =
 
             if (ratio === undefined) {
@@ -99,6 +104,7 @@ class VideoStream extends genericDrawable{
 	}
 
 	decode_frame(ratio){
+	    console.log('decode frame '+ratio);
         if(this.codecID===2) {
             return Libav.decode_frame(this.frames[ratio], this.width, this.height);
         }else if (this.codecID===5){
@@ -108,12 +114,22 @@ class VideoStream extends genericDrawable{
         }
     }
 
+    add_frame(frame_data){
+        if(this.frames[frame_data.frameNum] === undefined){
+            this.frames[frame_data.frameNum] = frame_data.videoData;
+            console.log(frame_data);
+            if(this.core.getCacheVideo()){
+                let data = this.decode_frame(frame_data.frameNum);
+                this.cached_frames[frame_data.frameNum]=data.slice(0);
+            }
+        }
+    }
+
     cache_frame(ratio){
-
 	    if(this.cached_frames[ratio]!==undefined)
-	        return
+	        return;
 
-        console.log('cache frame '+ratio);
+        console.log('cache frame '+ratio+' this.codecID='+this.codecID);
 	    let data = this.decode_frame(ratio);
         this.cached_frames[ratio]=data;
 

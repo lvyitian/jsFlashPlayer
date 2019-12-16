@@ -33,7 +33,7 @@ class VideoFrame extends genericTag{
                 }
             }
         }*/
-        stream.frames[frame.frameNum] = frame.videoData;
+        stream.add_frame(frame);
 
         //this.save_blob(frame.videoData);
         //console.log(frame);

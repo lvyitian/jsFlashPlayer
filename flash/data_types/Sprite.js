@@ -56,6 +56,7 @@ class Sprite{
 	reset(){
         this.cur_tag=0;
         this.cur_frame=0;
+        this.frame_ready = true;
     }
 
 	process_tags(){
@@ -76,9 +77,9 @@ class Sprite{
                         this.reset();
                         return true;
                     }
+
                     this.reset();
                     return true;
-                    break;
                 case 1:
                 	if(!this.is_initialised){
                 	    //console.log(this.core.getCacheVideo());
@@ -97,7 +98,6 @@ class Sprite{
                     }
                     this.cur_tag++;
                     return r;
-                    break;
                 default:
 
 
@@ -112,6 +112,7 @@ class Sprite{
             if(!r) return false;
             this.cur_tag++;
         }while(this.cur_tag<tags.length);
+        //}while(tag.code!=0);
 
         return true;
 	}
