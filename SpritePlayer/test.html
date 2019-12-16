@@ -993,7 +993,8 @@
         {
             canvas = document.getElementById('canvas');
             ctx = canvas.getContext('2d');
-
+            //player.setCacheVideo(true);
+            //player.debug_mode=true;
             player.loadFromBase64(spriteData, onLoaded);
         }
 
@@ -1001,9 +1002,10 @@
         {
             console.log(player.getAssetList());
 
+
             //player.debug_mode=true;
-            player.stop('snowball01');
-            player.gotoFrame('snowball01',6);
+            //player.stop('snowball01');
+            //player.gotoFrame('snowball01',0);
 
             draw();
         }
@@ -1021,11 +1023,11 @@
             /*if(!player.draw(ctx, 'bunnyIntro',0,0))
                 cancelAnimationFrame(redrawInterval);*/
 
-            if(!player.draw(ctx, 'snowball01',0,0))
-                cancelAnimationFrame(redrawInterval);
-
-            /*if(!player.draw(ctx, 'bunnyIdle',0,300))
+            /*if(!player.draw(ctx, 'snowball01',0,0))
                 cancelAnimationFrame(redrawInterval);*/
+
+            if(!player.draw(ctx, 'bunnyIdle',0,300))
+                cancelAnimationFrame(redrawInterval);
 
         }
 

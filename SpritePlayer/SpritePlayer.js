@@ -1,3 +1,16 @@
+class CanvasStub{
+    setTransform(){}
+    drawImage(){}
+    createPattern(){
+        return {
+            setTransform: function () {
+            }
+        }
+    }
+    fill(){}
+}
+
+
 class SpritePlayer{
 
     constructor(){
@@ -12,9 +25,10 @@ class SpritePlayer{
         this.canvas = document.createElement('canvas');
         this.preloader = null;
         this.exportAssets = new ExportAssetManager(this);
+        this.cacheVideo = false;
 
         this.canvas = null;
-        this.ctx = null;
+        this.ctx = new CanvasStub();
     }
 
     /**
@@ -28,6 +42,10 @@ class SpritePlayer{
         this.onLoad_callback = onComplete;
 
         this.preloader = new Preloader(this,this.data,this.reset_address, this.onLoad.bind(this));
+    }
+
+    getCacheVideo(){
+        return this.cacheVideo;
     }
 
     onLoad(){
@@ -234,6 +252,10 @@ class SpritePlayer{
         if (e.constructor.name !== 'Sprite')
             return;
         e.goto_frame(frame);
+    }
+
+    setCacheVideo(cache){
+        this.cacheVideo=cache;
     }
 
 }
