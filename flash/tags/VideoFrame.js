@@ -10,7 +10,7 @@ class VideoFrame extends genericTag{
         frame.frameNum = this.read_UI16();
 
         let stream = this.core.dictionary.get(frame.streamId);
-        if(stream.type!=this.core.dictionary.TypeVideoStream){
+        if(stream.type!==this.core.dictionary.TypeVideoStream){
             alert('Error: VideoFrame pointing to not VideoStream block!');
             return false;
         }

@@ -26,6 +26,8 @@ class Sprite{
 			__degug: 'this is a sprite avm object'
 		}
 
+        //console.log('create sprite '+this.data.spriteID);
+
         this.is_initialised = false;
 		this.process_tags();
 	}
@@ -51,6 +53,11 @@ class Sprite{
 		return true;
 	}
 
+	reset(){
+        this.cur_tag=0;
+        this.cur_frame=0;
+    }
+
 	process_tags(){
         let tags = this.data.tags;
 
@@ -59,30 +66,43 @@ class Sprite{
 
         do{
             tag = tags[this.cur_tag];
-            let tag_obj = tag;
-            //console.log(tag);
+            //let tag_obj = tag;
+            //console.log('sprite '+this.data.spriteID+' - init-'+this.is_initialised,tag);
             let r = true;
             switch (tag.code) {
                 case 0:
-                    this.cur_tag=0;
-                    this.cur_frame=0;
+                    if(!this.is_initialised){
+                        this.is_initialised = true;
+                        this.reset();
+                        return true;
+                    }
+                    this.reset();
+                    return true;
                     break;
                 case 1:
                 	if(!this.is_initialised){
-                		this.is_initialised = true;
-                		return true;
+                	    //console.log(this.core.getCacheVideo());
+                	    if(!this.core.getCacheVideo()) {
+                            this.is_initialised = true;
+                            return true;
+                        }else{
+                	        this.cur_tag++;
+                	        continue;
+                        }
 					}
                     this.frame_ready = true;
                     r = this.tag_ShowFrame();
                     if(this.display_list.do_abort_frame===true){
                         continue;
                     }
+                    this.cur_tag++;
+                    return r;
                     break;
                 default:
 
 
                     tag_processor = tag_list[tag.code];
-                    if(typeof(tag_processor)=='undefined'){
+                    if(typeof(tag_processor)==='undefined'){
                         console.log('sprite: unimplemented tag #'+tag.code);
                         return false;
                     }
@@ -91,7 +111,7 @@ class Sprite{
             }
             if(!r) return false;
             this.cur_tag++;
-        }while(tag.code!=1);
+        }while(this.cur_tag<tags.length);
 
         return true;
 	}
@@ -197,5 +217,8 @@ class Sprite{
     	if(this.core.debug_mode){
     		this.core.debug('sprite #'+this.data.spriteID+':',...args);
     	}
+    }
+    getCacheVideo(){
+	    return this.core.getCacheVideo();
     }
 }

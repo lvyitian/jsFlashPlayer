@@ -9,6 +9,8 @@ class VideoStream extends genericDrawable{
 		this.width = data.width;
 		this.height = data.height; 
 
+		this.cached_frames = [];
+
 		this.avm_obj = {};
 	}
 
@@ -25,7 +27,7 @@ class VideoStream extends genericDrawable{
                 if (this.last_frame)
                     imdat = this.last_frame;
             } else {
-                imdat = Libav.decode_frame(this.frames[ratio], this.width, this.height);
+                imdat = this.decode_frame(ratio);
             }
             if (imdat === false) {
                 console.log('len:', this.frames.length);
@@ -52,26 +54,32 @@ class VideoStream extends genericDrawable{
                 return false;
             }
             let imdat = false;
-            if(ratio===0){
-                console.log('reset!');
-                //Libav.reset_vp6_context();
-            }
+
+
             if (this.frames[ratio] === undefined) {
                 //return false;
                 if (this.last_frame) {
                     imdat = this.last_frame;
-                    //this.frames[ratio] = this.prev_encoded_frame;
                 }
 
             } else {
+                if(this.core.getCacheVideo() && this.cached_frames[ratio]!==undefined) {
+                    imdat = this.cached_frames[ratio];
+                }else{
+                    imdat = this.decode_frame(ratio);
 
-                imdat = Libav.decode_frame_vp6(this.frames[ratio], this.width, this.height);
-                this.prev_encoded_frame=this.frames[ratio];
+                }
             }
-            if (imdat === false) {
+
+            if(this.core.cacheVideo && this.cached_frames[ratio]===undefined){
+                this.cached_frames[ratio]=imdat;
+            }
+
+            if (imdat === false && this.cached_frames[ratio]===undefined) {
                 console.log('len:', this.frames.length);
                 console.log('ratio:', ratio);
                 console.log('frame:', this.frames);
+                console.log(this.cached_frames[ratio]);
                 return false;
             }
 
@@ -89,6 +97,37 @@ class VideoStream extends genericDrawable{
             return false;
 		}
 	}
+
+	decode_frame(ratio){
+        if(this.codecID===2) {
+            return Libav.decode_frame(this.frames[ratio], this.width, this.height);
+        }else if (this.codecID===5){
+            return Libav.decode_frame_vp6(this.frames[ratio], this.width, this.height);
+        }else{
+            throw new Error('Codec '+this.codecID+' not supported!');
+        }
+    }
+
+    cache_frame(ratio){
+
+	    if(this.cached_frames[ratio]!==undefined)
+	        return
+
+        console.log('cache frame '+ratio);
+	    let data = this.decode_frame(ratio);
+        this.cached_frames[ratio]=data;
+
+
+        /*let frames =  this.cached_frames;
+        this.cached_frames[ratio].onload=function() {
+            let canvas = document.getElementById('canvas');
+            let ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 800, 600);
+            ctx.drawImage(frames[ratio], 0, 0);
+            //throw new Error('stop~');
+        }*/
+
+    }
 
     align_width(width){
         while((width&3)>0){

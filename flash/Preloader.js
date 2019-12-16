@@ -90,4 +90,8 @@ class Preloader {
 
 		this.process();
 	}
+
+    getCacheVideo(){
+        return this.core.getCacheVideo();
+    }
 }
