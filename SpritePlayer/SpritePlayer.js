@@ -216,11 +216,14 @@ class SpritePlayer{
     draw(ctx, name, x, y){
         this.canvas = ctx.canvas;
         this.ctx = ctx;
+        ctx.save();
         let e = this.getElementByName(name);
         let matrix = new DOMMatrix();
         matrix.translateSelf(x,y);
         e.replace_canvas(canvas);
-        return e.draw(matrix);
+        let ret = e.draw(matrix);
+        ctx.restore();
+        return ret;
     }
 
     getCurrentFrame(name)

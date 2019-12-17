@@ -71,7 +71,7 @@ class VideoStream extends genericDrawable{
                 if(this.core.getCacheVideo() && this.cached_frames[ratio]!==undefined) {
                     imdat = this.cached_frames[ratio];
                 }else{
-                    imdat = this.decode_frame(ratio);
+                    imdat = this.decode_frame(ratio).slice(0);
 
                 }
             }
@@ -88,7 +88,7 @@ class VideoStream extends genericDrawable{
                 return false;
             }
 
-            this.last_frame = imdat;
+            this.last_frame = imdat.slice(0);
 
 
             var d1 = new Date();
@@ -119,8 +119,8 @@ class VideoStream extends genericDrawable{
             this.frames[frame_data.frameNum] = frame_data.videoData;
             console.log(frame_data);
             if(this.core.getCacheVideo()){
-                let data = this.decode_frame(frame_data.frameNum);
-                this.cached_frames[frame_data.frameNum]=data.slice(0);
+                let data = this.decode_frame(frame_data.frameNum).slice(0);
+                this.cached_frames[frame_data.frameNum]=data;
             }
         }
     }

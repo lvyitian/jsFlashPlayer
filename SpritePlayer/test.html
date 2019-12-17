@@ -1004,7 +1004,11 @@
 
 
             //player.debug_mode=true;
-            //player.stop('bunnyIdle');
+            player.stop('bunnyIdle');
+            player.gotoFrame('bunnyIdle',10);
+            player.stop('bunnyIntro');
+            player.gotoFrame('bunnyIdle',0);
+
             //player.gotoFrame('bunnyIdle',1);
 
             draw();
@@ -1023,8 +1027,8 @@
             if(!player.draw(ctx, 'bunnyIntro',0,0))
                 cancelAnimationFrame(redrawInterval);
 
-            /*if(!player.draw(ctx, 'snowball01',0,0))
-                cancelAnimationFrame(redrawInterval);*/
+            if(!player.draw(ctx, 'snowball01',0,0))
+                cancelAnimationFrame(redrawInterval);
 
             if(!player.draw(ctx, 'bunnyIdle',0,300))
                 cancelAnimationFrame(redrawInterval);
