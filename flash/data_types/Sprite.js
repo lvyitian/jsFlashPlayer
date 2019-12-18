@@ -56,7 +56,7 @@ class Sprite{
 	reset(){
         this.cur_tag=0;
         this.cur_frame=0;
-        this.frame_ready = true;
+        this.frame_ready = false;
     }
 
 	process_tags(){
@@ -77,10 +77,11 @@ class Sprite{
                         this.reset();
                         return true;
                     }
-
+                    //console.log("zero!");
                     this.reset();
-                    return true;
-                case 1:
+                    //return true;
+					break;
+				case 1:
                 	if(!this.is_initialised){
                 	    //console.log(this.core.getCacheVideo());
                 	    if(!this.core.getCacheVideo()) {
@@ -93,10 +94,10 @@ class Sprite{
 					}
                     this.frame_ready = true;
                     r = this.tag_ShowFrame();
-                    if(this.display_list.do_abort_frame===true){
+                    this.cur_tag++;
+                    if(this.display_list.do_abort_frame===true) {
                         continue;
                     }
-                    this.cur_tag++;
                     return r;
                 default:
 
@@ -111,7 +112,7 @@ class Sprite{
             }
             if(!r) return false;
             this.cur_tag++;
-        }while(this.cur_tag<tags.length);
+        }while(this.cur_tag<=tags.length);
         //}while(tag.code!=0);
 
         return true;
@@ -197,7 +198,7 @@ class Sprite{
         	this.debug('cannot find frame #'+frame);
         	return false;
         }
-        this.cur_frame = frame - 1;
+        this.cur_frame = frame;
         this.cur_tag = addr;
         this.frame_ready = false;
         //this.display_list.abort_frame();

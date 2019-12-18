@@ -15,7 +15,7 @@ class VideoStream extends genericDrawable{
 
 		if(this.codecID === 5 && this.core.getCacheVideo()){
 		    Libav.reset_vp6_context();
-		    console.log('reset vp6');
+		    //console.log('reset vp6');
 		}
 	}
 
@@ -104,7 +104,7 @@ class VideoStream extends genericDrawable{
 	}
 
 	decode_frame(ratio){
-	    console.log('decode frame '+ratio);
+	    //console.log('decode frame '+ratio);
         if(this.codecID===2) {
             return Libav.decode_frame(this.frames[ratio], this.width, this.height);
         }else if (this.codecID===5){
@@ -117,32 +117,12 @@ class VideoStream extends genericDrawable{
     add_frame(frame_data){
         if(this.frames[frame_data.frameNum] === undefined){
             this.frames[frame_data.frameNum] = frame_data.videoData;
-            console.log(frame_data);
+            //console.log(frame_data);
             if(this.core.getCacheVideo()){
                 let data = this.decode_frame(frame_data.frameNum).slice(0);
                 this.cached_frames[frame_data.frameNum]=data;
             }
         }
-    }
-
-    cache_frame(ratio){
-	    if(this.cached_frames[ratio]!==undefined)
-	        return;
-
-        console.log('cache frame '+ratio+' this.codecID='+this.codecID);
-	    let data = this.decode_frame(ratio);
-        this.cached_frames[ratio]=data;
-
-
-        /*let frames =  this.cached_frames;
-        this.cached_frames[ratio].onload=function() {
-            let canvas = document.getElementById('canvas');
-            let ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, 800, 600);
-            ctx.drawImage(frames[ratio], 0, 0);
-            //throw new Error('stop~');
-        }*/
-
     }
 
     align_width(width){

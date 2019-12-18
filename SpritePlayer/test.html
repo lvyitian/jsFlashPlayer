@@ -1004,12 +1004,13 @@
 
 
             //player.debug_mode=true;
-            player.stop('bunnyIdle');
-            player.gotoFrame('bunnyIdle',10);
-            player.stop('bunnyIntro');
+            //player.stop('bunnyIdle');
+            player.gotoFrame('bunnyIdle',0);
+            //player.stop('bunnyIntro');
             player.gotoFrame('bunnyIdle',0);
 
-            //player.gotoFrame('bunnyIdle',1);
+            //player.gotoFrame('snowball01',1);
+            //player.stop('snowball01');
 
             draw();
         }
@@ -1017,21 +1018,37 @@
         function draw()
         {
             redrawInterval = requestAnimationFrame(draw);
-            if(Date.now() - last_tick < 1000/player.getFramerate())
+            let dif = Date.now() - last_tick;
+            let tick = 1000.0/player.getFramerate()
+            if(dif < tick)
                 return;
 
-            last_tick = Date.now();
+            last_tick += tick;
+            if(dif>1000)
+                last_tick = Date.now();
+
+
 
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            //console.log(player.getCurrentFrame('snowball01'));
-            if(!player.draw(ctx, 'bunnyIntro',0,0))
-                cancelAnimationFrame(redrawInterval);
+            console.log(player.getCurrentFrame('bunnyIntro'));
+            if(!player.draw(ctx, 'bunnyIntro',0,300)) cancelAnimationFrame(redrawInterval);
 
-            if(!player.draw(ctx, 'snowball01',0,0))
-                cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball01',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball02',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball03',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball04',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball05',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball06',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball07',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball08',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball09',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball10',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball11',0,0)) cancelAnimationFrame(redrawInterval);
+            if(!player.draw(ctx, 'snowball12',0,0)) cancelAnimationFrame(redrawInterval);
 
-            if(!player.draw(ctx, 'bunnyIdle',0,300))
-                cancelAnimationFrame(redrawInterval);
+
+
+            if(!player.draw(ctx, 'bunnyIdle',0,300))  cancelAnimationFrame(redrawInterval);
 
         }
 
