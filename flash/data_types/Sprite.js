@@ -32,6 +32,10 @@ class Sprite{
 		this.process_tags();
 	}
 
+	clone(){
+		return new Sprite(this.type, this.data, this.core);
+	}
+
 	set_draw_options(options){
 
 		if('color_transform' in options){

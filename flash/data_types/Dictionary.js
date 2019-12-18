@@ -20,7 +20,11 @@ class Dictionary{
 	}
 
 	get(characterID){
-		return this.dict[characterID];
+		let item = this.dict[characterID];
+		if(item.constructor.name === 'Sprite'){
+			return item.clone();
+		}
+		return item;
 	}
 
 	has(characterID){

@@ -51,6 +51,7 @@ add_by_glob("../flash/AVM2/*/*.js");
 add_by_glob("../flash/AVM2/*.js");
 add_by_glob("../flash/*.js");
 add_by_glob("../*.js");
+add_by_glob("SpritePlayer.js");
 
 remove_from_list('../jsFlashPlayer.js');
 
@@ -67,6 +68,9 @@ foreach ($data as $f){
     $code = "\n\n// FILE: ".$f."\n\n".$code;
 
     file_put_contents(OUTFILE,$code,FILE_APPEND);
+
+    if($argv[1]=="export")
+        file_put_contents(OUTFILE,"\n\nexport SpritePlayer\n",FILE_APPEND);
 }
 
 echo "Done!\n";

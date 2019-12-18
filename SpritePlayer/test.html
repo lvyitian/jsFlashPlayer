@@ -3,7 +3,6 @@
     <title>SpritePlayerTest</title>
     <meta charset="UTF-8"/>
     <script src="build/SmartSpriteCore.js"></script>
-    <script src="SpritePlayer.js"></script>
 
     <style type="text/css">
 
@@ -988,6 +987,9 @@
         var canvas = null;
         var ctx = null;
         var last_tick = -1;
+        var bunnyIntro1 = null;
+        var bunnyIntro2 = null;
+        var bunnyIdle = null;
 
         function init()
         {
@@ -1002,15 +1004,9 @@
         {
             console.log(player.getAssetList());
 
-
-            //player.debug_mode=true;
-            //player.stop('bunnyIdle');
-            player.gotoFrame('bunnyIdle',0);
-            //player.stop('bunnyIntro');
-            player.gotoFrame('bunnyIdle',0);
-
-            //player.gotoFrame('snowball01',1);
-            //player.stop('snowball01');
+            bunnyIntro1 = player.getSprite('bunnyIntro');
+            bunnyIntro2 = player.getSprite('bunnyIntro');
+            bunnyIdle = player.getSprite('bunnyIdle');
 
             draw();
         }
@@ -1030,25 +1026,10 @@
 
 
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            console.log(player.getCurrentFrame('bunnyIntro'));
-            if(!player.draw(ctx, 'bunnyIntro',0,300)) cancelAnimationFrame(redrawInterval);
 
-            if(!player.draw(ctx, 'snowball01',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball02',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball03',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball04',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball05',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball06',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball07',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball08',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball09',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball10',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball11',0,0)) cancelAnimationFrame(redrawInterval);
-            if(!player.draw(ctx, 'snowball12',0,0)) cancelAnimationFrame(redrawInterval);
-
-
-
-            if(!player.draw(ctx, 'bunnyIdle',0,300))  cancelAnimationFrame(redrawInterval);
+            bunnyIntro1.draw(ctx,0,0);
+            bunnyIdle.draw(ctx,0,100);
+            bunnyIntro2.draw(ctx,0,300);
 
         }
 

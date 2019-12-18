@@ -10,6 +10,56 @@ class CanvasStub{
     fill(){}
 }
 
+class SmartSprite{
+    constructor(core, name){
+        this.core = core;
+        this.sprite = core.getElementByName(name);
+    }
+
+    draw(ctx, x, y){
+        this.core.canvas = ctx.canvas;
+        this.core.ctx = ctx;
+        ctx.save();
+        let matrix = new DOMMatrix();
+        matrix.translateSelf(x,y);
+        let e = this.sprite;
+        e.replace_canvas(canvas);
+        let ret = e.draw(matrix);
+        ctx.restore();
+        return ret;
+    }
+
+    getCurrentFrame()
+    {
+        let e = this.sprite;
+        if (e.constructor.name !== 'Sprite')
+            return 0;
+        return e.cur_frame;
+    }
+
+    stop()
+    {
+        let e = this.sprite;
+        if (e.constructor.name !== 'Sprite')
+            return;
+        e.stop();
+    }
+    play()
+    {
+        let e = this.sprite;
+        if (e.constructor.name !== 'Sprite')
+            return;
+        e.play();
+    }
+
+    gotoFrame(frame)
+    {
+        let e = this.sprite;
+        if (e.constructor.name !== 'Sprite')
+            return;
+        e.goto_frame(frame);
+    }
+}
 
 class SpritePlayer{
 
@@ -213,52 +263,17 @@ class SpritePlayer{
         return this.frame_rate;
     }
 
-    draw(ctx, name, x, y){
-        this.canvas = ctx.canvas;
-        this.ctx = ctx;
-        ctx.save();
-        let e = this.getElementByName(name);
-        let matrix = new DOMMatrix();
-        matrix.translateSelf(x,y);
-        e.replace_canvas(canvas);
-        let ret = e.draw(matrix);
-        ctx.restore();
-        return ret;
-    }
-
-    getCurrentFrame(name)
-    {
-        let e = this.getElementByName(name);
-        if (e.constructor.name !== 'Sprite')
-            return 0;
-        return e.cur_frame;
-    }
-
-    stop(name)
-    {
-        let e = this.getElementByName(name);
-        if (e.constructor.name !== 'Sprite')
-            return;
-        e.stop();
-    }
-    play(name)
-    {
-        let e = this.getElementByName(name);
-        if (e.constructor.name !== 'Sprite')
-            return;
-        e.play();
-    }
-
-    gotoFrame(name, frame)
-    {
-        let e = this.getElementByName(name);
-        if (e.constructor.name !== 'Sprite')
-            return;
-        e.goto_frame(frame);
-    }
-
     setCacheVideo(cache){
         this.cacheVideo=cache;
+    }
+
+    /**
+     *
+     * @param name
+     * @returns {SmartSprite}
+     */
+    getSprite(name){
+        return new SmartSprite(this, name);
     }
 
 }
