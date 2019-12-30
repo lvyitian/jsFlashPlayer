@@ -60,6 +60,12 @@ class DisplayList{
             this.ctx = ctx;
             this.canvas = ctx.canvas;
         }
+        if(typeof(this.ctx) === "undefined"){
+        	if(typeof(this.core.ctx) === "undefined"){
+        		throw new Error('this.core.ctx is undefined!');
+			}
+			this.ctx = this.core.ctx;
+		}
 
 		if(this.actions.length){
 			/*if(this.sprite_mode){
