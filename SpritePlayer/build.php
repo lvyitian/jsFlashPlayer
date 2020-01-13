@@ -68,9 +68,9 @@ foreach ($data as $f){
     $code = "\n\n// FILE: ".$f."\n\n".$code;
 
     file_put_contents(OUTFILE,$code,FILE_APPEND);
-
-    if($argv[1]=="export")
-        file_put_contents(OUTFILE,"\n\nexport SpritePlayer\n",FILE_APPEND);
 }
+
+if($argv[1]=="export")
+    file_put_contents(OUTFILE,"\n\nexport default SpritePlayer;\n",FILE_APPEND);
 
 echo "Done!\n";
