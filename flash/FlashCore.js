@@ -410,6 +410,10 @@ class FlashCore{
         debug.update('Loading '+precent+'% ('+loaded+'/'+total+')');
     }
 
+    getCacheVideo(){
+        return false;
+    }
+
     create_image_from_array(image_array, width, height){
         let canvas = document.createElement("canvas");
         canvas.width = width;

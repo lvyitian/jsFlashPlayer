@@ -53,6 +53,17 @@ function add_by_glob($gl){
 	}	
 }
 
+function remove_from_list($el){
+    global $data;
+    $out = [];
+    $arr = $data['content_scripts'][0]['js'];
+    foreach ($arr as $a) {
+    	if($el != $a)
+    		$out[]=$a;
+    }
+    $data['content_scripts'][0]['js']=$out;
+}
+
 add_by_glob("helpers/ffmpeg_wrapper/ffmpeg_wrapper.js");
 add_by_glob("helpers/*/*.js");
 add_by_glob("helpers/*.js");
@@ -67,6 +78,8 @@ add_by_glob("flash/AVM2/*/*.js");
 add_by_glob("flash/AVM2/*.js");
 add_by_glob("flash/*.js");
 add_by_glob("*.js");
+
+remove_from_list("helpers/ffmpeg_wrapper/ffmpeg_no_wasm.js");
 
 
 

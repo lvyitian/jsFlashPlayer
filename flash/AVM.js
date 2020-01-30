@@ -45,6 +45,7 @@ class AVM{
 		this.native_functions['getBytesTotal'] = this.native_getBytesTotal.bind(this);
 		this.native_functions['setInterval'] = this.native_setInterval.bind(this);
 		this.native_functions['gotoAndStop'] = this.native_gotoAndStop.bind(this);
+		this.native_functions['stop'] = this.native_stop.bind(this);
 
 		this.native_class = [];
 		this.native_class['Sound'] = function() { this.____debug = 'It is a Sound object'};
@@ -389,6 +390,12 @@ class AVM{
 		let clip = obj.__________this__________;
 		
 		clip.goto_frame(frame);
+		clip.stop();
+		return true;
+	}
+
+	native_stop(state, args, obj){
+		let clip = obj.__________this__________;
 		clip.stop();
 		return true;
 	}

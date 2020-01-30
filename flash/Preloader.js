@@ -34,7 +34,8 @@ class Preloader {
 			let name = tag.name;
 			if(
 					name.startsWith('Define') ||
-					name === 'ExportAssets'
+					name === 'ExportAssets' ||
+					name === 'JPEGTables'
 			)
 				tl[i] = tag;
 		}
@@ -68,7 +69,8 @@ class Preloader {
 
 	        if(typeof(tag_processor) == "undefined") {
 	        	let skip_tag = tag_list[tag.code];
-	        	this.debug("skip",skip_tag.name);
+	        	if(typeof(skip_tag) != "undefined")
+	        		this.debug("skip",skip_tag.name);
                 continue;
             }
 	        
