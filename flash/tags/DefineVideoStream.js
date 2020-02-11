@@ -11,8 +11,11 @@ class DefineVideoStream extends genericTag{
 			height : this.read_UI16()
 		}
 
-		if(this.core.dictionary.has(object.characterID))
+		if(this.core.dictionary.has(object.characterID)){
+			let o = this.core.dictionary.get(object.characterID);
+            o.reset_flag=true;
 			return true;
+        }
 
 		let temp = this.read_UI8();
 

@@ -5,8 +5,7 @@ https://z0r.de/29       (color transform not applying)
 https://z0r.de/90		(gradient fill)
 https://z0r.de/5720		(gradient fill)
 https://z0r.de/117		(Clip Actions in PlaceObject2)
-https://z0r.de/2692		(video codec 4)
-https://z0r.de/463		(video codec 4)
+https://z0r.de/463		(video codec 4 source array is too long)
 https://z0r.de/135		(tag #8)
 https://z0r.de/293		(tag #8)
 https://z0r.de/5128		(tag #8)
@@ -31,8 +30,10 @@ https://z0r.de/6715		(video artefact) (squerrel)
 https://z0r.de/7321		(video artefact)
 https://z0r.de/3933		(video artefact)
 https://z0r.de/2812		(video artefact)
+https://z0r.de/5549		(video codec 4) no movement
 
 ----------------- ok -----------------
+https://z0r.de/2692		[to aru magical index]
 https://z0r.de/84
 https://z0r.de/34
 https://z0r.de/1198		(preloader) [haruhi]
@@ -124,6 +125,8 @@ https://z0r.de/2814
 https://z0r.de/2455		(clannad)
 https://z0r.de/2283		(haruhi)
 https://z0r.de/1911
+https://z0r.de/2586
+https://z0r.de/5787     [clannad fuuko]
 
 ---------------- fail --------------
 
@@ -136,9 +139,6 @@ https://z0r.de/1959		(parse error(!!!))
 https://z0r.de/6489		(gradient fill)
 https://z0r.de/3360		(gradient fill)
 https://z0r.de/2649		(gradient fill)
-https://z0r.de/2586		(video codec 4)
-https://z0r.de/5787		(video codec 4)
-https://z0r.de/5549		(video codec 4)
 https://z0r.de/352		(tag #8)
 https://z0r.de/6196		(tag #8)
 https://z0r.de/314		(tag #35)

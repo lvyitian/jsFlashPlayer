@@ -263,7 +263,13 @@ class FlashCore{
         }
         
         do{
-            let ret = this.process_tag();
+            let ret
+            try {
+               ret = this.process_tag();
+            }catch(e) {
+                console.log(e);
+                ret = false;
+            }
 
             if(ret === false){
                 cancelAnimationFrame(this.redraw_interval_id);

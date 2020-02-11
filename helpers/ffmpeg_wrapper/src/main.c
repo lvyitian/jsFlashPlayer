@@ -8,7 +8,7 @@
 #define BYTE unsigned char
 
 
-BYTE* convert_YCrCb_to_RGB24(AVFrame* pFrame){
+BYTE* convert_YCrCb_to_RGB24(AVFrame* pFrame, int flip){
 	int Yh = pFrame->height;
     int Yw = pFrame->width;
     BYTE* buffer = (BYTE*)malloc(Yw*Yh*4);
@@ -20,6 +20,8 @@ BYTE* convert_YCrCb_to_RGB24(AVFrame* pFrame){
     int Cls = pFrame->linesize[1];
 
     //printf("Yw:%d Yh:%d\n",Yw,Yh);
+
+    int h;
 
     for(int i=0;i<Yh;i++){
         for(int j=0;j<Yw;j++){
@@ -46,10 +48,16 @@ BYTE* convert_YCrCb_to_RGB24(AVFrame* pFrame){
             BYTE g = Y;
             BYTE b = Cb;*/
 
-            buffer[i*(Yw*4)+(j*4)+0]=r;
-            buffer[i*(Yw*4)+(j*4)+1]=g;
-            buffer[i*(Yw*4)+(j*4)+2]=b;
-            buffer[i*(Yw*4)+(j*4)+3]=255;
+            if(flip==1){
+                h=Yh-i-1;
+            }else{
+                h=i;
+            }
+
+            buffer[h*(Yw*4)+(j*4)+0]=r;
+            buffer[h*(Yw*4)+(j*4)+1]=g;
+            buffer[h*(Yw*4)+(j*4)+2]=b;
+            buffer[h*(Yw*4)+(j*4)+3]=255;
             //printf("%02x ",r);
         }
     }
@@ -152,7 +160,7 @@ int decode_frame(BYTE* packet,int length, int* output, int* out_length){
     avcodec_send_packet(pCodecContext, pPacket);
     avcodec_receive_frame(pCodecContext, pFrame);
 
-    BYTE* t = convert_YCrCb_to_RGB24(pFrame);
+    BYTE* t = convert_YCrCb_to_RGB24(pFrame,0);
 
     
     *output = (int)t;
@@ -178,10 +186,13 @@ void reset_vp6_context(){
         printf("reset vp6\n");
         avcodec_free_context(&pCodecContext_vp6);
         pCodecContext_vp6 = NULL;
+        avcodec_parameters_free(&codec_vp6Params);
+        codec_vp6Params=NULL;
+        codec_vp6=NULL;
     }
 }
 
-int decode_frame_vp6(BYTE* packet,int length, int* output, int* out_length){
+int decode_frame_vp6(BYTE* packet,int length, int* output, int* out_length, int alpha){
     //printf("decode_frame_vp6 called!\n");
 
     AVPacket *pPacket = av_packet_alloc();
@@ -191,11 +202,16 @@ int decode_frame_vp6(BYTE* packet,int length, int* output, int* out_length){
         codec_vp6Params = avcodec_parameters_alloc();
 
     if(codec_vp6==NULL){
-        codec_vp6 = avcodec_find_decoder(AV_CODEC_ID_VP6A);
+        if(alpha==1){
+            codec_vp6 = avcodec_find_decoder(AV_CODEC_ID_VP6A);
+        }else{
+            codec_vp6 = avcodec_find_decoder(AV_CODEC_ID_VP6);
+        }
         printf("vp6 codec: %s\n",codec_vp6->name);
     }
 
     if(pCodecContext_vp6==NULL){
+        printf("vp6 create context\n");
         pCodecContext_vp6 = avcodec_alloc_context3(codec_vp6);
         avcodec_parameters_to_context(pCodecContext_vp6, codec_vp6Params);
         avcodec_open2(pCodecContext_vp6, codec_vp6, NULL);
@@ -208,29 +224,16 @@ int decode_frame_vp6(BYTE* packet,int length, int* output, int* out_length){
     avcodec_send_packet(pCodecContext_vp6, pPacket);
     avcodec_receive_frame(pCodecContext_vp6, pFrame);
 
-    BYTE* t = convert_YCrCb_to_RGBA(pFrame);
+    BYTE* t;
 
-    //printf("format: %d\n",pFrame->format);
+    if(alpha==1){
+        t = convert_YCrCb_to_RGBA(pFrame);
+    }else{
+        t = convert_YCrCb_to_RGB24(pFrame,1);
+    }
 
-    /*struct SwsContext * ctx = sws_getContext(pFrame->width, pFrame->height,
-                                          pFrame->format,
-                                          pFrame->width, pFrame->height,
-                                          AV_PIX_FMT_RGBA,
-                                          0, 0, 0, 0);
 
-    AVFrame *frame = av_frame_alloc();
-    int num_bytes = av_image_get_buffer_size(AV_PIX_FMT_RGBA, pFrame->width, pFrame->height,32);
-    av_image_alloc(frame->data,frame->linesize,pFrame->width, pFrame->height,AV_PIX_FMT_RGBA,32);
-    //uint8_t* frame2_buffer = (uint8_t *)av_malloc(num_bytes*sizeof(uint8_t));
-    //avpicture_fill((AVPicture*)frame, frame2_buffer, AV_PIX_FMT_RGBA, pFrame->width, pFrame->height);
-
-    //frame->data[0] = frame2_buffer;
-
-    sws_scale(ctx, pFrame->data, pFrame->linesize, 0, pFrame->height, frame->data, frame->linesize);
-*/
-    
     *output = (int)t;
-    //*output = (int)pFrame->data;
     *out_length = pFrame->width*pFrame->height*4;
 
 
