@@ -11,7 +11,7 @@ class VideoStream extends genericDrawable{
 
 		this.cached_frames = [];
 
-		this.avm_obj = {};
+		this.avm_obj = new AVM_Object(this);
 
 		this.reset_flag = false;
 	}

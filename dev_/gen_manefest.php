@@ -73,6 +73,7 @@ add_by_glob("flash/data_types/*.js");
 add_by_glob("flash/tags/generic*.js");
 add_by_glob("flash/tags/DefineShape.js");
 add_by_glob("flash/tags/*.js");
+add_by_glob("flash/AVM/*.js");
 add_by_glob("flash/AVM2/base/AVM2InstanceInterface.js");
 add_by_glob("flash/AVM2/*/*.js");
 add_by_glob("flash/AVM2/*.js");

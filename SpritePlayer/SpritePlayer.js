@@ -70,7 +70,7 @@ class SpritePlayer{
         this.pako = pako;
         this.timeline = new Timeline(this);
         this.dictionary = new Dictionary(this);
-        this.avm_obj = {};
+        this.avm_obj = new AVM_Object(this);
         this.avm = new AVM(this);
         this.canvas = document.createElement('canvas');
         this.preloader = null;

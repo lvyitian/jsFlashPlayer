@@ -7,13 +7,14 @@ class TextEdit extends genericDrawable{
 		this.core = core;
 		this.ctx = core.ctx
 
-		this.avm_obj = {
+		this.avm_obj = new AVM_Object(this);
+		/*this.avm_obj = {
 			_____debug: 'this is text edit',
 			text: {type:-1,val:''}
 		};
 
 		if(data.hasText)
-			this.avm_obj.text.val=data.initialText;
+			this.avm_obj.text.val=data.initialText;*/
 	}
 
 	draw(parent_matrix){
@@ -61,7 +62,7 @@ class TextEdit extends genericDrawable{
 		//ctx.stroke();
 		ctx.clip();
 		
-		ctx.fillText(this.avm_obj.text.val,this.data.indent/20,font_size);
+		ctx.fillText(this.avm_obj.getVar('text').val,this.data.indent/20,font_size);
 
 
 		ctx.restore();

@@ -13,7 +13,7 @@ class Shape{
 		this.fill_shapes = null;
 		this.lines = null;
 
-		this.avm_obj = {};
+		this.avm_obj = new AVM_Object(this);
 
 		this.FILLTYPE_SOLID_FILL = 0x00;
 		this.FILLTYPE_LINEAR_GRADIENT_FILL = 0x10;

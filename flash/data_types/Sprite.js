@@ -22,9 +22,8 @@ class Sprite{
 		this.frame_ready = false;
 
 
-		this.avm_obj = {
-			__degug: 'this is a sprite avm object'
-		}
+		this.avm_obj = new AVM_Object(this);
+        this.matrix = new DOMMatrix();
 
         //console.log('create sprite '+this.data.spriteID);
 
@@ -123,8 +122,28 @@ class Sprite{
 	}
 
 	draw(matrix){
+        this.matrix = new DOMMatrix();
+        this.matrix.multiplySelf(matrix);
 
-        this.matrix = matrix;
+        //this.avm_obj.setVar('_x',{val: this.matrix.e, type: 6});
+        //this.avm_obj.setVar('_y',{val: this.matrix.f, type: 6});
+
+		let _x = this.avm_obj.getVar('_x').val;
+        if(_x!==0){
+            this.matrix.e = _x;
+        }
+        let _y = this.avm_obj.getVar('_y').val;
+        if(_y!==0){
+            this.matrix.f = _y;
+        }
+        let _xscale = this.avm_obj.getVar('_xscale').val;
+        if(_xscale!==100){
+            this.matrix.a = _xscale/100;
+        }
+        let _yscale = this.avm_obj.getVar('_yscale').val;
+        if(_yscale!==100){
+            this.matrix.d = _yscale/100;
+        }
 
 		if(!this.playing && this.frame_ready){
 			return this.tag_ShowFrame();
@@ -211,7 +230,7 @@ class Sprite{
 
     register_avm_object(name, obj){
         this.debug('sprite register object "'+name+'"');
-        this.avm_obj[name] = {type:this.avm.VARTYPE_OBJ, val: obj};
+        this.avm_obj.setVar(name, {type:this.avm.VARTYPE_OBJ, val: obj});
     }
 
     replace_canvas(canvas){

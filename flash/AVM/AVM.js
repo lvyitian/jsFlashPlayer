@@ -67,7 +67,7 @@ class AVM{
 		for(let i=0;i<keys.length;i++){
 			let name = keys[i];
 			let f = this.native_functions[name];
-			this.core.avm_obj[name] = {type:this.VARTYPE_NATIVE_FUNC, val: f};
+			this.core.avm_obj.setVar(name, {type:this.VARTYPE_NATIVE_FUNC, val: f});
 		}
 	}
 
@@ -149,7 +149,7 @@ class AVM{
 			skip_actions_count: 0
 		};
 		if(!("_root" in state.vars)){
-			state.vars._root = {type:this.VARTYPE_OBJ, val: this.core.avm_obj};
+			state.vars.setVar('_root', {type:this.VARTYPE_OBJ, val: this.core.avm_obj});
 		}
 		do{
 			act.cur = state.pc;
@@ -184,7 +184,7 @@ class AVM{
 
 	register_object(name, obj){
 		this.debug('register object "'+name+'"');
-		this.core.avm_obj[name] = {type:this.VARTYPE_OBJ, val: obj};
+		this.core.avm_obj.setVar(name, {type:this.VARTYPE_OBJ, val: obj});
 	}
 
 	make_user_func(funcdata, state){
@@ -305,6 +305,10 @@ class AVM{
 			return state.vars[name];
 		}
 
+		if(state.target.avm_obj.hasVar(name)){
+		    return state.target.avm_obj.getVar(name);
+        }
+
 		return false;
 	}
 
@@ -408,8 +412,9 @@ class AVM{
 		let loaded = (this.core.timeline.get_address(a.frame)>0);
 		if(!loaded){
 			state.skip_actions_count = a.skip_count;			
-			//console.log(this.core.timeline);
-			//console.log('frame:',a.frame, loaded);
+			console.log(this.core.timeline);
+			console.log('frame:',a.frame, loaded);
+			return false;
 		}
 
 		return true;
@@ -545,7 +550,7 @@ class AVM{
 			return false;
 		}
 
-		if(!(name in obj)){
+		if(!obj.hasVar(name)){
 			this.errord('error, Call undefined method "'+name+'" from ',obj);
 			return false;
 		}
@@ -555,7 +560,7 @@ class AVM{
 		for(let i=0;i<arg_count;i++)
 			args.push(state.stack.pop());
 		
-		if(!this.call_function(state, obj[name], args, obj))
+		if(!this.call_function(state, obj.getVar(name), args, obj))
 			return false;
 		return true;	
 	}
@@ -584,12 +589,12 @@ class AVM{
 			console.log('no object');
 			return false;
 		}
-		if(!(name in obj)){
+		if(!obj.hasVar(name)){
 			this.errord('object',obj,' does not have member ',name);
 			return false;	
 		}
 
-		state.stack.push(obj[name]);
+		state.stack.push(obj.getVar(name));
 		return true;
 	}
 
@@ -604,7 +609,9 @@ class AVM{
 			return false;
 		}
 
-		obj[mem]=val;
+		//console.log(obj);
+		//obj[mem]=val;
+        obj.setVar(mem, val);
 
 		return true;
 	}

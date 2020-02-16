@@ -22,7 +22,7 @@ class Dictionary{
 	get(characterID){
 		let item = this.dict[characterID];
 		if(item.constructor.name === 'Sprite'){
-			return item.clone();
+			//return item.clone();
 		}
 		return item;
 	}

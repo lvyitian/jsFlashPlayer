@@ -2,11 +2,9 @@
 
 class FlashCore{
     constructor(url,canvas){
-    	this.debug_mode = true;
+    	this.debug_mode = false;
 
-        this.avm_obj = {
-            __________this__________ : this
-        };
+        this.avm_obj = new AVM_Object(this);
         this.debug(url);
         console.log(url);
         this.raw_data = null;
@@ -49,7 +47,7 @@ class FlashCore{
         this.pako=null;
 
         this.do_frame_finish=false;
-
+        this.exportAssets = new ExportAssetManager(this);
 
         this.is_firefox=(typeof(document.wrappedJSObject)!=='undefined');
 
@@ -264,12 +262,12 @@ class FlashCore{
         
         do{
             let ret
-            try {
+            //try {
                ret = this.process_tag();
-            }catch(e) {
-                console.log(e);
+            /*}catch(e) {
+                console.error('Error!',JSON.stringify(e.message));
                 ret = false;
-            }
+            }*/
 
             if(ret === false){
                 cancelAnimationFrame(this.redraw_interval_id);
@@ -358,7 +356,7 @@ class FlashCore{
 
     register_avm_object(name, obj){
         this.debug('register object "'+name+'"');
-        this.avm_obj[name] = {type:this.avm.VARTYPE_OBJ, val: obj};
+        this.avm_obj.setVar(name,{type:this.avm.VARTYPE_OBJ, val: obj});
     }
 
     set_frame_label(frame, label){
