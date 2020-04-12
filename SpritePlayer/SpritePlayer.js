@@ -34,7 +34,7 @@ class SmartSprite{
         let e = this.sprite;
         if (e.constructor.name !== 'Sprite')
             return 0;
-        return e.cur_frame;
+        return e.current_frame;
     }
 
     stop()

@@ -382,6 +382,9 @@ class Shape{
 				this.ctx.fillStyle = pattern;
 
 			}break;
+			/*case this.FILLTYPE_RADIAL_GRADIENT_FILL:{
+				console.log(fill_style);
+			}break;*/
 
 			default:
 				alert("TODO: Fill type:"+fill_style.type);

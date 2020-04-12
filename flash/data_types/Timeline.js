@@ -13,6 +13,7 @@ class Timeline{
 	}
 
 	get_address(frame){
+		//console.log(this.timeline);
 		if(this.timeline[frame] === undefined)
 			return -1
 		let {address} = this.timeline[frame];

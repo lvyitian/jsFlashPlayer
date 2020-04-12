@@ -46,6 +46,7 @@ class AVM{
 		this.native_functions['setInterval'] = this.native_setInterval.bind(this);
 		this.native_functions['gotoAndStop'] = this.native_gotoAndStop.bind(this);
 		this.native_functions['stop'] = this.native_stop.bind(this);
+		this.native_functions['play'] = this.native_play.bind(this);
 
 		this.native_class = [];
 		this.native_class['Sound'] = function() { this.____debug = 'It is a Sound object'};
@@ -72,11 +73,11 @@ class AVM{
 	}
 
 	make_math_obj(){
-		let o={};
-		o._____debug='It is a Math object';
-
-		o.floor = {type:this.VARTYPE_NATIVE_FUNC, val: this.native_Math_floor};
-		o.round = {type:this.VARTYPE_NATIVE_FUNC, val: this.native_Math_round};
+		let o = new AVM_Object(null, true);
+		o.setVar('floor', {type:this.VARTYPE_NATIVE_FUNC, val: this.native_Math_floor});
+		o.setVar('round', {type:this.VARTYPE_NATIVE_FUNC, val: this.native_Math_round});
+		console.log('Math:',o);
+		//o._____debug='It is a Math object';
 		return o;
 	}
 
@@ -391,7 +392,7 @@ class AVM{
 			return false;
 		}
 		let frame = state.convert_to_number(args[0]);
-		let clip = obj.__________this__________;
+		let clip = obj.parent;
 		
 		clip.goto_frame(frame);
 		clip.stop();
@@ -399,10 +400,16 @@ class AVM{
 	}
 
 	native_stop(state, args, obj){
-		let clip = obj.__________this__________;
+		let clip = obj.parent;
 		clip.stop();
 		return true;
 	}
+
+	native_play(state, args, obj){
+        let clip = obj.parent;
+        clip.play();
+        return true;
+    }
 
 	//--------------------------------------------------------------------- avm actions ----------------------------------------------------
 
@@ -411,10 +418,11 @@ class AVM{
 		a.skip_count = a.data.read_UI8();
 		let loaded = (this.core.timeline.get_address(a.frame)>0);
 		if(!loaded){
-			state.skip_actions_count = a.skip_count;			
-			console.log(this.core.timeline);
-			console.log('frame:',a.frame, loaded);
-			return false;
+			//this does not works...
+			//state.skip_actions_count = a.skip_count;
+			//console.log(this.core.timeline);
+			//console.log('frame:',a.frame, loaded);
+			//return false;
 		}
 
 		return true;
@@ -546,7 +554,7 @@ class AVM{
 
 		let obj = state.pop_object();
 		if(obj===false){
-			this.errord('error, object expected!')
+			this.errord('error, object expected!');
 			return false;
 		}
 
@@ -737,7 +745,6 @@ class AVM{
 	}
 	action_goto_label(a,state){
 		let label = a.data.read_STRING();
-		
 		return state.target.goto_label(label);
 	}
 }

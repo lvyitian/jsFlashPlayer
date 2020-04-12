@@ -1,12 +1,16 @@
 class AVM_Object{
-    constructor(parent){
+    constructor(parent, empty = false){
         this.parent = parent;
-        this.vars = {
-            _x: {val: 0},
-            _y: {val: 0},
-            _xscale: {val: 100},
-            _yscale: {val: 100}
-        };
+        if(empty){
+            this.vars = {};
+        }else {
+            this.vars = {
+                _x: {val: 0},
+                _y: {val: 0},
+                _xscale: {val: 100},
+                _yscale: {val: 100}
+            };
+        }
 
     }
     getVar(varname){

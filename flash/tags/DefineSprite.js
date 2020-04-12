@@ -13,16 +13,23 @@ class DefineSprite extends genericTag{
 		o.tags = [];
 
 		let end = false;
-		let frame =0;
-		let timeline = new Timeline();
-		timeline.add_frame(0,frame);
+		this.current_frame = 0;
+		this.timeline = new Timeline();
+		this.timeline.add_frame(0,this.current_frame);
 		while(!end){
 			let t = this.read_tag_data();
 			o.tags.push(t);
 
 			if(t.code==1){
-				frame++;
-				timeline.add_frame(o.tags.length,frame);
+                this.current_frame++;
+				this.timeline.add_frame(o.tags.length, this.current_frame);
+			}
+
+			if(t.code == 43){
+				let reader = new DefineFrameLabel(this,t);
+				if(!reader.no_error){
+					return false;
+				}
 			}
 
 			if(t.code==0){
@@ -30,7 +37,7 @@ class DefineSprite extends genericTag{
 				break;
 			}
 		}
-		o.timeline = timeline;
+		o.timeline = this.timeline;
 
 		//console.log(o);
 		let spr = new Sprite(this.header.code,o, this.core);
@@ -40,7 +47,12 @@ class DefineSprite extends genericTag{
 		return true;
 	}
 
-	
+	debug(m){
+
+	}
+    set_frame_label(frame, label){
+        this.timeline.add_label(frame, label);
+    }
 }
 
 tag_list[39] = DefineSprite;

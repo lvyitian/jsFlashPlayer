@@ -14,7 +14,7 @@ class Sprite{
 
 		this.bug_inject_script = core.bug_inject_script.bind(core);
 
-		this.cur_frame=0;
+		this.current_frame=0;
 		this.cur_tag=0;
 
 		this.playing = true;
@@ -58,7 +58,7 @@ class Sprite{
 
 	reset(){
         this.cur_tag=0;
-        this.cur_frame=0;
+        this.current_frame=0;
         this.frame_ready = false;
     }
 
@@ -153,7 +153,7 @@ class Sprite{
 			return false;
 
 
-		/*if(this.cur_frame == 4){
+		/*if(this.current_frame == 4){
 			if(![
 					//125
 				].includes(this.data.spriteID)){
@@ -176,7 +176,7 @@ class Sprite{
 		
 		if(!ret){
 			console.log(this.data.tags);
-			console.log("frame:",this.cur_frame);
+			console.log("frame:",this.current_frame);
 		}
 
 		if(this.has_color_transform){
@@ -189,14 +189,14 @@ class Sprite{
 		//return false;
 
 		if(!this.playing){
-            //if(!this.goto_frame(this.cur_frame)){
+            //if(!this.goto_frame(this.current_frame)){
             //	return false;
             //}
-            this.cur_frame--;
+            this.current_frame--;
         }
 
 
-		this.cur_frame++;
+		this.current_frame++;
 		return ret;
 	}
 
@@ -221,11 +221,27 @@ class Sprite{
         	this.debug('cannot find frame #'+frame);
         	return false;
         }
-        this.cur_frame = frame;
+        this.current_frame = frame;
         this.cur_tag = addr;
         this.frame_ready = false;
         //this.display_list.abort_frame();
         return true;
+    }
+
+    goto_label(label){
+        let frame = this.timeline.get_frame_by_label(label);
+        if(frame<0){
+            console.error("goto label fail, frame with label '"+label+"' was not found on a timeline");
+            console.log(this.data);
+            return false;
+        }
+        //console.log('current_frame:',this.current_frame, 'goto_frame',frame);
+        //return false;
+        return this.goto_frame(frame);
+    }
+
+    set_frame_label(frame, label){
+        this.timeline.add_label(frame, label);
     }
 
     register_avm_object(name, obj){
